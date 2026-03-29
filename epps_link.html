@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edward's Personal Preference Schedule</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: #f0f0eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 14px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 1020px;
+    background: #fff;
+    border: 2px solid #1a6ab5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: #0d2a4a; }
+  .search-panel input {
+    flex: 1; min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid #b0c8e8; border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: #0d2a4a;
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: #1a6ab5; background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: #1a6ab5; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .err-box {
+    width: 1020px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── PAGE ── */
+  .page {
+    background: #fff;
+    width: 1020px;
+    padding: 16px 16px 16px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    border: 1px solid #bbb;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  /* HEADER */
+  .header-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+    margin-bottom: 10px;
+    font-size: 10px;
+  }
+  .header-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 3px;
+    gap: 3px;
+  }
+  .header-row label {
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 10px;
+  }
+  .header-line {
+    border-bottom: 1px solid #333;
+    flex: 1;
+    height: 14px;
+  }
+  .header-filled {
+    border-bottom: 1px solid #333;
+    flex: 1;
+    height: 14px;
+    font-weight: bold;
+    font-size: 10.5px;
+    color: #111;
+    padding-bottom: 1px;
+    display: inline-flex;
+    align-items: flex-end;
+  }
+
+  /* BLOCK */
+  .block { margin-bottom: 5px; }
+
+  .epps-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .epps-table td, .epps-table th {
+    border: 1px solid #333;
+    text-align: center;
+    font-size: 9px;
+    padding: 1px 0;
+    height: 17px;
+  }
+
+  .epps-table col.num-col {
+    width: calc((100% - 108px) / 15);
+  }
+  .epps-table col.exam-col {
+    width: 108px;
+  }
+
+  .num-cell {
+    font-size: 9px;
+    line-height: 1.3;
+  }
+  .num-cell sup {
+    font-size: 6.5px;
+    font-weight: bold;
+  }
+
+  /* Examiner header row */
+  .exam-hdr {
+    font-size: 8px;
+    font-weight: bold;
+    border-left: 2px solid #444 !important;
+    padding: 0;
+  }
+
+  .exam-hdr-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    height: 100%;
+  }
+  .exam-hdr-inner span {
+    border-right: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 1px 0;
+  }
+  .exam-hdr-inner span:last-child { border-right: none; }
+
+  /* Examiner data cell */
+  .exam-data {
+    border-left: 2px solid #444 !important;
+    padding: 0;
+  }
+  .exam-data-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    height: 100%;
+    min-height: 17px;
+  }
+  .exam-data-inner span {
+    border-right: 1px solid #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5px;
+    padding: 1px 0;
+  }
+  .exam-data-inner span:last-child { border-right: none; }
+  .exam-data-inner span.lbl {
+    font-weight: bold;
+    justify-content: flex-start;
+    padding-left: 2px;
+    font-size: 8.5px;
+  }
+
+  .empty-hdr {
+    border: none !important;
+  }
+
+  /* Checkbox row */
+  .cb-cell {
+    border: 1px solid #333;
+    height: 18px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .cb-cell input[type="checkbox"] {
+    width: 11px;
+    height: 11px;
+    margin: 0;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
+  /* Cons cell */
+  .cons-cell {
+    border: 1px solid #333;
+    border-left: 2px solid #444 !important;
+    height: 18px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 7.5px;
+    font-weight: bold;
+    padding: 0 1px;
+  }
+  .cons-box {
+    display: inline-block;
+    width: 18px;
+    height: 11px;
+    border: 1px solid #333;
+    vertical-align: middle;
+    margin-left: 1px;
+  }
+
+  /* Scored cells */
+  .ans-A     { color: #1a6ab5; font-weight: 900; }
+  .ans-B     { color: #dc2626; font-weight: 900; }
+  .line-red  { background: #ffe0e0; }
+  .line-blue { background: #ddeeff; }
+
+  /* Score display in examiner cols */
+  .score-val {
+    font-weight: 900; font-size: 9px; color: #111;
+  }
+  /* Cons checkbox checked style */
+  .cons-checked { background: #ffd700; }
+
+  /* Cons score box filled */
+  .cons-score {
+    font-weight: 900; font-size: 10px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .search-panel, .err-box { display: none !important; }
+    .page { box-shadow: none; border: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<div class="page">
+
+  <div class="title">Edward's Personal Preference Schedule</div>
+
+  <div class="header-cols">
+    <div>
+      <div class="header-row">
+        <label>Nama</label>
+        <span class="header-filled" id="hNama"></span>
+        <label style="margin-left:8px;">NIP.</label>
+        <div class="header-line" style="flex:0.6"></div>
+      </div>
+      <div class="header-row">
+        <label>Tempat, Tanggal lahir</label>
+        <div class="header-line"></div>
+      </div>
+      <div class="header-row">
+        <label>Pekerjaan/Jabatan</label>
+        <div class="header-line"></div>
+      </div>
+    </div>
+    <div>
+      <div class="header-row">
+        <label>Nomor</label>
+        <span class="header-filled" id="hNomor"></span>
+        <label style="margin-left:8px;">Tanggal</label>
+        <div class="header-line"></div>
+      </div>
+      <div class="header-row">
+        <label>Pendidikan akhir</label>
+        <span class="header-filled" id="hPendidikan"></span>
+      </div>
+      <div class="header-row">
+        <label>Suku bangsa</label>
+        <div class="header-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gridArea"></div>
+
+</div>
+
+<script>
+// ─── API CONFIG ───────────────────────────────────────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── STATE ────────────────────────────────────────────────────
+let letters = new Array(226).fill('');
+
+const needGroups = [
+  ['Ach','Def','Ord','Exh','Aut'],
+  ['Aff','Int','Suc','Dom','Aba'],
+  ['Nur','Chg','End','Het','Agg'],
+];
+
+// ─── GARIS MERAH & BIRU ───────────────────────────────────────
+// Merah: 15 nomor total (3 kelompok × 5)
+const RED_NOS = [
+  1,7,13,19,25,          // block 0
+  101,107,113,119,125,   // block 1
+  201,207,213,219,225,   // block 2
+];
+// Biru: diurutkan berdasarkan KOLOM TABEL yang sama dengan RED_NOS
+// RED col0=1   ↔ BLUE col0=151  | RED col5=101 ↔ BLUE col5=26
+// RED col10=201↔ BLUE col10=51
+const BLUE_NOS = [
+  151,157,163,169,175,   // pasangan col 0-4
+  26,32,38,44,50,        // pasangan col 5-9
+  51,57,63,69,75,        // pasangan col 10-14
+];
+
+const RED_SET  = new Set(RED_NOS);
+const BLUE_SET = new Set(BLUE_NOS);
+
+// ─── PARSER ───────────────────────────────────────────────────
+function parseEpps(str) {
+  const result = new Array(226).fill('');
+  if (!str) return result;
+  str.split(';').map(s => s.trim()).filter(Boolean).forEach((val, idx) => {
+    const n = idx + 1;
+    if (n <= 225) result[n] = val.toUpperCase();
+  });
+  return result;
+}
+
+// ─── SCORING ──────────────────────────────────────────────────
+// Nomor soal di block b, col c, row r:
+//   num = b*75 + c*5 + r + 1   (b=0..2, c=0..14, r=0..4)
+
+// r (row score) per need:
+//   hitung A di 15 item baris (col 0..14), KECUALI yg terkena garis merah
+function calcRowScore(blockIdx, rowIdx) {
+  let score = 0;
+  for (let col = 0; col < 15; col++) {
+    const num = blockIdx * 75 + col * 5 + rowIdx + 1;
+    if (RED_SET.has(num)) continue; // skip garis merah
+    if (letters[num] === 'A') score++;
+  }
+  return score;
+}
+
+// c (col score) per need per block:
+//   Hitung B secara VERTIKAL di kolom need tersebut (col = rowIdx sebagai posisi kolom)
+//   di semua 5 row dalam block itu, KECUALI yg terkena garis merah (pink).
+//   Misal Ach (row=0, block=0) → col=0 → nomor: 1,2,3,4,5 → skip 1 (pink) → hitung B di 2,3,4,5
+//   Misal Def (row=1, block=0) → col=1 → nomor: 6,7,8,9,10 → skip 7 (pink) → hitung B di 6,8,9,10
+//   (col di sini = posisi kolom vertikal = rowIdx, karena setiap need punya 1 kolom khusus)
+// PENTING: "kolom" vertikal = col tertentu, bukan row. Dalam formula:
+//   num = blockIdx*75 + col*5 + row + 1
+//   Untuk kolom vertikal col=needCol, iterasi row=0..4:
+//   num = blockIdx*75 + needCol*5 + row + 1
+// c (col score) per need:
+// Hitung B secara VERTIKAL di kolom needCol, merentang SEMUA 3 block (15 sel total),
+// skip yang pink (RED_SET). needCol = 0..14 (posisi kolom di tabel).
+// Misal Ach (needCol=0): num 1,2,3,4,5,76,77,78,79,80,151,152,153,154,155 → skip 1 (pink)
+// Misal Def (needCol=1): num 6,7,8,9,10,81,82,83,84,85,156,157,158,159,160 → skip 7 (pink)
+function calcColScore(needCol) {
+  let score = 0;
+  for (let b = 0; b < 3; b++) {
+    for (let row = 0; row < 5; row++) {
+      const num = b * 75 + needCol * 5 + row + 1;
+      if (RED_SET.has(num)) continue;
+      if (letters[num] === 'B') score++;
+    }
+  }
+  return score;
+}
+
+// Total s = jumlah semua nilai s yang tampil (15 need × 3 block masing-masing punya s)
+// s per baris = r(blockIdx,row) + c(needCol) di mana needCol = blockIdx*5 + row
+function calcTotalS() {
+  let total = 0;
+  for (let b = 0; b < 3; b++) {
+    for (let row = 0; row < 5; row++) {
+      const needCol = b * 5 + row;
+      const r = calcRowScore(b, row);
+      const c = calcColScore(needCol);
+      total += r + c;
+    }
+  }
+  return total;
+}
+
+// ─── WS (Weighted Score) ──────────────────────────────────────
+// ss = lookup nilai s per need ke wsMap (disalin dari psikogram-engine-json.js)
+const needKeys = ['ACH','DEF','ORD','EXH','AUT','AFF','INT','SUC','DOM','ABA','NUR','CHG','END','HET','AGG'];
+
+const wsMap = {
+  ACH:{28:20,27:20,26:19,25:18,24:17,23:16,22:16,21:15,20:14,19:13,18:12,17:11,16:10,15:9,14:8,13:7,12:6,11:5,10:5,9:4,8:3,7:2,6:1,5:0,4:0,3:0,2:0,1:0,0:0},
+  DEF:{22:20,21:19,20:18,19:18,18:18,17:17,16:16,15:15,14:14,13:13,12:11,11:11,10:10,9:9,8:8,7:7,6:6,5:5,4:3,3:3,2:2,1:1,0:0},
+  ORD:{28:20,27:19,26:19,25:18,24:17,23:17,22:16,21:15,20:15,19:14,18:13,17:13,16:12,15:11,14:10,13:9,12:9,11:8,10:7,9:7,8:6,7:5,6:5,5:4,4:3,3:3,2:2,1:1,0:1},
+  EXH:{24:20,23:19,22:18,21:18,20:17,19:16,18:15,17:15,16:14,15:13,14:12,13:11,12:10,11:9,10:8,9:7,8:7,7:6,6:5,5:4,4:3,3:3,2:2,1:1,0:0},
+  AUT:{21:20,20:19,19:18,18:17,17:16,16:15,15:14,14:13,13:12,12:11,11:10,10:9,9:8,8:7,7:6,6:5,5:4,4:3,3:2,2:2,1:1,0:0},
+  AFF:{26:20,25:19,24:19,23:18,22:17,21:16,20:15,19:14,18:14,17:13,16:12,15:11,14:10,13:9,12:8,11:8,10:7,9:6,8:5,7:4,6:3,5:3,4:2,3:1,2:1,1:0},
+  INT:{28:20,27:20,26:19,25:18,24:17,23:17,22:16,21:15,20:14,19:14,18:13,17:12,16:11,15:10,14:9,13:8,12:7,11:7,10:6,9:5,8:4,7:4,6:3,5:2,4:1,3:1,2:0,1:0},
+  SUC:{27:20,26:19,25:19,24:18,23:17,22:17,21:16,20:15,19:15,18:14,17:13,16:13,15:12,14:11,13:10,12:9,11:9,10:8,9:7,8:7,7:6,6:5,5:4,4:4,3:3,2:2,1:1,0:1},
+  DOM:{25:20,24:20,23:19,22:18,21:17,20:17,19:16,18:15,17:14,16:14,15:13,14:12,13:11,12:10,11:9,10:8,9:8,8:7,7:6,6:5,5:5,4:4,3:3,2:2,1:1,0:0},
+  ABA:{29:20,28:19,27:18,26:18,25:17,24:16,23:15,22:15,21:14,20:13,19:13,18:12,17:11,16:10,15:9,14:8,13:8,12:7,11:6,10:5,9:5,8:4,7:3,6:2,5:2,4:1,3:0,2:0,1:0},
+  NUR:{30:20,29:19,28:18,27:18,26:17,25:16,24:16,23:15,22:14,21:14,20:13,19:12,18:12,17:11,16:10,15:9,14:9,13:8,12:7,11:7,10:6,9:5,8:5,7:4,6:3,5:3,4:2,3:1,2:1,1:0},
+  CHG:{27:20,26:19,25:18,24:18,23:17,22:16,21:16,20:15,19:14,18:13,17:13,16:12,15:11,14:10,13:9,12:9,11:8,10:7,9:6,8:6,7:5,6:4,5:3,4:3,3:2,2:1,1:1,0:0},
+  END:{30:20,29:19,28:18,27:17,26:17,25:16,24:16,23:15,22:14,21:14,20:13,19:13,18:12,17:12,16:11,15:10,14:9,13:9,12:8,11:7,10:7,9:6,8:6,7:5,6:4,5:4,4:3,3:3,2:2,1:1,0:1},
+  HET:{26:20,25:19,24:19,23:18,22:18,21:17,20:17,19:16,18:16,17:15,16:15,15:14,14:14,13:13,12:12,11:12,10:11,9:11,8:10,7:9,6:9,5:8,4:8,3:7,2:7,1:6,0:5},
+  AGG:{27:20,26:19,25:18,24:18,23:17,22:16,21:16,20:15,19:14,18:14,17:13,16:12,15:12,14:11,13:10,12:9,11:9,10:8,9:7,8:7,7:6,6:5,5:5,4:4,3:3,2:3,1:2,0:1}
+};
+
+function getWS(sVal, key) {
+  const m = wsMap[key];
+  if (!m) return '';
+  const keys = Object.keys(m).map(Number).sort((a,b) => b - a);
+  for (const k of keys) { if (sVal >= k) return m[k]; }
+  return 0;
+}
+// Pasangan RED vs BLUE per kolom:
+//   col 0:  RED=1   BLUE=26   (block0: row0,col0 vs row0,col5)
+//   col 1:  RED=7   BLUE=32   (block0: row1,col1 vs row1,col6)
+//   col 2:  RED=13  BLUE=38
+//   col 3:  RED=19  BLUE=44
+//   col 4:  RED=25  BLUE=50
+//   col 5:  RED=101 BLUE=51   (block1: row0,col0 vs block0: row0,col10)
+//   col 6:  RED=107 BLUE=57
+//   col 7:  RED=113 BLUE=63
+//   col 8:  RED=119 BLUE=69
+//   col 9:  RED=125 BLUE=75
+//   col 10: RED=201 BLUE=151  (block2: row0,col0 vs block2: row0,col5)
+//   col 11: RED=207 BLUE=157
+//   col 12: RED=213 BLUE=163
+//   col 13: RED=219 BLUE=169
+//   col 14: RED=225 BLUE=175
+// checks[col] = true jika jawaban RED[col] === BLUE[col] (keduanya tidak kosong)
+function calcConsistency() {
+  let count = 0;
+  const checks = [];
+  for (let i = 0; i < 15; i++) {
+    const redAns  = letters[RED_NOS[i]];
+    const blueAns = letters[BLUE_NOS[i]];
+    const same = (redAns !== '' && blueAns !== '' && redAns === blueAns);
+    checks.push(same);
+    if (same) count++;
+  }
+  return { count, checks };
+}
+
+// ─── BUILD GRID ───────────────────────────────────────────────
+const gridArea = document.getElementById('gridArea');
+
+function buildBlock(blockIndex) {
+  const start = blockIndex * 75 + 1;
+  const needs  = needGroups[blockIndex];
+  const isFirst = blockIndex === 0;
+  const isLast  = blockIndex === 2;
+
+  const blockDiv = document.createElement('div');
+  blockDiv.className = 'block';
+  const table = document.createElement('table');
+  table.className = 'epps-table';
+
+  // colgroup
+  const cg = document.createElement('colgroup');
+  for (let c = 0; c < 15; c++) {
+    const col = document.createElement('col'); col.className = 'num-col'; cg.appendChild(col);
+  }
+  const ec = document.createElement('col'); ec.className = 'exam-col'; cg.appendChild(ec);
+  table.appendChild(cg);
+
+  const tbody = document.createElement('tbody');
+  tbody.dataset.block = blockIndex;
+
+  // Header row (block 0 only)
+  if (isFirst) {
+    const hdrRow = document.createElement('tr');
+    for (let c = 0; c < 15; c++) {
+      const td = document.createElement('td'); td.className = 'empty-hdr'; hdrRow.appendChild(td);
+    }
+    const examTd = document.createElement('td');
+    examTd.className = 'exam-hdr';
+    examTd.innerHTML = `<div class="exam-hdr-inner"><span>Need</span><span>r</span><span>c</span><span>s</span><span>ss</span></div>`;
+    hdrRow.appendChild(examTd);
+    tbody.appendChild(hdrRow);
+  }
+
+  // 5 data rows
+  for (let row = 0; row < 5; row++) {
+    const tr = document.createElement('tr');
+    tr.dataset.block = blockIndex;
+    tr.dataset.row   = row;
+
+    for (let col = 0; col < 15; col++) {
+      const num = blockIndex * 75 + col * 5 + row + 1;
+      const td  = document.createElement('td');
+      td.className = 'num-cell';
+      td.dataset.num = num;
+
+      const ans = letters[num];
+      let cellClass = '';
+      if (RED_SET.has(num))  cellClass = 'line-red';
+      if (BLUE_SET.has(num)) cellClass = 'line-blue';
+      if (cellClass) td.classList.add(cellClass);
+
+      const ansClass = ans === 'A' ? 'ans-A' : ans === 'B' ? 'ans-B' : '';
+      td.innerHTML = `${num}<sup class="${ansClass}">${ans}</sup>`;
+      tr.appendChild(td);
+    }
+
+    // Examiner data cell
+    // needCol = posisi kolom tabel global untuk need ini = blockIndex*5 + row
+    const needCol = blockIndex * 5 + row;
+    const r = calcRowScore(blockIndex, row);
+    const c = calcColScore(needCol);
+    const s = r + c;
+    const examTd = document.createElement('td');
+    examTd.className = 'exam-data';
+    examTd.dataset.block = blockIndex;
+    examTd.dataset.row   = row;
+    const hasData = letters.some(l => l !== '');
+    const isLastRow = (row === 4);
+    const isLastBlock = (blockIndex === 2);
+    // ss = weighted score dari nilai s per need
+    const needKey = needKeys[blockIndex * 5 + row];
+    const ss = hasData ? getWS(s, needKey) : '';
+    examTd.innerHTML = `<div class="exam-data-inner">
+      <span class="lbl">${needs[row]}</span>
+      <span class="score-val">${hasData ? r : ''}</span>
+      <span class="score-val">${hasData ? c : ''}</span>
+      <span class="score-val">${hasData ? s : ''}</span>
+      <span class="score-val">${ss}</span>
+    </div>`;
+    tr.appendChild(examTd);
+    tbody.appendChild(tr);
+  }
+
+  // Checkbox + Konsistensi row (block 2 only)
+  if (isLast) {
+    const { count, checks } = calcConsistency();
+    const cbRow = document.createElement('tr');
+    const hasData = letters.some(l => l !== '');
+
+    // checks[] berisi 15 elemen untuk 15 pasang RED vs BLUE
+    // RED_NOS[0..4]  = kolom 0..4  (block 0, row 0..4 diagonal: num 1,7,13,19,25)
+    // RED_NOS[5..9]  = kolom 5..9  (block 1, row 0..4 diagonal: num 101,107,113,119,125)
+    // RED_NOS[10..14]= kolom 10..14(block 2, row 0..4 diagonal: num 201,207,213,219,225)
+    // Urutan kolom di tabel: col 0..14 → checks[col]
+    for (let col = 0; col < 15; col++) {
+      const td = document.createElement('td');
+      td.className = 'cb-cell';
+      if (hasData && checks[col]) {
+        td.style.background = '#fffacd';
+        td.innerHTML = `<span style="font-size:11px;font-weight:900;color:#333">✓</span>`;
+      } else {
+        td.innerHTML = '';
+      }
+      cbRow.appendChild(td);
+    }
+
+    const consTd = document.createElement('td');
+    consTd.className = 'cons-cell';
+    const totalS = hasData ? calcTotalS() : '';
+    consTd.innerHTML = `Cons <span class="cons-box" style="display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:11px">${hasData ? count : ''}</span> <span class="cons-box" style="display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;background:#fffde7">${totalS}</span>`;
+    cbRow.appendChild(consTd);
+    tbody.appendChild(cbRow);
+  }
+
+  table.appendChild(tbody);
+  blockDiv.appendChild(table);
+  return blockDiv;
+}
+
+function renderGrid() {
+  gridArea.innerHTML = '';
+  for (let b = 0; b < 3; b++) gridArea.appendChild(buildBlock(b));
+}
+
+// ─── BIO ──────────────────────────────────────────────────────
+function renderBio(x02Str) {
+  let bio = {};
+  try { bio = JSON.parse(x02Str || '{}'); } catch {}
+  setEl('hNama',       bio.nama       || '');
+  setEl('hNomor',      bio.id_x || bio.nomor || '');
+  setEl('hPendidikan', bio.pendidikan || '');
+}
+function setEl(id, val) { const el=document.getElementById(id); if (el) el.textContent=val; }
+
+// ─── RESET ────────────────────────────────────────────────────
+function resetAll() {
+  clearErr();
+  letters = new Array(226).fill('');
+  renderGrid();
+  ['hNama','hNomor','hPendidikan'].forEach(id => setEl(id,''));
+  document.getElementById('inputId').value = '';
+}
+
+// ─── UI HELPERS ───────────────────────────────────────────────
+function showErr(msg) { const el=document.getElementById('errBox'); el.textContent=msg; el.classList.add('show'); }
+function clearErr()   { const el=document.getElementById('errBox'); el.textContent=''; el.classList.remove('show'); }
+function setBtn(loading) {
+  const btn=document.getElementById('btnCari');
+  btn.disabled=loading;
+  btn.innerHTML=loading?'<span class="spinner"></span> Mencari...':'Cari';
+}
+
+// ─── MAIN FETCH ───────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+  clearErr(); setBtn(true);
+  try {
+    const res = await fetch(`${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } });
+    const d = await res.json();
+    if (!d.success || !d.data) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
+
+    renderBio(row.x_02 || '');
+
+    let x06 = {};
+    try { x06 = JSON.parse(row.x_06 || '{}'); } catch {}
+    letters = parseEpps(x06.epps || '');
+    renderGrid();
+
+  } catch(e) {
+    showErr('⚠ Gagal: ' + e.message);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+renderGrid();
+</script>
+
+</body>
+</html>

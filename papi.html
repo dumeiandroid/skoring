@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAPI Kostick</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: #f0f0eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 720px;
+    background: #fff;
+    border: 2px solid #1a6ab5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 12px;
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: #0d2a4a; }
+  .search-panel input {
+    flex: 1; min-width: 160px; padding: 9px 13px;
+    border: 2px solid #b0c8e8; border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: #0d2a4a;
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: #1a6ab5; background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: #1a6ab5; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err-box {
+    width: 720px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600;
+    font-family: 'Segoe UI', sans-serif; display: none; margin-bottom: 10px;
+  }
+  .err-box.show { display: block; }
+
+  /* ── TABS ── */
+  .tabs {
+    width: 720px;
+    display: flex; gap: 0;
+    margin-bottom: 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 0;
+    border: 1px solid #bbb; border-bottom: none;
+    background: #e8e8e4; color: #555;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
+    border-radius: 8px 8px 0 0;
+  }
+  .tab-btn:first-child { margin-right: -1px; }
+  .tab-btn.active {
+    background: #fff; color: #1a6ab5;
+    border-color: #bbb; z-index: 2;
+    border-bottom: 2px solid #fff;
+  }
+  .tab-btn:hover:not(.active) { background: #d8d8d4; }
+
+  /* ── TAB CONTENT ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── PAGE (grid) ── */
+  .page {
+    background: #fff;
+    width: 720px;
+    padding: 20px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+    border: 1px solid #bbb;
+  }
+
+  /* ── HEADER TOP/BOT ── */
+  .header-top {
+    display: grid;
+    grid-template-columns: 48px repeat(10, 1fr) 48px;
+    align-items: end; margin-bottom: 3px; padding: 0 2px;
+  }
+  .header-top .lbl, .header-bottom .lbl {
+    text-align: center; font-size: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .hdr-box {
+    width: 22px; height: 22px; border: 1px solid #333;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 900; color: #1a1a1a;
+  }
+  .header-bottom {
+    display: grid;
+    grid-template-columns: 48px repeat(10, 1fr) 48px;
+    align-items: start; margin-top: 3px; padding: 0 2px;
+  }
+
+  /* ── GRID ── */
+  .grid-wrapper { position: relative; border: 1px solid #333; }
+  .grid { display: grid; grid-template-columns: 48px repeat(9, 1fr); }
+  .arrow-left-col { display: flex; flex-direction: column; }
+  .arrow-left-cell {
+    height: 52px; display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px dotted #aaa; border-right: 1px solid #333;
+  }
+  .arrow-left-cell:last-child { border-bottom: none; }
+  .num-col-wrap { display: flex; flex-direction: column; border-right: 1px solid #aaa; }
+  .num-col-wrap:last-child { border-right: none; }
+  .num-cell {
+    height: 52px; border-bottom: 1px dotted #aaa;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .num-cell:last-child { border-bottom: none; }
+  .num-cell .number { font-size: 9px; color: #999; margin-top: 1px; }
+  .diagonal-line {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+  }
+  .ans-A { font-size: 13px; font-weight: 900; color: #1a6ab5; }
+  .ans-B { font-size: 13px; font-weight: 900; color: #dc2626; }
+
+  /* ── CHART PAGE ── */
+  .page-chart {
+    background: #fff;
+    width: 720px;
+    padding: 24px 30px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+    border: 1px solid #bbb;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .chart-title {
+    font-size: 22px; font-weight: bold; letter-spacing: 3px; margin-bottom: 2px;
+  }
+  .chart-subtitle { font-size: 11px; font-style: italic; color: #555; margin-bottom: 16px; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page, .page-chart { box-shadow: none; border: none; }
+    .search-panel, .err-box, .tabs { display: none !important; }
+    .tab-content { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+<div class="err-box" id="errBox"></div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('tab-grid', this)">📋 Lembar Jawaban</button>
+  <button class="tab-btn" onclick="switchTab('tab-chart', this)">🎯 Profil PAPI</button>
+</div>
+
+<!-- TAB 1: GRID -->
+<div id="tab-grid" class="tab-content active">
+<div class="page">
+  <div class="header-top">
+    <div class="lbl"><span>Total</span><span class="hdr-box" id="hdr-total-top"></span></div>
+    <div class="lbl"><span>G</span><span class="hdr-box" id="hdr-G"></span></div>
+    <div class="lbl"><span>L</span><span class="hdr-box" id="hdr-L"></span></div>
+    <div class="lbl"><span>I</span><span class="hdr-box" id="hdr-I"></span></div>
+    <div class="lbl"><span>T</span><span class="hdr-box" id="hdr-T"></span></div>
+    <div class="lbl"><span>V</span><span class="hdr-box" id="hdr-V"></span></div>
+    <div class="lbl"><span>S</span><span class="hdr-box" id="hdr-S"></span></div>
+    <div class="lbl"><span>R</span><span class="hdr-box" id="hdr-R"></span></div>
+    <div class="lbl"><span>D</span><span class="hdr-box" id="hdr-D"></span></div>
+    <div class="lbl"><span>C</span><span class="hdr-box" id="hdr-C"></span></div>
+    <div class="lbl"><span>E</span><span class="hdr-box" id="hdr-E"></span></div>
+    <div class="lbl"></div>
+  </div>
+  <div class="grid-wrapper">
+    <div class="grid" id="mainGrid"></div>
+    <svg class="diagonal-line" id="diagSvg" xmlns="http://www.w3.org/2000/svg">
+      <line id="diagLine" stroke="#333" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="header-bottom">
+    <div class="lbl"><span class="hdr-box" id="hdr-N"></span><span>N</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-A"></span><span>A</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-P"></span><span>P</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-X"></span><span>X</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-B"></span><span>B</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-O"></span><span>O</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-Z"></span><span>Z</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-K"></span><span>K</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-F"></span><span>F</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-W"></span><span>W</span></div>
+    <div class="lbl"><span class="hdr-box" id="hdr-total-bot"></span><span>Total</span></div>
+    <div class="lbl"></div>
+  </div>
+</div>
+</div>
+
+<!-- TAB 2: CHART -->
+<div id="tab-chart" class="tab-content">
+<div class="page-chart">
+  <div class="chart-title">PAPI</div>
+  <div class="chart-subtitle">Preference Inventory</div>
+  <svg id="papiSvg" width="660" height="660" viewBox="0 0 660 660" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+</div>
+
+<script>
+// ─── TABS ─────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── API CONFIG ────────────────────────────────────────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── GRID HELPER ──────────────────────────────────────────────
+function soalAt(col, row) { return (8 - col) * 10 + (row + 1); }
+
+// ─── PARSE ────────────────────────────────────────────────────
+function parsePapi(str) {
+  if (!str) return [];
+  return str.split(';').map(s => s.trim()).filter(Boolean);
+}
+
+// ─── SCORING MAP ──────────────────────────────────────────────
+const MAPPING = {
+  G:  { A:[1,11,21,31,41,51,61,71,81],              B:[] },
+  L:  { A:[12,22,32,42,52,62,72,82],                B:[81] },
+  I:  { A:[23,33,43,53,63,73,83],                   B:[71,82] },
+  T:  { A:[34,44,54,64,74,84],                      B:[61,72,83] },
+  V:  { A:[45,55,65,75,85],                         B:[51,62,73,84] },
+  S:  { A:[56,66,76,86],                            B:[41,52,63,74,85] },
+  R:  { A:[67,77,87],                               B:[31,42,53,64,75,86] },
+  D:  { A:[78,88],                                  B:[21,32,43,54,65,76,87] },
+  C:  { A:[89],                                     B:[11,22,33,44,55,66,77,88] },
+  E:  { A:[],                                       B:[1,12,23,34,45,56,67,78,89] },
+  N:  { A:[],                                       B:[2,13,24,35,46,57,68,79,90] },
+  A_: { A:[2],                                      B:[3,14,25,36,47,58,69,80] },
+  P:  { A:[13,3],                                   B:[4,15,26,37,48,59,70] },
+  X:  { A:[24,14,4],                                B:[5,16,27,38,49,60] },
+  B_: { A:[35,25,15,5],                             B:[6,17,28,39,50] },
+  O:  { A:[46,36,26,16,6],                          B:[7,18,29,40] },
+  Z:  { A:[57,47,37,27,17,7],                       B:[8,19,30] },
+  K:  { A:[68,58,48,38,28,18,8],                    B:[9,20] },
+  F:  { A:[79,69,59,49,39,29,19,9],                 B:[10] },
+  W:  { A:[90,80,70,60,50,40,30,20,10],             B:[] },
+};
+
+function hitungSkala(answers, key) {
+  const m = MAPPING[key];
+  let t = 0;
+  m.A.forEach(s => { if (answers[s-1] === 'A') t++; });
+  m.B.forEach(s => { if (answers[s-1] === 'B') t++; });
+  return t;
+}
+
+function hitungSemua(answers) {
+  const G=hitungSkala(answers,'G'), L=hitungSkala(answers,'L'),
+        I=hitungSkala(answers,'I'), T=hitungSkala(answers,'T'),
+        V=hitungSkala(answers,'V'), S=hitungSkala(answers,'S'),
+        R=hitungSkala(answers,'R'), D=hitungSkala(answers,'D'),
+        C=hitungSkala(answers,'C'), E=hitungSkala(answers,'E'),
+        N=hitungSkala(answers,'N'), A=hitungSkala(answers,'A_'),
+        P=hitungSkala(answers,'P'), X=hitungSkala(answers,'X'),
+        B=hitungSkala(answers,'B_'),O=hitungSkala(answers,'O'),
+        Z=hitungSkala(answers,'Z'), K=hitungSkala(answers,'K'),
+        F=hitungSkala(answers,'F'), W=hitungSkala(answers,'W');
+  return { G,L,I,T,V,S,R,D,C,E, N,A,P,X,B,O,Z,K,F,W,
+    totalAtas: G+L+I+T+V+S+R+D+C+E,
+    totalBawah: N+A+P+X+B+O+Z+K+F+W };
+}
+
+// ─── HEADER BOXES ─────────────────────────────────────────────
+function isiKotakHeader(sc) {
+  [['hdr-total-top',sc.totalAtas],
+   ['hdr-G',sc.G],['hdr-L',sc.L],['hdr-I',sc.I],['hdr-T',sc.T],['hdr-V',sc.V],
+   ['hdr-S',sc.S],['hdr-R',sc.R],['hdr-D',sc.D],['hdr-C',sc.C],['hdr-E',sc.E],
+   ['hdr-N',sc.N],['hdr-A',sc.A],['hdr-P',sc.P],['hdr-X',sc.X],['hdr-B',sc.B],
+   ['hdr-O',sc.O],['hdr-Z',sc.Z],['hdr-K',sc.K],['hdr-F',sc.F],['hdr-W',sc.W],
+   ['hdr-total-bot',sc.totalBawah]
+  ].forEach(([id,val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val ?? '';
+  });
+}
+
+function clearKotakHeader() {
+  ['hdr-total-top','hdr-G','hdr-L','hdr-I','hdr-T','hdr-V','hdr-S','hdr-R','hdr-D','hdr-C','hdr-E',
+   'hdr-N','hdr-A','hdr-P','hdr-X','hdr-B','hdr-O','hdr-Z','hdr-K','hdr-F','hdr-W','hdr-total-bot']
+  .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = ''; });
+}
+
+// ─── BUILD GRID ───────────────────────────────────────────────
+function buildGrid(answers) {
+  const grid = document.getElementById('mainGrid');
+  grid.innerHTML = '';
+  const leftCol = document.createElement('div');
+  leftCol.className = 'arrow-left-col';
+  for (let r = 0; r < 10; r++) {
+    const cell = document.createElement('div');
+    cell.className = 'arrow-left-cell';
+    leftCol.appendChild(cell);
+  }
+  grid.appendChild(leftCol);
+  for (let c = 0; c < 9; c++) {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'num-col-wrap';
+    for (let r = 0; r < 10; r++) {
+      const num = soalAt(c, r);
+      const cell = document.createElement('div');
+      cell.className = 'num-cell';
+      cell.id = 'cell-' + num;
+      const ans = answers[num - 1];
+      if (ans === 'A' || ans === 'B') {
+        cell.innerHTML = `<span class="ans-${ans}">${ans}</span><div class="number">${num}</div>`;
+      } else {
+        cell.innerHTML = `<div class="number">${num}</div>`;
+      }
+      colDiv.appendChild(cell);
+    }
+    grid.appendChild(colDiv);
+  }
+  requestAnimationFrame(() => {
+    const wrapper = document.querySelector('.grid-wrapper');
+    const w = wrapper.offsetWidth, h = wrapper.offsetHeight;
+    const svg = document.getElementById('diagSvg');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    const line = document.getElementById('diagLine');
+    line.setAttribute('x1', w); line.setAttribute('y1', 0);
+    line.setAttribute('x2', 0); line.setAttribute('y2', h);
+  });
+}
+
+// ─── PAPI CHART ───────────────────────────────────────────────
+const CX = 330, CY = 330;
+const R_OUTER   = 310;
+const R_CAT     = 280;
+const R_SUBCAT  = 245;
+const R_LETTER  = 210;
+const R_SCALE_O = 198;
+const R_SCALE_I = 80;
+
+function toRad(deg) { return deg * Math.PI / 180; }
+function polar(cx, cy, r, deg) {
+  return [cx + r * Math.cos(toRad(deg)), cy + r * Math.sin(toRad(deg))];
+}
+function arcPath(r1, r2, s, e) {
+  const [x1,y1]=polar(CX,CY,r1,s), [x2,y2]=polar(CX,CY,r1,e);
+  const [x3,y3]=polar(CX,CY,r2,e), [x4,y4]=polar(CX,CY,r2,s);
+  const lg = (e-s)>180?1:0;
+  return `M${x1},${y1} A${r1},${r1} 0 ${lg} 1 ${x2},${y2} L${x3},${y3} A${r2},${r2} 0 ${lg} 0 ${x4},${y4} Z`;
+}
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+  return el;
+}
+function svgText(txt, x, y, size, fill, weight='normal', rotate=0, style='normal') {
+  const t = svgEl('text', {
+    x, y, 'font-size': size, fill, 'text-anchor':'middle',
+    'dominant-baseline':'middle', 'font-family':'Times New Roman, serif',
+    'font-weight': weight, 'font-style': style
+  });
+  if (rotate) t.setAttribute('transform', `rotate(${rotate},${x},${y})`);
+  t.textContent = txt;
+  return t;
+}
+
+const LETTERS_ORDER = ['N','G','A','L','P','I','T','V','X','B','O','S','C','D','R','Z','E','K','F','W'];
+const CATEGORIES = [
+  { name:'ARAH KERJA',   count:3 },
+  { name:'KEPEMIMPINAN', count:3 },
+  { name:'AKTIFITAS',    count:3 },
+  { name:'PERGAULAN',    count:3 },
+  { name:'GAYA KERJA',   count:3 },
+  { name:'SIFAT',        count:3 },
+  { name:'KETAATAN',     count:2 },
+];
+const SUB_LABELS = {
+  N:'MENYELESAIKAN\nTUGAS SCR PRIBADI', G:'PERAN SEBAGAI\nPEKERJA KERAS',
+  A:'HASRAT UNTUK\nBERPRESTASI',        L:'PERAN SEBAGAI\nPIMPINAN',
+  P:'MENGENDALIKAN\nORANG LAIN',        I:'MUDAH MEMBUAT\nKEPUTUSAN',
+  T:'TEMPO\nKERJA',                     V:'STAMINA',
+  X:'MEMPEROLEH\nPERHATIAN',            B:'KEBUTUHAN BETAH\nDLM KELOMPOK',
+  O:'KEBUTUHAN UNTUK\nMENSAYANGI',      S:'PERGAULAN\nLUAS',
+  C:'SUKA PEKERJAAN\nYANG TERATUR',     D:'SUKA PEKERJAAN\nYANG TERPERINCI',
+  R:'TIPE\nTEORITIS',                   Z:'HASIL\nKREASI',
+  E:'PENGENDALIAN\nEMOSI',              K:'AGRESIF',
+  F:'DORONGAN\nUNTUK KETAATAN',         W:'KEBUTUHAN TAAT\nATASAN & PERATURAN',
+};
+// K dan Z reversed (0 di luar, 9 di dalam)
+const REVERSED = new Set(['K','Z']);
+
+const SEG = 18;
+const START = -90;
+
+// Store number element positions for each letter+score
+// scoreCircles[letter][n] = {x, y}
+const scorePos = {}; // scorePos[letter][n] = {x, y}
+
+function buildChart(scores) {
+  const svg = document.getElementById('papiSvg');
+  svg.innerHTML = '';
+
+  // Background
+  svg.appendChild(svgEl('circle', {cx:CX, cy:CY, r:R_OUTER, fill:'#fff', stroke:'#333', 'stroke-width':1.5}));
+
+  // Category bands
+  let deg = START;
+  CATEGORIES.forEach(cat => {
+    const span = cat.count * SEG;
+    const end = deg + span;
+    svg.appendChild(svgEl('path', { d:arcPath(R_OUTER, R_CAT, deg, end), fill:'#1a1a1a', stroke:'#fff', 'stroke-width':0.5 }));
+
+    // Arc text for category
+    const textR = (R_OUTER + R_CAT) / 2;
+    const large = span > 180 ? 1 : 0;
+    const [sx,sy] = polar(CX, CY, textR, deg+1);
+    const [ex,ey] = polar(CX, CY, textR, end-1);
+    const pid = 'cp_' + cat.name.replace(/\s/g,'');
+    const pathEl = svgEl('path', { id: pid, d:`M${sx},${sy} A${textR},${textR} 0 ${large} 1 ${ex},${ey}`, fill:'none' });
+    svg.appendChild(pathEl);
+    const textEl = svgEl('text', { 'font-size':9, fill:'#fff', 'font-family':'Times New Roman, serif', 'font-weight':'bold' });
+    const tp = svgEl('textPath', { href:'#'+pid, startOffset:'50%', 'text-anchor':'middle' });
+    tp.textContent = cat.name;
+    textEl.appendChild(tp);
+    svg.appendChild(textEl);
+
+    deg = end;
+  });
+
+  // Sub-label bands
+  deg = START;
+  LETTERS_ORDER.forEach(letter => {
+    const s = deg, e = deg + SEG, mid = (s+e)/2;
+    svg.appendChild(svgEl('path', { d:arcPath(R_CAT, R_SUBCAT, s, e), fill:'#333', stroke:'#fff', 'stroke-width':0.5 }));
+    const lr = (R_CAT + R_SUBCAT) / 2;
+    const [lx,ly] = polar(CX, CY, lr, mid);
+    const lines = (SUB_LABELS[letter]||'').split('\n');
+    lines.forEach((line, li) => {
+      const offset = (li - (lines.length-1)/2) * 8;
+      svg.appendChild(svgText(line, lx, ly+offset, 5.5, '#fff', 'normal', mid+90));
+    });
+    deg = e;
+  });
+
+  // Letter ring
+  deg = START;
+  LETTERS_ORDER.forEach(letter => {
+    const s = deg, e = deg + SEG, mid = (s+e)/2;
+    svg.appendChild(svgEl('path', { d:arcPath(R_SUBCAT, R_LETTER, s, e), fill:'#fff', stroke:'#333', 'stroke-width':0.8 }));
+    const [lx,ly] = polar(CX, CY, (R_SUBCAT+R_LETTER)/2, mid);
+    svg.appendChild(svgText(letter, lx, ly, 14, '#000', 'bold', mid+90));
+    deg = e;
+  });
+
+  // Scale number rings + radial lines + store positions
+  deg = START;
+  LETTERS_ORDER.forEach(letter => {
+    const s = deg, e = deg + SEG, mid = (s+e)/2;
+    const isRev = REVERSED.has(letter);
+    if (!scorePos[letter]) scorePos[letter] = {};
+
+    for (let n = 0; n <= 9; n++) {
+      const frac = n / 9;
+      const r = R_SCALE_I + frac * (R_SCALE_O - R_SCALE_I);
+      const displayNum = isRev ? (9-n) : n;
+      const [nx,ny] = polar(CX, CY, r, mid);
+      scorePos[letter][displayNum] = { x: nx, y: ny, r };
+      svg.appendChild(svgText(String(displayNum), nx, ny, 7, '#000', 'normal', mid+90));
+    }
+
+    // Radial divider
+    const [ls0x,ls0y] = polar(CX, CY, R_SCALE_I, s);
+    const [ls1x,ls1y] = polar(CX, CY, R_LETTER,  s);
+    svg.appendChild(svgEl('line', { x1:ls0x, y1:ls0y, x2:ls1x, y2:ls1y, stroke:'#333', 'stroke-width':0.5 }));
+
+    deg = e;
+  });
+
+  // Concentric rings (faint)
+  for (let n = 0; n <= 9; n++) {
+    const r = R_SCALE_I + (n/9) * (R_SCALE_O - R_SCALE_I);
+    svg.appendChild(svgEl('circle', { cx:CX, cy:CY, r, fill:'none', stroke:'#ccc', 'stroke-width':0.4 }));
+  }
+
+  // Inner circle
+  svg.appendChild(svgEl('circle', { cx:CX, cy:CY, r:R_SCALE_I, fill:'#fff', stroke:'#333', 'stroke-width':1 }));
+
+  // Outer border circles
+  svg.appendChild(svgEl('circle', { cx:CX, cy:CY, r:R_OUTER,  fill:'none', stroke:'#333', 'stroke-width':2 }));
+  svg.appendChild(svgEl('circle', { cx:CX, cy:CY, r:R_LETTER, fill:'none', stroke:'#333', 'stroke-width':1 }));
+
+  // ── Draw score circles if scores provided ──
+  if (scores) drawScoreCircles(svg, scores);
+}
+
+function drawScoreCircles(svg, scores) {
+  const scoreMap = {
+    N: scores.N, G: scores.G, A: scores.A, L: scores.L,
+    P: scores.P, I: scores.I, T: scores.T, V: scores.V,
+    X: scores.X, B: scores.B, O: scores.O, S: scores.S,
+    C: scores.C, D: scores.D, R: scores.R, Z: scores.Z,
+    E: scores.E, K: scores.K, F: scores.F, W: scores.W,
+  };
+
+  // Collect ordered positions for all 20 letters
+  const points = [];
+  LETTERS_ORDER.forEach(letter => {
+    const val = scoreMap[letter];
+    if (val === undefined || val === null) { points.push(null); return; }
+    const n = Math.max(0, Math.min(9, val));
+    const pos = scorePos[letter] && scorePos[letter][n];
+    points.push(pos || null);
+  });
+
+  // Draw connecting polygon (closed) — drawn BEFORE circles so circles appear on top
+  const validPts = points.filter(Boolean);
+  if (validPts.length >= 2) {
+    // Build polyline points string following LETTERS_ORDER, skip nulls
+    const allPts = [...points, points[0]]; // close the shape
+    let d = '';
+    let started = false;
+    allPts.forEach(p => {
+      if (!p) return;
+      if (!started) { d += `M${p.x},${p.y}`; started = true; }
+      else d += ` L${p.x},${p.y}`;
+    });
+    svg.appendChild(svgEl('path', {
+      d,
+      fill: 'rgba(220,30,0,0.08)',
+      stroke: '#e03',
+      'stroke-width': 1.5,
+      'stroke-linejoin': 'round'
+    }));
+  }
+
+  // Draw circles on top of lines
+  LETTERS_ORDER.forEach(letter => {
+    const val = scoreMap[letter];
+    if (val === undefined || val === null) return;
+    const n = Math.max(0, Math.min(9, val));
+    const pos = scorePos[letter] && scorePos[letter][n];
+    if (!pos) return;
+    svg.appendChild(svgEl('circle', {
+      cx: pos.x, cy: pos.y, r: 7,
+      fill: '#fff', stroke: '#e03', 'stroke-width': 1.8
+    }));
+  });
+}
+
+// ─── RESET / UI ────────────────────────────────────────────────
+function resetAll() {
+  clearErr(); buildGrid([]); clearKotakHeader();
+  buildChart(null);
+  document.getElementById('inputId').value = '';
+}
+function showErr(msg) { const el=document.getElementById('errBox'); el.textContent=msg; el.classList.add('show'); }
+function clearErr()   { document.getElementById('errBox').classList.remove('show'); }
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Mencari...' : 'Cari';
+}
+
+// ─── FETCH ─────────────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+  clearErr(); setBtn(true);
+  try {
+    const res = await fetch(`${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } });
+    const d = await res.json();
+    if (!d.success || !d.data) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
+    let x06 = {};
+    try { x06 = JSON.parse(row.x_06 || '{}'); } catch {}
+    const answers = parsePapi(x06.papi || '');
+    buildGrid(answers);
+    const sc = hitungSemua(answers);
+    isiKotakHeader(sc);
+    buildChart(sc);
+  } catch (e) {
+    showErr('⚠ Gagal: ' + e.message);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── INIT ──────────────────────────────────────────────────────
+buildGrid([]);
+buildChart(null);
+</script>
+</body>
+</html>

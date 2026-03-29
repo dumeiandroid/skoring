@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tes Kemampuan Differensial – Subtes VI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --blue: #1a6ab5;
+    --border: #1a6ab5;
+    --bg: #f5f8fc;
+    --paper: #ffffff;
+    --line: #b0c8e8;
+    --row-alt: #f0f6fd;
+    --correct: #16a34a;
+    --wrong:   #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+    gap: 16px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 100%; max-width: 800px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: #0d2a4a; }
+  .search-panel input {
+    flex: 1; min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid var(--line); border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: #0d2a4a;
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: var(--blue); background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .err-box {
+    width: 100%; max-width: 800px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600; display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── SHEET ── */
+  .sheet {
+    background: var(--paper);
+    width: 100%; max-width: 800px;
+    border: 2px solid var(--border);
+    padding: 22px 28px 24px;
+    box-shadow: 0 4px 24px rgba(26,106,181,0.10);
+  }
+
+  /* ── HEADER ── */
+  .header-wrap { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 14px; }
+  .header-left table { border-collapse: collapse; font-size: 11px; color: var(--blue); }
+  .header-left table th {
+    border: 1.5px solid var(--blue); padding: 3px 10px;
+    font-weight: 700; font-size: 10.5px; text-align: center; background: var(--paper);
+  }
+  .header-left table td {
+    border: 1.5px solid var(--blue); padding: 3px 6px;
+    height: 22px; min-width: 48px; text-align: center;
+  }
+  .header-left table td.row-label {
+    border: none; border-right: 1.5px solid var(--blue);
+    font-weight: 700; font-size: 11px; text-align: right;
+    padding-right: 5px; min-width: 38px;
+  }
+  .header-left table td.filled { font-weight: 700; color: #0d2a4a; font-size: 11.5px; }
+  .header-right { flex: 1; font-size: 11px; color: var(--blue); }
+  .header-right .field-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px; }
+  .header-right .field-row label { font-weight: 600; white-space: nowrap; min-width: 110px; }
+  .field-line { border-bottom: 1.5px solid var(--blue); flex: 1; height: 14px; display: inline-block; min-width: 100px; }
+  .field-filled {
+    border-bottom: 1.5px solid var(--blue); flex: 1; min-width: 100px;
+    display: inline-flex; align-items: flex-end;
+    font-weight: 700; font-size: 11.5px; color: #0d2a4a; padding-bottom: 1px;
+  }
+  .lp-tag { border: 1.5px solid var(--blue); font-size: 10.5px; font-weight: 700; padding: 1px 5px; margin-left: 4px; line-height: 16px; white-space: nowrap; }
+
+  /* ── TITLE ── */
+  .title-block { text-align: center; margin: 4px 0 14px; position: relative; }
+  .title-block h1 { font-family: 'Libre Baskerville', serif; font-size: 17px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); }
+  .title-block .sub { font-size: 12px; font-weight: 600; color: var(--blue); margin-top: 2px; letter-spacing: 0.5px; }
+  .code-box { position: absolute; right: 0; top: 50%; transform: translateY(-50%); border: 1.5px solid var(--blue); font-size: 10px; font-weight: 700; padding: 3px 8px; letter-spacing: 0.5px; white-space: nowrap; }
+
+  /* ── MAIN TABLE ── */
+  .q-table { width: 100%; border-collapse: collapse; font-size: 13px; color: var(--blue); margin-top: 6px; }
+  .q-table thead tr th { border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); padding: 6px 10px; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; background: var(--paper); }
+  .q-table thead tr th.th-no { text-align: left; width: 38px; }
+  .q-table thead tr th.th-soal { text-align: center; letter-spacing: 4px; }
+  .q-table thead tr th.th-ans { text-align: right; width: 180px; }
+
+  .q-table tbody tr { border-bottom: 1px solid var(--line); }
+  .q-table tbody tr:nth-child(even) { background: var(--row-alt); }
+  .q-table tbody tr:last-child { border-bottom: 1.5px solid var(--border); }
+  .q-table td { padding: 5px 10px; vertical-align: middle; }
+  .q-table td.td-no { width: 38px; text-align: left; font-weight: 600; white-space: nowrap; font-size: 13px; }
+  .q-table td.td-soal { text-align: center; font-size: 13.5px; letter-spacing: 2px; font-weight: 400; }
+  .q-table td.td-soal .num { display: inline-block; min-width: 38px; text-align: center; }
+  .q-table td.td-ans { width: 180px; text-align: right; white-space: nowrap; }
+  .td-no-right { width: 38px; text-align: right; font-weight: 600; font-size: 13px; color: var(--blue); white-space: nowrap; }
+
+  /* ── ANSWER GROUP ── */
+  .ans-group {
+    display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+  }
+  /* Kotak jawaban — tampilkan nilai dari data */
+  .ans-box {
+    border: none; border-bottom: 1.5px solid var(--blue);
+    width: 52px; font-size: 13px; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    text-align: center; padding: 1px 2px;
+    background: transparent; color: #0d2a4a;
+    min-height: 20px; display: inline-flex;
+    align-items: flex-end; justify-content: center;
+  }
+  /* Benar */
+  .ans-box.box-correct {
+    background: #dcfce7; color: var(--correct);
+    border-bottom-color: var(--correct);
+    border-radius: 3px;
+    outline: 2px solid var(--correct);
+  }
+  /* Salah */
+  .ans-box.box-wrong {
+    background: #fee2e2; color: var(--wrong);
+    border-bottom-color: var(--wrong);
+    border-radius: 3px;
+    outline: 2px solid var(--wrong);
+  }
+  /* Skip */
+  .ans-box.box-skip {
+    color: #94a3b8; border-bottom-color: #cbd5e1;
+    font-style: italic; font-weight: 400; font-size: 11px;
+  }
+  /* Tanda ✓/✗ */
+  .ans-mark { font-size: 14px; font-weight: 900; min-width: 16px; text-align: center; }
+  .ans-mark.mark-correct { color: var(--correct); }
+  .ans-mark.mark-wrong   { color: var(--wrong); }
+  .ans-mark.mark-skip    { color: #94a3b8; }
+
+  /* ── SCORE BOX ── */
+  .score-area { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .score-box { border: 2px solid var(--blue); padding: 10px 20px; font-size: 13px; font-weight: 700; color: var(--blue); line-height: 2.4; min-width: 150px; }
+  .score-val { font-weight: 800; color: #0d2a4a; border-bottom: 1.5px solid var(--blue); min-width: 50px; display: inline-block; margin-left: 6px; padding-bottom: 1px; }
+  .score-line { border-bottom: 1.5px solid var(--blue); min-width: 50px; display: inline-block; height: 14px; margin-left: 6px; }
+
+  /* ── FOOTER ── */
+  .sheet-footer { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 10px; color: var(--blue); border-top: 1px solid var(--line); padding-top: 10px; }
+  .sheet-footer .footer-text { line-height: 1.5; }
+  .sheet-footer .footer-text strong { font-size: 10.5px; }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .search-panel, .err-box { display: none !important; }
+    .sheet { box-shadow: none; }
+    .ans-box.box-correct, .ans-box.box-wrong { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<!-- SHEET -->
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header-wrap">
+    <div class="header-left">
+      <table>
+        <thead>
+          <tr>
+            <th style="border:none;"></th>
+            <th>TAHUN</th><th>BULAN</th><th>TANGGAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">TES</td>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="row-label">LAHIR</td>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="row-label">USIA</td>
+            <td class="filled" id="hUsia" colspan="3"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="header-right">
+      <div class="field-row">
+        <label>Nomor :</label>
+        <span class="field-filled" id="hNomor"></span>
+        <span class="lp-tag" id="hLP">L/P</span>
+      </div>
+      <div class="field-row">
+        <label>Nama :</label>
+        <span class="field-filled" id="hNama"></span>
+      </div>
+      <div class="field-row">
+        <label>Pekerjaan/Jabatan :</label>
+        <span class="field-line"></span>
+      </div>
+      <div class="field-row">
+        <label>Pendidikan Akhir :</label>
+        <span class="field-filled" id="hPendidikan"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <h1>Tes Kemampuan Differensial</h1>
+    <div class="sub">SUBTES VI</div>
+    <div class="sub">No. 1 – 30</div>
+    <span class="code-box">UI – 10113 – 05</span>
+  </div>
+
+  <!-- TABLE -->
+  <table class="q-table">
+    <thead>
+      <tr>
+        <th class="th-no">NO.</th>
+        <th class="th-soal">S O A L</th>
+        <th class="th-ans" colspan="2">JAWABAN</th>
+      </tr>
+    </thead>
+    <tbody id="qtbody"></tbody>
+  </table>
+
+  <!-- SCORE -->
+  <div class="score-area">
+    <div class="score-box">
+      <div>RS = <span id="skorRS" class="score-line"></span></div>
+      <div>SS = <span class="score-line"></span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="sheet-footer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#1a6ab5" stroke-width="4"/>
+      <text x="50" y="57" text-anchor="middle" font-size="36" font-family="serif" fill="#1a6ab5" font-weight="bold">UI</text>
+    </svg>
+    <div class="footer-text">
+      <strong>Lembaga Pengembangan Sarana Pengukuran dan Pendidikan Psikologi</strong><br>
+      Fakultas Psikologi Universitas Indonesia
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── API CONFIG ───────────────────────────────────────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── DATA SOAL TKD6 ──────────────────────────────────────────
+const questions = [
+  { n:1,  seq:["4","8","12","16","20","24"] },
+  { n:2,  seq:["17","22","27","32","37","42"] },
+  { n:3,  seq:["1","2","4","8","16","32"] },
+  { n:4,  seq:["21","19","17","15","13","11"] },
+  { n:5,  seq:["12","1","9","1","6","1"] },
+  { n:6,  seq:["10","10","7","7","4","4"] },
+  { n:7,  seq:["16","8","4","2","1","1/2"] },
+  { n:8,  seq:["1/3","1","3","9","27","81"] },
+  { n:9,  seq:["65","58","51","44","37","30"] },
+  { n:10, seq:["10","12","11","13","12","14"] },
+  { n:11, seq:["5","6","8","11","15","20"] },
+  { n:12, seq:["2","5","4","7","6","9"] },
+  { n:13, seq:["31","30","28","25","21","16"] },
+  { n:14, seq:["7","6","12","11","17","16"] },
+  { n:15, seq:["14","16","11","13","8","10"] },
+  { n:16, seq:["12","18","30","36","48","54"] },
+  { n:17, seq:["19","15","18","14","17","13"] },
+  { n:18, seq:["4","8","11","22","25","50"] },
+  { n:19, seq:["45","15","18","6","9","3"] },
+  { n:20, seq:["22","28","14","20","10","16"] },
+  { n:21, seq:["4","8","6","12","10","20"] },
+  { n:22, seq:["3","5","7","4","6","8"] },
+  { n:23, seq:["1","2","6","24","120","720"] },
+  { n:24, seq:["1","9","2","8","3","7"] },
+  { n:25, seq:["37","44","27","34","17","24"] },
+  { n:26, seq:["8","3","4","6","2","12"] },
+  { n:27, seq:["276","272","68","64","16","12"] },
+  { n:28, seq:["96","7","24","14","6","28"] },
+  { n:29, seq:["180","171","153","126","90","45"] },
+  { n:30, seq:["24","16","12","48/6","8","48/7"] },
+];
+
+// ─── PARSER FORMAT x_08.tkd6 ─────────────────────────────────
+// Format token: "urutan.nomor[JAW1 JAW2][v/x]✗"
+// Contoh: "1.19 7x✗"   → soal 1, jaw1="19", jaw2="7", salah
+//         "10.107/ 7/x✗" → soal 10, jaw1="7/", jaw2="7/", salah
+//         "5.57 7v✗"   → soal 5, jaw1="7", jaw2="7", benar
+//
+// Strategi parse:
+//   1. Hapus ✗ di akhir
+//   2. Match: urutan.nomor + KONTEN + [v/x]
+//   3. KONTEN = semua karakter sebelum [v/x] terakhir
+//   4. KONTEN dipisah spasi menjadi [jaw1, jaw2]
+function parseSubtest(str) {
+  if (!str) return {};
+  const map = {};
+
+  str.split(';').map(s => s.trim()).filter(Boolean).forEach(token => {
+    // Hapus karakter ✗
+    const t = token.replace(/✗/g, '').trim();
+
+    // Format: "urutan.urutanJAW1 JAW2v/x"
+    // Contoh: "1.184 48x"  → urutan=1, sisa="184 48", hapus prefix "1" → konten="84 48" → jaw1="84", jaw2="48"
+    // Contoh: "10.1067 45x" → urutan=10, sisa="1067 45", hapus prefix "10" → konten="67 45" → jaw1="67", jaw2="45"
+    // Contoh: "1.1a ax"    → urutan=1, sisa="1a a", hapus prefix "1" → konten="a a" → jaw1="a", jaw2="a"
+    const m = t.match(/^(\d+)\.(.+)(v|x)$/i);
+    if (!m) return;
+
+    const urutan = parseInt(m[1]);
+    const sisa   = m[2]; // urutanJAW1 JAW2
+    const benar  = m[3].toLowerCase() === 'v';
+
+    // Hapus prefix urutan dari awal sisa untuk mendapatkan konten jawaban
+    const urtStr = String(urutan);
+    let konten = sisa.startsWith(urtStr) ? sisa.substring(urtStr.length) : sisa;
+    konten = konten.trim();
+
+    // Cek SKIP
+    const isSkip = konten.toUpperCase().includes('SKIP');
+
+    // Pisah konten menjadi jaw1 dan jaw2 berdasarkan spasi pertama
+    const spaceIdx = konten.indexOf(' ');
+    let jaw1, jaw2;
+    if (spaceIdx >= 0) {
+      jaw1 = konten.substring(0, spaceIdx).trim();
+      jaw2 = konten.substring(spaceIdx + 1).trim();
+    } else {
+      jaw1 = konten;
+      jaw2 = '';
+    }
+
+    map[urutan] = { jaw1, jaw2, benar, skip: isSkip };
+  });
+
+  return map;
+}
+
+// ─── BUILD ROW ───────────────────────────────────────────────
+function buildRow(q, data) {
+  const d = data[q.n];
+  const tr = document.createElement('tr');
+
+  // NO kiri
+  const tdNoL = document.createElement('td');
+  tdNoL.className = 'td-no';
+  tdNoL.textContent = q.n + '.';
+  tr.appendChild(tdNoL);
+
+  // SOAL (deret angka)
+  const tdSoal = document.createElement('td');
+  tdSoal.className = 'td-soal';
+  tdSoal.innerHTML = q.seq.map(v => `<span class="num">${v}</span>`).join('');
+  tr.appendChild(tdSoal);
+
+  // JAWABAN — dua kotak
+  const tdAns = document.createElement('td');
+  tdAns.className = 'td-ans';
+
+  const ag = document.createElement('div');
+  ag.className = 'ans-group';
+
+  if (!d) {
+    // Belum ada data — kotak kosong
+    for (let i = 0; i < 2; i++) {
+      const box = document.createElement('span');
+      box.className = 'ans-box';
+      box.textContent = '';
+      ag.appendChild(box);
+    }
+    // Tanda kosong
+    const mark = document.createElement('span');
+    mark.className = 'ans-mark';
+    mark.textContent = '';
+    ag.appendChild(mark);
+
+  } else if (d.skip) {
+    // SKIP
+    for (let i = 0; i < 2; i++) {
+      const box = document.createElement('span');
+      box.className = 'ans-box box-skip';
+      box.textContent = '–';
+      ag.appendChild(box);
+    }
+    const mark = document.createElement('span');
+    mark.className = 'ans-mark mark-skip';
+    mark.textContent = '–';
+    ag.appendChild(mark);
+
+  } else {
+    // Ada jawaban
+    const cls   = d.benar ? 'box-correct' : 'box-wrong';
+    const vals  = [d.jaw1, d.jaw2];
+    vals.forEach(val => {
+      const box = document.createElement('span');
+      box.className = `ans-box ${cls}`;
+      box.textContent = val || '?';
+      ag.appendChild(box);
+    });
+    // Tanda ✓/✗
+    const mark = document.createElement('span');
+    mark.className = `ans-mark ${d.benar ? 'mark-correct' : 'mark-wrong'}`;
+    mark.textContent = d.benar ? '✓' : '✗';
+    ag.appendChild(mark);
+  }
+
+  tdAns.appendChild(ag);
+  tr.appendChild(tdAns);
+
+  // NO kanan
+  const tdNoR = document.createElement('td');
+  tdNoR.className = 'td-no-right';
+  tdNoR.textContent = q.n + '.';
+  tr.appendChild(tdNoR);
+
+  return tr;
+}
+
+// ─── RENDER TABEL ────────────────────────────────────────────
+function renderTabel(data) {
+  const tbody = document.getElementById('qtbody');
+  tbody.innerHTML = '';
+  let benar = 0;
+  questions.forEach(q => {
+    tbody.appendChild(buildRow(q, data));
+    if (data[q.n] && data[q.n].benar) benar++;
+  });
+  return benar;
+}
+
+// ─── RENDER BIO ──────────────────────────────────────────────
+function renderBio(x02Str) {
+  let bio = {};
+  try { bio = JSON.parse(x02Str || '{}'); } catch {}
+  setText('hNama',       bio.nama        || '');
+  setText('hUsia',       bio.usia        || '');
+  setText('hPendidikan', bio.pendidikan  || '');
+  setText('hNomor',      bio.id_x || bio.nomor || '');
+  const lp = document.getElementById('hLP');
+  if (lp && bio.jenis_kelamin) lp.textContent = bio.jenis_kelamin;
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ─── RESET ───────────────────────────────────────────────────
+function resetTabel() {
+  renderTabel({});
+  // Reset skor
+  const sk = document.getElementById('skorRS');
+  if (sk) { sk.className = 'score-line'; sk.textContent = ''; }
+  // Reset bio
+  ['hNama','hUsia','hPendidikan','hNomor'].forEach(id => setText(id,''));
+  const lp = document.getElementById('hLP');
+  if (lp) lp.textContent = 'L/P';
+}
+
+function resetAll() {
+  clearErr();
+  resetTabel();
+  document.getElementById('inputId').value = '';
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg; el.classList.add('show');
+}
+function clearErr() {
+  const el = document.getElementById('errBox');
+  el.textContent = ''; el.classList.remove('show');
+}
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Mencari...' : 'Cari';
+}
+
+// ─── MAIN FETCH ──────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+
+  clearErr();
+  resetTabel();
+  setBtn(true);
+
+  try {
+    const res = await fetch(
+      `${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } }
+    );
+    const d = await res.json();
+
+    if (!d.success || !d.data) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
+    }
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
+    }
+
+    renderBio(row.x_02 || '');
+
+    let x08 = {};
+    try { x08 = JSON.parse(row.x_08 || '{}'); } catch {}
+
+    const dataMap   = parseSubtest(x08.tkd6 || '');
+    const totalBenar = renderTabel(dataMap);
+
+    // Tampilkan RS
+    const sk = document.getElementById('skorRS');
+    if (sk) { sk.className = 'score-val'; sk.textContent = totalBenar; }
+
+  } catch (e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+    console.error(e);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── INIT: render kosong saat load ───────────────────────────
+renderTabel({});
+</script>
+</body>
+</html>

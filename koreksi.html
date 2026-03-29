@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lembar Jawaban Digital | Lidan Psikologi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;
+  --success:#16a34a;--success-light:#dcfce7;
+  --danger:#dc2626;--danger-light:#fee2e2;
+  --warn:#d97706;
+  --bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --mono:'DM Mono',monospace;--display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* LOADER */
+#globalLoader{position:fixed;inset:0;background:rgba(255,255,255,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px}
+.spinner{width:40px;height:40px;border:4px solid #e2e8f0;border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+.spinner-sm{width:16px;height:16px;border:2.5px solid #e2e8f0;border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loaderText{color:var(--muted);font-size:.9em;font-family:var(--body)}
+
+/* SCREEN */
+.screen{display:none}.screen.active{display:block}
+#screenKoreksi{display:none;flex-direction:column;height:100vh}
+#screenKoreksi.active{display:flex}
+
+/* HEADER */
+#appHeader{background:var(--primary);color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0;box-shadow:0 4px 16px rgba(37,99,235,.3)}
+.hdr-title{font-family:var(--display);font-size:1em;font-weight:800}
+.hdr-sub{font-size:.73em;opacity:.7;margin-top:1px}
+.btn-new{padding:7px 15px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:8px;font-size:.78em;font-weight:700;cursor:pointer;font-family:var(--display);transition:all .18s}
+.btn-new:hover{background:rgba(255,255,255,.28)}
+
+/* CARD */
+.card{background:var(--card);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:28px;max-width:520px;margin:0 auto}
+.page-title{font-family:var(--display);font-size:1.35em;font-weight:800;color:var(--primary);margin-bottom:6px}
+.page-sub{color:var(--muted);font-size:.87em;line-height:1.65;margin-bottom:20px}
+.section-label{font-size:.73em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px;margin-top:2px}
+.form-group{margin-bottom:13px}
+.form-group label{display:block;font-size:.81em;font-weight:600;color:var(--muted);margin-bottom:5px}
+.form-group input,.form-group select{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.93em;font-family:var(--body);color:var(--text);background:var(--bg);outline:none;transition:border .2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary);background:#fff}
+.form-group input.error,.form-group select.error{border-color:var(--danger)}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:.95em;font-weight:700;cursor:pointer;width:100%;font-family:var(--display);transition:all .2s}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,99,235,.3)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.err-box{background:var(--danger-light);border:1.5px solid #fecaca;border-radius:10px;padding:11px 14px;color:var(--danger);font-size:.84em;font-weight:500;margin-top:12px;display:none}
+.err-box.show{display:block}
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* PAKET */
+.paket-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:7px;margin-bottom:5px}
+.paket-btn{display:flex;flex-direction:column;align-items:flex-start;padding:10px 12px;border:2px solid var(--border);border-radius:11px;background:#f8fafc;cursor:pointer;transition:all .18s;font-family:var(--body);text-align:left;gap:3px}
+.paket-btn:hover{border-color:var(--primary);background:var(--primary-light);transform:translateY(-1px)}
+.paket-btn.selected{border-color:var(--primary);background:var(--primary);color:#fff;transform:translateY(-2px);box-shadow:0 5px 16px rgba(37,99,235,.3)}
+.paket-btn .pb-id{font-size:.66em;font-weight:700;letter-spacing:.04em;opacity:.6;font-family:var(--mono)}
+.paket-btn .pb-nama{font-size:.83em;font-weight:700;line-height:1.3}
+.paket-loading{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.84em;padding:7px 0}
+.paket-required{font-size:.79em;color:var(--danger);margin-top:4px;display:none}
+.paket-required.show{display:block}
+
+/* KESEDIAAN RADIO */
+.radio-opt{display:flex;align-items:flex-start;gap:11px;padding:10px 13px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:7px}
+.radio-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.radio-opt input{margin-top:2px;accent-color:var(--primary);width:15px;height:15px;flex-shrink:0}
+.ro-label{font-size:.87em;font-weight:700;color:var(--text)}
+.ro-sub{font-size:.75em;color:var(--muted);margin-top:2px;line-height:1.5}
+
+/* SCREEN DAFTAR */
+#screenDaftar{padding:26px 14px}
+
+/* PESERTA BAR */
+#pesertaBar{background:#fff;border-bottom:1.5px solid var(--border);padding:7px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.p-chip{font-size:.81em;color:var(--muted)}.p-chip strong{color:var(--text)}.p-chip .mono{font-family:var(--mono);font-size:.9em}
+
+/* TAB BAR */
+#tabBar{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0}
+#tabBar::-webkit-scrollbar{height:3px}
+#tabBar::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.tab-btn{padding:0 16px;height:48px;white-space:nowrap;flex-shrink:0;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-family:var(--display);font-size:.79em;font-weight:700;color:var(--muted);transition:all .18s;display:flex;align-items:center;gap:5px}
+.tab-btn:hover{color:var(--primary);background:#f8faff}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:#f8faff}
+.tab-done-dot{width:7px;height:7px;border-radius:50%;background:var(--success);flex-shrink:0}
+
+/* PANEL */
+#panelArea{flex:1;overflow-y:auto;padding:16px 18px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.panel-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.panel-title{font-family:var(--display);font-size:1.15em;font-weight:800;color:var(--primary)}
+.panel-meta{font-size:.78em;color:var(--muted);margin-top:3px}
+.score-box{background:var(--card);border:2px solid var(--border);border-radius:11px;padding:9px 16px;text-align:center;min-width:105px;flex-shrink:0}
+.sb-label{font-size:.68em;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.sb-val{font-family:var(--mono);font-size:1.6em;color:var(--primary);line-height:1.1;margin-top:2px}
+.sb-of{font-size:.7em;color:var(--muted)}
+
+/* ANSWER GRID */
+.ans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.ans-item{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:9px;padding:6px 10px;transition:border-color .15s}
+.ans-item.answered{border-color:#bbf7d0;background:#f0fdf4}
+.ans-num{width:24px;height:24px;border-radius:6px;background:var(--bg);border:1.5px solid var(--border);font-family:var(--mono);font-size:.72em;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0}
+.ans-item.answered .ans-num{background:var(--primary);border-color:var(--primary);color:#fff}
+.ans-opts{display:flex;gap:4px;flex-wrap:wrap}
+.opt-btn{padding:4px 9px;border:2px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-family:var(--mono);font-size:.78em;font-weight:500;color:var(--muted);transition:all .12s;line-height:1}
+.opt-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.opt-btn.sel{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* INPUT */
+.ans-input{flex:1;padding:5px 9px;border:2px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:.82em;color:var(--text);outline:none;transition:border .15s;background:#fff}
+.ans-input:focus{border-color:var(--primary)}
+.ans-input.filled{border-color:#86efac;background:#f0fdf4}
+
+/* DIGIT CHECK */
+.dc-wrap{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.dc-btn{width:24px;height:24px;border:1.5px solid var(--border);border-radius:5px;background:#fff;font-family:var(--mono);font-size:.74em;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;position:relative;user-select:none}
+.dc-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+.dc-btn.sel{background:var(--primary);border-color:var(--primary);color:#fff}
+.dc-ord{position:absolute;top:-5px;right:-5px;width:12px;height:12px;background:var(--success);color:#fff;border-radius:50%;font-size:.52em;font-weight:700;display:flex;align-items:center;justify-content:center}
+.dc-prev{font-family:var(--mono);font-size:.78em;color:var(--primary);font-weight:600;min-width:32px}
+.btn-rst{padding:3px 7px;border:1.5px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;font-size:.68em;color:var(--muted);transition:all .12s;font-family:var(--body)}
+.btn-rst:hover{border-color:var(--danger);color:var(--danger)}
+
+/* AB CHOICE */
+.ab-grid{display:grid;grid-template-columns:1fr;gap:6px}
+.ab-item{background:var(--card);border:2px solid var(--border);border-radius:9px;padding:8px 11px;transition:border-color .15s}
+.ab-item.answered{border-color:#bbf7d0}
+.ab-num{font-family:var(--mono);font-size:.72em;color:var(--muted);margin-bottom:5px}
+.ab-choices{display:flex;gap:5px}
+.ab-btn{padding:7px 18px;border:2px solid var(--border);border-radius:7px;background:#fff;cursor:pointer;font-size:.9em;font-weight:700;text-align:center;font-family:var(--mono);transition:all .15s;color:var(--text);min-width:48px}
+.ab-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+.ab-btn.sel{border-color:var(--primary);background:var(--primary);color:#fff}
+
+/* RANKING */
+.kolom-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.kolom-tab{padding:5px 12px;border:2px solid var(--border);border-radius:99px;font-size:.76em;font-weight:700;cursor:pointer;background:#fff;font-family:var(--display);transition:all .15s;color:var(--muted)}
+.kolom-tab:hover{border-color:var(--primary);color:var(--primary)}
+.kolom-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.kolom-tab.done{background:var(--success);border-color:var(--success);color:#fff}
+.rank-wrap{overflow-x:auto}
+.rank-table{width:100%;border-collapse:collapse;min-width:520px}
+.rank-table th{background:var(--primary);color:#fff;font-family:var(--display);font-size:.76em;padding:8px 10px;text-align:left}
+.rank-table td{border-bottom:1px solid var(--border);padding:6px 9px;font-size:.81em}
+.rank-table tr:hover td{background:#f8faff}
+.rank-btns{display:flex;gap:3px;flex-wrap:wrap}
+.rank-btn{width:26px;height:26px;border:1.5px solid var(--border);border-radius:5px;background:#fff;font-family:var(--mono);font-size:.72em;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}
+.rank-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+.rank-btn.sel{background:var(--success);border-color:var(--success);color:#fff}
+.rank-btn.gone{display:none!important}
+
+/* SAVE BAR */
+#saveBar{background:#fff;border-top:2px solid var(--border);padding:8px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.save-dot{width:8px;height:8px;border-radius:50%;background:var(--warn);flex-shrink:0}
+.save-dot.saved{background:var(--success)}
+.save-dot.saving{animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.save-status{font-size:.79em;color:var(--muted)}
+.prog-summary{font-size:.79em;color:var(--muted)}
+.prog-summary strong{color:var(--text)}
+.btn-save{padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.83em;cursor:pointer;font-family:var(--display);display:flex;align-items:center;gap:6px;transition:all .18s}
+.btn-save:hover:not(:disabled){background:var(--primary-dark)}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.btn-clear{padding:6px 13px;border:2px solid var(--danger-light);border-radius:7px;background:var(--danger-light);color:var(--danger);cursor:pointer;font-size:.77em;font-weight:700;font-family:var(--body);transition:all .15s}
+.btn-clear:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+.done-banner{background:var(--success-light);border:2px solid #86efac;border-radius:9px;padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:.84em;color:#065f46;font-weight:600}
+.panel-err{color:var(--danger);font-size:.84em;padding:18px 0}
+
+/* TKD-6 KOREKSI CEPAT */
+.tkd6-kunci{flex:1;font-family:var(--mono);font-size:.88em;font-weight:700;color:var(--primary);letter-spacing:.02em;user-select:none}
+.ans-item.benar .tkd6-kunci{color:var(--success)}
+.btn-centang{width:30px;height:30px;border-radius:7px;border:2px solid var(--border);background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;color:var(--muted)}
+.btn-centang:hover{border-color:var(--success);background:var(--success-light);color:var(--success)}
+.btn-centang.aktif{background:var(--success);border-color:var(--success);color:#fff}
+.btn-centang svg{width:14px;height:14px;stroke-width:3}
+.ans-item.benar{border-color:#86efac!important;background:var(--success-light)!important}
+.ans-item.benar .ans-num{background:var(--success)!important;border-color:var(--success)!important;color:#fff!important}
+.tkd6-score-note{font-size:.78em;color:var(--muted);margin-top:2px}
+
+@media(max-width:600px){
+  #panelArea{padding:10px}
+  .ans-grid,.ab-grid{grid-template-columns:1fr}
+  .card{padding:18px 14px}
+  #screenDaftar{padding:14px 8px}
+  .panel-hdr{flex-direction:column}
+  .score-box{width:100%;min-width:unset}
+}
+</style>
+</head>
+<body>
+
+<div id="globalLoader">
+  <div class="spinner"></div>
+  <div id="loaderText" class="loader-text">Memeriksa sesi...</div>
+</div>
+
+<!-- HEADER -->
+<div id="appHeader" style="display:none">
+  <div>
+    <div class="hdr-title">📋 Lembar Jawaban Digital</div>
+    <div class="hdr-sub" id="hdrSub">Lidan Psikologi</div>
+  </div>
+  <button class="btn-new" onclick="konfirmasiPesertaBaru()">👤 Peserta Baru</button>
+</div>
+
+<!-- SCREEN: BIODATA / DAFTAR -->
+<div id="screenDaftar" class="screen active">
+  <div class="card">
+    <div class="page-title">📝 Data Peserta</div>
+    <p class="page-sub">Isi data peserta dan pilih paket tes. Sistem akan membuat token secara otomatis.</p>
+
+    <div class="section-label">Data Diri</div>
+    <div class="form-group">
+      <label for="bioNama">Nama Lengkap <span style="color:var(--danger)">*</span></label>
+      <input type="text" id="bioNama" placeholder="Masukkan nama lengkap" autocomplete="off">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+      <div class="form-group">
+        <label for="bioUsia">Usia <span style="color:var(--danger)">*</span></label>
+        <input type="number" id="bioUsia" placeholder="Tahun" min="10" max="99">
+      </div>
+      <div class="form-group">
+        <label for="bioGender">Jenis Kelamin <span style="color:var(--danger)">*</span></label>
+        <select id="bioGender"><option value="">— Pilih —</option><option value="L">Laki-laki</option><option value="P">Perempuan</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="bioPend">Pendidikan Terakhir <span style="color:var(--danger)">*</span></label>
+      <input type="text" id="bioPend" placeholder="Contoh: S1, SMA, D3" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="bioTelp">Nomor Telepon / WhatsApp <span style="color:var(--danger)">*</span></label>
+      <input type="tel" id="bioTelp" placeholder="Contoh: 08123456789" inputmode="numeric" autocomplete="off">
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Paket Tes <span style="color:var(--danger)">*</span></div>
+    <div class="paket-loading" id="paketLoading"><div class="spinner-sm"></div> Memuat paket...</div>
+    <div class="paket-grid" id="paketGrid" style="display:none"></div>
+    <div class="paket-required" id="paketRequired">⚠ Pilih paket tes terlebih dahulu</div>
+
+    <div class="divider"></div>
+    <div class="section-label">Kesediaan Dihubungi <span style="color:var(--danger)">*</span></div>
+    <label class="radio-opt" id="radioLabelBersedia" onmouseenter="syncRadio()" onmouseleave="syncRadio()">
+      <input type="radio" name="bioKesediaan" id="bioKesediaanY" value="bersedia" onchange="syncRadio()">
+      <div><div class="ro-label">✅ Bersedia</div><div class="ro-sub">Saya bersedia dihubungi oleh perusahaan yang relevan dengan hasil tes saya.</div></div>
+    </label>
+    <label class="radio-opt" id="radioLabelTidak" onmouseenter="syncRadio()" onmouseleave="syncRadio()">
+      <input type="radio" name="bioKesediaan" id="bioKesediaanN" value="tidak_bersedia" onchange="syncRadio()">
+      <div><div class="ro-label">🚫 Tidak Bersedia</div><div class="ro-sub">Saya tidak ingin dihubungi untuk keperluan rekrutmen.</div></div>
+    </label>
+
+    <div class="err-box" id="daftarErr"></div>
+    <button class="btn-primary" id="btnDaftar" onclick="handleDaftar()" style="margin-top:16px">Buka Lembar Jawaban →</button>
+  </div>
+</div>
+
+<!-- SCREEN: KOREKSI -->
+<div id="screenKoreksi" class="screen">
+  <div id="pesertaBar">
+    <div class="p-chip">👤 <strong id="pNama">—</strong></div>
+    <div class="p-chip">Paket: <strong id="pPaket">—</strong></div>
+    <div class="p-chip">Token: <span class="mono" id="pToken" style="font-size:.78em">—</span></div>
+  </div>
+  <div id="tabBar"></div>
+  <div id="panelArea"></div>
+  <div id="saveBar">
+    <div class="save-dot" id="saveDot"></div>
+    <span class="save-status" id="saveStatus">—</span>
+    <span class="prog-summary" id="progSummary"></span>
+    <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+      <button class="btn-clear" onclick="clearTab()">↺ Reset Tab</button>
+      <button class="btn-save" id="btnSave" onclick="saveTab()">💾 Simpan Tab Ini</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — identik dengan tes-iq-free.html
+// ═══════════════════════════════════════════════════
+const BASE='https://cipta.my.id/psikotest/simpel/';
+const API_W='https://lidan-co-id.pages.dev/api/contacts_filter_dinamis6';
+const API_R='https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL='nilai1_json',TBL_P='alat_tes',AUTH='admin';
+const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+const ALL_CONFIG=[
+  {id:'apm0',  dataUrl:BASE+'apm0.txt',   type:'image_single',     saveField:'x_05', label:'APM Set 0'},
+  {id:'apm1',  dataUrl:BASE+'apm1.txt',   type:'image_single',     saveField:'x_05', label:'APM Set 1'},
+  {id:'apm1a', dataUrl:BASE+'apm1a.txt',  type:'image_single',     saveField:'x_05', label:'APM 1A'},
+  {id:'apm1b', dataUrl:BASE+'apm1b.txt',  type:'image_single',     saveField:'x_05', label:'APM 1B'},
+  {id:'apm2',  dataUrl:BASE+'apm2.txt',   type:'image_single',     saveField:'x_05', label:'APM Set 2'},
+  {id:'apm2a', dataUrl:BASE+'apm2a.txt',  type:'image_single',     saveField:'x_05', label:'APM 2A'},
+  {id:'apm2b', dataUrl:BASE+'apm2b.txt',  type:'image_single',     saveField:'x_05', label:'APM 2B'},
+  {id:'apm14', dataUrl:BASE+'apm14.txt',  type:'image_single',     saveField:'x_05', label:'APM 1+4'},
+  {id:'cfit0', dataUrl:BASE+'cfit0.txt',  type:'image_single',     saveField:'x_05', label:'CFIT 0'},
+  {id:'cfit1', dataUrl:BASE+'cfit1.txt',  type:'image_single',     saveField:'x_05', label:'CFIT 1'},
+  {id:'cfit2', dataUrl:BASE+'cfit2_a.txt',type:'image_multi',      saveField:'x_05', label:'CFIT 2'},
+  {id:'cfit3', dataUrl:BASE+'cfit3.txt',  type:'image_single',     saveField:'x_05', label:'CFIT 3'},
+  {id:'cfit4', dataUrl:BASE+'cfit4.txt',  type:'image_single',     saveField:'x_05', label:'CFIT 4'},
+  {id:'epps',  dataUrl:BASE+'epps.txt',   type:'ab_choice',        saveField:'x_06', label:'EPPS'},
+  {id:'ist0',  dataUrl:BASE+'ist0.txt',   type:'text_choice',      saveField:'x_05', label:'IST-0'},
+  {id:'ist1',  dataUrl:BASE+'ist1.txt',   type:'text_choice',      saveField:'x_05', label:'IST-1'},
+  {id:'ist2',  dataUrl:BASE+'ist2.txt',   type:'text_choice',      saveField:'x_05', label:'IST-2'},
+  {id:'ist3',  dataUrl:BASE+'ist3.txt',   type:'text_choice',      saveField:'x_05', label:'IST-3'},
+  {id:'ist4_a',dataUrl:BASE+'ist4_a.txt', type:'text_input_scored',saveField:'x_05', label:'IST-4'},
+  {id:'ist5_a',dataUrl:BASE+'ist5_a.txt', type:'digit_check',      saveField:'x_05', label:'IST-5'},
+  {id:'ist6_a',dataUrl:BASE+'ist6_a.txt', type:'digit_check',      saveField:'x_05', label:'IST-6'},
+  {id:'ist7',  dataUrl:BASE+'ist7.txt',   type:'image_single',     saveField:'x_05', label:'IST-7'},
+  {id:'ist8',  dataUrl:BASE+'ist8.txt',   type:'image_single',     saveField:'x_05', label:'IST-8'},
+  {id:'ist9',  dataUrl:BASE+'ist9.txt',   type:'text_choice',      saveField:'x_05', label:'IST-9'},
+  {id:'papi',  dataUrl:BASE+'papi.txt',   type:'ab_choice',        saveField:'x_06', label:'PAPI'},
+  {id:'rmib',  dataUrl:BASE+'rmib.txt',   type:'ranking',          saveField:'x_06', label:'RMIB',totalKolom:8},
+  {id:'tkd3',  dataUrl:BASE+'tkd3.txt',   type:'text_choice',      saveField:'x_05', label:'TKD-3'},
+  {id:'tkd6',  dataUrl:BASE+'tkd6_a.txt', type:'text_input',       saveField:'x_05', label:'TKD-6'},
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let cu=null,sPaket=null,pList=[];
+let activeConfigs=[],qaData={},answers={};
+let savedState={},currentTabId=null,dirty=false;
+let rmibKolom={},dcState={};
+
+const $=id=>document.getElementById(id);
+const sl=t=>{$('loaderText').textContent=t||'Memuat...';$('globalLoader').style.display='flex'};
+const hl=()=>$('globalLoader').style.display='none';
+const ss=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')};
+const aF=async(u,o={})=>(await fetch(u,o)).json();
+const aG=id=>aF(`${API_R}?table=${TBL}&id_x=${id}`,{headers:{'X-Custom-Auth':AUTH}});
+const aP=(id,b)=>fetch(`${API_W}?table=${TBL}&id_x=${id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Custom-Auth':AUTH},body:JSON.stringify(b)});
+const td=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const rs=n=>{let r='';for(let i=0;i<n;i++)r+=CHARS[Math.floor(Math.random()*CHARS.length)];return r};
+const getQs=raw=>{if(raw&&!Array.isArray(raw)&&raw.soal)return raw.soal;if(Array.isArray(raw))return raw;return[]};
+const getBio=f=>{try{return JSON.parse(cu.x_02||'{}')[f]||''}catch{return''}};
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.onload=async()=>{
+  $('appHeader').style.display='flex';
+  // Load paket (paralel)
+  loadPaket();
+  // Cek sesi localStorage
+  const tok=localStorage.getItem('koreks_token');
+  const dbId=localStorage.getItem('koreks_db_id');
+  const pNama=localStorage.getItem('koreks_paket');
+  if(tok&&dbId&&pNama){
+    sl('Melanjutkan sesi...');
+    try{
+      const res=await aF(`${API_R}?table=${TBL}&x_01_eq=${encodeURIComponent(tok)}`,{headers:{'X-Custom-Auth':AUTH}});
+      if(res.success&&res.count){
+        cu=res.data[0];
+        await loadPaket();
+        sPaket=pList.find(p=>(p.x_01||'').trim()===pNama)||null;
+        if(sPaket){
+          await loadActiveConfigs();
+          await loadAllQA();
+          setupKoreksiUI();
+          hl();return;
+        }
+      }
+    }catch(e){console.warn('[resume]',e)}
+    clearLS();
+  }
+  hl();ss('screenDaftar');
+};
+
+async function loadPaket(){
+  if(pList.length)return;
+  try{
+    const d=await aF(`${API_R}?table=${TBL_P}`,{headers:{'X-Custom-Auth':AUTH}});
+    pList=(d.success&&d.data)||[];
+    renderPaketGrid();
+  }catch{pList=[]}
+}
+
+function renderPaketGrid(){
+  const grid=$('paketGrid');
+  $('paketLoading').style.display='none';
+  grid.style.display='grid';grid.innerHTML='';
+  pList.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.className='paket-btn';
+    btn.innerHTML=`<div class="pb-id">${p.x_01||'—'}</div><div class="pb-nama">${p.x_01||'—'}</div>`;
+    btn.onclick=()=>{
+      document.querySelectorAll('.paket-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');sPaket=p;$('paketRequired').classList.remove('show');
+    };
+    grid.appendChild(btn);
+  });
+  if(!pList.length) grid.innerHTML='<div style="color:var(--muted);font-size:.84em">Paket tidak ditemukan</div>';
+}
+
+function syncRadio(){
+  const y=$('bioKesediaanY'),n=$('bioKesediaanN');
+  const ly=$('radioLabelBersedia'),ln=$('radioLabelTidak');
+  ly.style.borderColor=(y&&y.checked)?'var(--primary)':'var(--border)';
+  ly.style.background=(y&&y.checked)?'var(--primary-light)':'';
+  ln.style.borderColor=(n&&n.checked)?'var(--primary)':'var(--border)';
+  ln.style.background=(n&&n.checked)?'var(--primary-light)':'';
+}
+
+// ═══════════════════════════════════════════════════
+// HANDLE DAFTAR — sama persis dengan asli
+// ═══════════════════════════════════════════════════
+async function handleDaftar(){
+  const eb=$('daftarErr');eb.classList.remove('show');
+  for(const[id,lb]of[['bioNama','Nama'],['bioUsia','Usia'],['bioPend','Pendidikan'],['bioGender','Jenis Kelamin']]){
+    const el=$(id);el.classList.remove('error');
+    if(!el.value.trim()){el.classList.add('error');el.focus();eb.textContent='Mohon isi: '+lb;eb.classList.add('show');return}
+  }
+  const telpEl=$('bioTelp');telpEl.classList.remove('error');
+  const telpVal=telpEl.value.trim().replace(/\s+/g,'');
+  if(!telpVal){telpEl.classList.add('error');telpEl.focus();eb.textContent='Mohon isi: Nomor Telepon';eb.classList.add('show');return}
+  if(!/^(\+62|62|0)[0-9]{8,13}$/.test(telpVal)){telpEl.classList.add('error');telpEl.focus();eb.textContent='Format nomor telepon tidak valid. Contoh: 08123456789';eb.classList.add('show');return}
+  const kesediaan=document.querySelector('input[name="bioKesediaan"]:checked');
+  if(!kesediaan){eb.textContent='Mohon pilih kesediaan dihubungi.';eb.classList.add('show');return}
+  if(!sPaket){$('paketRequired').classList.add('show');return}
+
+  const btn=$('btnDaftar');btn.disabled=true;
+  sl('Membuat token...');
+  try{
+    const pid=String(sPaket.id_x).trim(),pnm=(sPaket.x_01||'').trim();
+    const tok=await genTok(pid);
+    const bio=JSON.stringify({
+      nama:$('bioNama').value.trim(),usia:$('bioUsia').value.trim(),
+      pendidikan:$('bioPend').value.trim(),jenis_kelamin:$('bioGender').value.trim(),
+      telepon:telpVal,kesediaan_dihubungi:kesediaan.value,
+      tgl_tes:td(),status:'aktif',sumber:'koreksi-digital'
+    });
+    sl('Menyimpan data...');
+    const res=await aF(`${API_W}?table=${TBL}`,{method:'POST',headers:{'Content-Type':'application/json','X-Custom-Auth':AUTH},body:JSON.stringify({x_01:tok,x_02:bio})});
+    if(!res.success)throw new Error(res.message||'Gagal menyimpan.');
+    // localStorage — sama dengan asli
+    localStorage.setItem('koreks_token',tok);
+    localStorage.setItem('koreks_db_id',String(res.id_x));
+    localStorage.setItem('koreks_paket',pnm);
+    cu={id_x:res.id_x,x_01:tok,x_02:bio};
+    sl('Memuat soal...');
+    await loadActiveConfigs();await loadAllQA();setupKoreksiUI();
+  }catch(e){eb.textContent='⚠ '+e.message;eb.classList.add('show')}
+  btn.disabled=false;hl();
+}
+
+async function chkTok(t){try{const d=await aF(`${API_W}?table=${TBL}&x_01_eq=${encodeURIComponent(t)}`,{headers:{'X-Custom-Auth':AUTH}});return d.success&&d.count>0}catch{return false}}
+async function genTok(pid){for(let i=0;i<10;i++){const t='K'+pid+'-'+rs(i<8?10:12);if(!(await chkTok(t)))return t}return'K'+pid+'-'+rs(14)}
+
+// ═══════════════════════════════════════════════════
+// LOAD CONFIGS & SOAL
+// ═══════════════════════════════════════════════════
+async function loadActiveConfigs(){
+  const p=(sPaket?.x_01||'').trim();
+  try{
+    const d=await aF(`${API_R}?table=${TBL_P}&x_01_eq=${encodeURIComponent(p)}`,{headers:{'X-Custom-Auth':AUTH}});
+    if(!d.success||!d.count){activeConfigs=ALL_CONFIG;return}
+    const items=(d.data[0].x_02||'').split('|').map(s=>s.trim()).filter(Boolean);
+    activeConfigs=[];
+    for(const item of items){
+      const k=item.replace(/\.txt$/i,'').replace(/^who:/,'');
+      const c=ALL_CONFIG.find(c=>(c.dataUrl||'').split('/').pop().replace(/\.txt$/i,'')==k);
+      if(c)activeConfigs.push(c);
+    }
+    if(!activeConfigs.length)activeConfigs=ALL_CONFIG;
+  }catch{activeConfigs=ALL_CONFIG}
+}
+
+async function loadAllQA(){
+  sl('Memuat soal...');
+  const done=new Set();
+  await Promise.all(activeConfigs.map(async cfg=>{
+    if(done.has(cfg.id))return;done.add(cfg.id);
+    try{
+      const raw=await(await fetch(cfg.dataUrl+'?v='+Date.now())).json();
+      if(raw&&!Array.isArray(raw)&&raw.meta&&raw.soal){
+        if(raw.meta.title)cfg.label=cfg.label||raw.meta.title;
+        qaData[cfg.id]=raw.soal;
+      }else qaData[cfg.id]=raw;
+    }catch(e){console.warn('[qa]',cfg.id,e);qaData[cfg.id]=null}
+  }));
+}
+
+// ═══════════════════════════════════════════════════
+// SETUP KOREKSI
+// ═══════════════════════════════════════════════════
+function setupKoreksiUI(){
+  $('pNama').textContent=getBio('nama')||'Peserta';
+  $('pPaket').textContent=sPaket?.x_01||'—';
+  $('pToken').textContent=cu.x_01||'—';
+  $('hdrSub').textContent=`${getBio('nama')||'Peserta'} · ${sPaket?.x_01||''}`;
+  answers={};savedState={};rmibKolom={};dcState={};dirty=false;
+  // Load existing answers
+  activeConfigs.forEach(cfg=>{
+    try{
+      const o=JSON.parse(cu[cfg.saveField]||'{}');
+      // Untuk RMIB cek tiap kolom
+      if(cfg.type==='ranking'){
+        const tot=cfg.totalKolom||8;
+        const kolData={};let anyDone=false;
+        for(let k=1;k<=tot;k++){const key=`${cfg.id}_k${k}`;if(o[key]!==undefined&&o[key]!==''){kolData[k]=o[key];anyDone=true}}
+        if(anyDone)savedState[cfg.id]=kolData;
+      }else{
+        if(o[cfg.id]!==undefined&&o[cfg.id]!=='')savedState[cfg.id]=o[cfg.id];
+      }
+    }catch{}
+  });
+  buildTabs();ss('screenKoreksi');setSaveStatus('saved');updateProgress();
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+function buildTabs(){
+  const tabBar=$('tabBar'),panelArea=$('panelArea');
+  tabBar.innerHTML='';panelArea.innerHTML='';
+  activeConfigs.forEach((cfg,i)=>{
+    const isDone=savedState[cfg.id]!==undefined;
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(i===0?' active':'');btn.id='tab-btn-'+cfg.id;
+    btn.innerHTML=(isDone?'<span class="tab-done-dot"></span>':'')+(cfg.label||cfg.id);
+    btn.onclick=()=>switchTab(cfg.id);tabBar.appendChild(btn);
+    const panel=document.createElement('div');
+    panel.className='tab-panel'+(i===0?' active':'');panel.id='panel-'+cfg.id;
+    panelArea.appendChild(panel);
+    answers[cfg.id]={};
+  });
+  currentTabId=activeConfigs[0]?.id;
+  if(currentTabId)renderPanel(currentTabId);
+}
+
+function switchTab(id){
+  currentTabId=id;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  $('tab-btn-'+id)?.classList.add('active');$('panel-'+id)?.classList.add('active');
+  if(!$('panel-'+id)?.dataset.rendered)renderPanel(id);
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER PANEL
+// ═══════════════════════════════════════════════════
+function renderPanel(id){
+  const cfg=activeConfigs.find(c=>c.id===id),panel=$('panel-'+id);
+  if(!cfg||!panel)return;
+  panel.dataset.rendered='1';
+  const raw=qaData[id],isDone=savedState[id]!==undefined;
+  panel.innerHTML=`
+    ${isDone?'<div class="done-banner">✅ Tab ini sudah pernah disimpan. Bisa diperbarui kembali.</div>':''}
+    <div class="panel-hdr">
+      <div><div class="panel-title">${cfg.label||cfg.id}</div><div class="panel-meta" id="meta-${id}">Memuat...</div></div>
+      <div class="score-box"><div class="sb-label">Terjawab</div><div class="sb-val" id="sbv-${id}">0</div><div class="sb-of" id="sbo-${id}">dari 0</div></div>
+    </div>
+    <div id="body-${id}"></div>`;
+  if(!raw){$('body-'+id).innerHTML=`<div class="panel-err">❌ Gagal memuat soal (${id})</div>`;return}
+  const t=cfg.type;
+  if(t==='text_choice'||t==='image_single')renderChoicePanel(id,cfg,raw);
+  else if(t==='image_multi')renderMultiPanel(id,cfg,raw);
+  else if(t==='text_input'||t==='text_input_scored')renderInputPanel(id,cfg,raw);
+  else if(t==='digit_check')renderDCPanel(id,cfg,raw);
+  else if(t==='ab_choice')renderAbPanel(id,cfg,raw);
+  else if(t==='ranking')renderRankingPanel(id,cfg,raw);
+  restoreAnswers(id,cfg);
+}
+
+// ═══════════════════════════════════════════════════
+// CHOICE
+// ═══════════════════════════════════════════════════
+function renderChoicePanel(id,cfg,raw){
+  const qs=getQs(raw);
+  $('meta-'+id).textContent=`${qs.length} soal · pilih 1 jawaban`;$('sbo-'+id).textContent=`dari ${qs.length}`;
+  $('body-'+id).innerHTML=`<div class="ans-grid" id="grid-${id}"></div>`;
+  const grid=$('grid-'+id);
+  qs.forEach((q,i)=>{
+    const keys=Object.keys(q.options||{}).filter(k=>q.options[k]);
+    const btns=keys.map(k=>`<button class="opt-btn" id="ob-${id}-${i}-${k}" onclick="chooseOpt('${id}',${i},'${k}')">${k}</button>`).join('');
+    const item=document.createElement('div');item.className='ans-item';item.id=`ai-${id}-${i}`;
+    item.innerHTML=`<div class="ans-num">${i+1}</div><div class="ans-opts">${btns}</div>`;
+    grid.appendChild(item);
+  });
+  answers[id]={qs,type:cfg.type,ua:[],sc:0,ans:[]};
+}
+
+function chooseOpt(id,i,k){
+  const st=answers[id],q=st.qs[i];
+  const keys=Object.keys(q.options||{}).filter(x=>q.options[x]);
+  keys.forEach(x=>$(`ob-${id}-${i}-${x}`)?.classList.remove('sel'));
+  $(`ob-${id}-${i}-${k}`)?.classList.add('sel');
+  $(`ai-${id}-${i}`)?.classList.add('answered');
+  const correct=q.answer||q.correctAnswer||'',isOk=k===correct;
+  const entry=`${i+1}${k}${isOk?'v':'x'}`;
+  const ei=st.ua.findIndex(u=>u.match(new RegExp(`^${i+1}[A-Za-z]`)));
+  if(ei!==-1)st.ua[ei]=entry;else st.ua.push(entry);
+  st.sc=st.ua.filter(u=>u.endsWith('v')).length;
+  if(!st.ans.includes(i))st.ans.push(i);
+  updateScoreBox(id);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// IMAGE MULTI
+// ═══════════════════════════════════════════════════
+function renderMultiPanel(id,cfg,raw){
+  const qs=getQs(raw),opH=['a','b','c','d','e','f'];
+  $('meta-'+id).textContent=`${qs.length} soal · pilih 2 jawaban`;$('sbo-'+id).textContent=`dari ${qs.length}`;
+  $('body-'+id).innerHTML=`<div class="ans-grid" id="grid-${id}"></div>`;
+  const grid=$('grid-'+id);
+  qs.forEach((q,i)=>{
+    const btns=(q.options||[]).map((_,ki)=>{const k=opH[ki]||String(ki);return`<button class="opt-btn" id="ob-${id}-${i}-${k}" onclick="chooseMulti('${id}',${i},'${k}')">${k.toUpperCase()}</button>`}).join('');
+    const item=document.createElement('div');item.className='ans-item';item.id=`ai-${id}-${i}`;
+    item.innerHTML=`<div class="ans-num">${i+1}</div><div class="ans-opts">${btns}</div>`;grid.appendChild(item);
+  });
+  answers[id]={qs,type:'image_multi',ua:[],sc:0,ans:[],sel:{}};
+}
+
+function chooseMulti(id,i,k){
+  const st=answers[id];if(!st.sel)st.sel={};if(!st.sel[i])st.sel[i]=[];
+  const idx=st.sel[i].indexOf(k);
+  if(idx!==-1){st.sel[i].splice(idx,1);$(`ob-${id}-${i}-${k}`)?.classList.remove('sel')}
+  else if(st.sel[i].length<2){st.sel[i].push(k);$(`ob-${id}-${i}-${k}`)?.classList.add('sel')}
+  const done=st.sel[i].length===2;
+  $(`ai-${id}-${i}`)?.classList.toggle('answered',done);
+  if(done){
+    const q=st.qs[i],opH=['a','b','c','d','e','f'];
+    const joined=st.sel[i].sort().join('').toUpperCase();
+    const corrSet=(q.correctAnswers||[]).map(v=>{const ki=(q.options||[]).indexOf(v);return ki>=0?opH[ki]:'?'});
+    const ok=st.sel[i].every(x=>corrSet.includes(x));
+    const entry=`${i+1}${joined}${ok?'v':'x'}`;
+    const ei=st.ua.findIndex(u=>u.startsWith(`${i+1}`));
+    if(ei!==-1)st.ua[ei]=entry;else st.ua.push(entry);
+    if(!st.ans.includes(i))st.ans.push(i);
+  }else{
+    const ei=st.ua.findIndex(u=>u.startsWith(`${i+1}`));if(ei!==-1)st.ua.splice(ei,1);
+    const ai=st.ans.indexOf(i);if(ai!==-1)st.ans.splice(ai,1);
+  }
+  st.sc=st.ua.filter(u=>u.endsWith('v')).length;updateScoreBox(id);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// TEXT INPUT
+// ═══════════════════════════════════════════════════
+function renderInputPanel(id,cfg,raw){
+  const qs=getQs(raw),isTkd6=cfg.id==='tkd6';
+  if(isTkd6){
+    // MODE KOREKSI CEPAT: tampilkan kunci, centang manual
+    $('meta-'+id).textContent=`${qs.length} soal · centang jika jawaban peserta benar`;
+    $('sbo-'+id).textContent=`dari ${qs.length}`;
+    $('body-'+id).innerHTML=`<div class="ans-grid" id="grid-${id}"></div>`;
+    const grid=$('grid-'+id);
+    qs.forEach((q,i)=>{
+      const kunci=getTkd6Kunci(q);
+      const item=document.createElement('div');item.className='ans-item';item.id=`ai-${id}-${i}`;
+      item.innerHTML=`<div class="ans-num">${i+1}</div><div class="tkd6-kunci">${kunci}</div><button class="btn-centang" id="cb-${id}-${i}" onclick="tkd6Toggle('${id}',${i})" title="Klik jika benar"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></button>`;
+      grid.appendChild(item);
+    });
+    answers[id]={qs,type:cfg.type,ua:[],sc:0,ans:[],tkd6Check:{}};
+    return;
+  }
+  $('meta-'+id).textContent=`${qs.length} soal · ketik jawaban`;$('sbo-'+id).textContent=`dari ${qs.length}`;
+  $('body-'+id).innerHTML=`<div class="ans-grid" id="grid-${id}"></div>`;
+  const grid=$('grid-'+id);
+  qs.forEach((q,i)=>{
+    const item=document.createElement('div');item.className='ans-item';item.id=`ai-${id}-${i}`;
+    item.innerHTML=`<div class="ans-num">${i+1}</div><input class="ans-input" id="inp-${id}-${i}" placeholder="Jawaban..." autocomplete="off" oninput="onInput('${id}',${i},this)">`;
+    grid.appendChild(item);
+  });
+  answers[id]={qs,type:cfg.type,ua:[],sc:0,ans:[]};
+}
+
+// Ambil kunci TKD-6: pilih versi dengan spasi saja
+function getTkd6Kunci(q){
+  const cas=q.correctAnswers||[];
+  if(!cas.length)return q.answer||q.correctAnswer||'—';
+  // Cari yang mengandung spasi (format "28 32")
+  const withSpace=cas.map(ca=>ca.answer||ca).find(a=>/\d\s+\d/.test(a));
+  if(withSpace)return withSpace;
+  // Fallback: jawaban pertama
+  return cas[0].answer||cas[0]||'—';
+}
+
+// Toggle centang TKD-6
+function tkd6Toggle(id,i){
+  const st=answers[id];
+  if(!st.tkd6Check)st.tkd6Check={};
+  st.tkd6Check[i]=!st.tkd6Check[i];
+  const benar=st.tkd6Check[i];
+  $(`ai-${id}-${i}`)?.classList.toggle('benar',benar);
+  $(`cb-${id}-${i}`)?.classList.toggle('aktif',benar);
+  // Hitung ulang skor
+  st.sc=Object.values(st.tkd6Check).filter(Boolean).length;
+  st.ans=Object.keys(st.tkd6Check).filter(k=>st.tkd6Check[k]).map(Number);
+  // Simpan ke ua untuk kompatibilitas save
+  st.ua=st.ans.map(idx=>`${idx+1}v`);
+  updateScoreBox(id);markDirty();
+}
+
+function onInput(id,i,el){
+  const val=el.value.trim();
+  el.classList.toggle('filled',val!=='');$(`ai-${id}-${i}`)?.classList.toggle('answered',val!=='');
+  const st=answers[id],q=st.qs[i];
+  const nm=s=>s.toLowerCase().replace(/[-–]/g,' ').replace(/\s+/g,' ').trim();
+  if(st.type==='text_input_scored'){
+    let s2=0;for(const ca of(q.correctAnswers||[])){if(nm(val)===nm(ca.answer)){s2=ca.score;break}}
+    const entry=`${i+1}|${val}|${s2>0?'v':'x'}|s${s2}`;
+    const ei=st.ua.findIndex(u=>u.startsWith(`${i+1}|`));
+    if(val){if(ei!==-1)st.ua[ei]=entry;else st.ua.push(entry);if(!st.ans.includes(i))st.ans.push(i)}
+    else{if(ei!==-1)st.ua.splice(ei,1);const ai=st.ans.indexOf(i);if(ai!==-1)st.ans.splice(ai,1)}
+  }else{
+    let ok=false;const a=val.replace(/,/g,' ');
+    for(const ca of(q.correctAnswers||[])){if(a.toLowerCase()===(ca.answer||'').replace(/,/g,' ').trim().toLowerCase()){ok=true;break}}
+    const entry=`${i+1}${a}${ok?'v':'x'}`;
+    const ei=st.ua.findIndex(u=>String(u).match(new RegExp(`^${i+1}[^0-9]`)));
+    if(val){if(ei!==-1)st.ua[ei]=entry;else st.ua.push(entry);if(!st.ans.includes(i))st.ans.push(i)}
+    else{if(ei!==-1)st.ua.splice(ei,1);const ai=st.ans.indexOf(i);if(ai!==-1)st.ans.splice(ai,1)}
+  }
+  updateScoreBox(id);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// DIGIT CHECK
+// ═══════════════════════════════════════════════════
+function renderDCPanel(id,cfg,raw){
+  const qs=getQs(raw);
+  $('meta-'+id).textContent=`${qs.length} soal · klik angka sesuai urutan`;$('sbo-'+id).textContent=`dari ${qs.length}`;
+  $('body-'+id).innerHTML=`<div class="ans-grid" id="grid-${id}"></div>`;
+  const grid=$('grid-'+id);
+  qs.forEach((q,i)=>{
+    const btnHtml=['1','2','3','4','5','6','7','8','9','0'].map(d=>`<button class="dc-btn" id="dcb-${id}-${i}-${d}" onclick="dcToggle('${id}',${i},'${d}')">${d}</button>`).join('');
+    const item=document.createElement('div');item.className='ans-item';item.id=`ai-${id}-${i}`;
+    item.innerHTML=`<div class="ans-num">${i+1}</div><div class="dc-wrap">${btnHtml}</div><div class="dc-prev" id="dcp-${id}-${i}">—</div><button class="btn-rst" onclick="dcReset('${id}',${i})">↺</button>`;
+    grid.appendChild(item);
+  });
+  dcState[id]=qs.map(()=>[]);answers[id]={qs,type:cfg.type,ua:[],sc:0,ans:[]};
+}
+
+function dcToggle(id,i,d){const arr=dcState[id][i];const idx=arr.indexOf(d);if(idx!==-1)arr.splice(idx);else arr.push(d);dcUI(id,i);dcCommit(id,i);markDirty()}
+function dcReset(id,i){dcState[id][i]=[];dcUI(id,i);dcCommit(id,i);markDirty()}
+function dcUI(id,i){
+  const arr=dcState[id][i];
+  ['1','2','3','4','5','6','7','8','9','0'].forEach(d=>{
+    const b=$(`dcb-${id}-${i}-${d}`);if(!b)return;
+    const p=arr.indexOf(d);b.classList.toggle('sel',p!==-1);
+    let o=b.querySelector('.dc-ord');
+    if(p!==-1){if(!o){o=document.createElement('span');o.className='dc-ord';b.appendChild(o)}o.textContent=p+1}else if(o)o.remove();
+  });
+  const prev=$(`dcp-${id}-${i}`);if(prev)prev.textContent=arr.length?arr.join(''):'—';
+  $(`ai-${id}-${i}`)?.classList.toggle('answered',arr.length>0);
+}
+function dcCommit(id,i){
+  const arr=dcState[id][i],st=answers[id],q=st.qs[i];
+  const a=arr.join(''),ok=a===(q.correctAnswers||[]).join('');
+  const entry=`${i+1}|${a}|${ok?'v':'x'}`;
+  const ei=st.ua.findIndex(u=>u.startsWith(`${i+1}|`));
+  if(arr.length){if(ei!==-1)st.ua[ei]=entry;else st.ua.push(entry);if(!st.ans.includes(i))st.ans.push(i)}
+  else{if(ei!==-1)st.ua.splice(ei,1);const ai=st.ans.indexOf(i);if(ai!==-1)st.ans.splice(ai,1)}
+  updateScoreBox(id);
+}
+
+// ═══════════════════════════════════════════════════
+// AB CHOICE
+// ═══════════════════════════════════════════════════
+function renderAbPanel(id,cfg,raw){
+  const qs=getQs(raw);
+  $('meta-'+id).textContent=`${qs.length} pasang soal · pilih A atau B`;$('sbo-'+id).textContent=`dari ${qs.length}`;
+  $('body-'+id).innerHTML=`<div class="ab-grid" id="grid-${id}"></div>`;
+  const grid=$('grid-'+id);
+  qs.forEach((q,i)=>{
+    const item=document.createElement('div');item.className='ab-item';item.id=`ai-${id}-${i}`;
+    item.innerHTML=`<div class="ab-num">No. ${i+1}</div><div class="ab-choices">
+      <button class="ab-btn" id="ab-${id}-${i}-A" onclick="chooseAB('${id}',${i},'A')"><strong>A</strong></button>
+      <button class="ab-btn" id="ab-${id}-${i}-B" onclick="chooseAB('${id}',${i},'B')"><strong>B</strong></button>
+    </div>`;grid.appendChild(item);
+  });
+  answers[id]={qs,type:'ab_choice',ua:[],ans:[]};
+}
+
+function chooseAB(id,i,c){
+  const st=answers[id];
+  ['A','B'].forEach(x=>$(`ab-${id}-${i}-${x}`)?.classList.remove('sel'));
+  $(`ab-${id}-${i}-${c}`)?.classList.add('sel');$(`ai-${id}-${i}`)?.classList.add('answered');
+  if(!st.ua)st.ua=[];st.ua[i]=c;if(!st.ans.includes(i))st.ans.push(i);
+  updateScoreBox(id);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// RANKING (RMIB)
+// ═══════════════════════════════════════════════════
+function renderRankingPanel(id,cfg,raw){
+  const tot=cfg.totalKolom||8;
+  if(!rmibKolom[id])rmibKolom[id]={};
+  for(let k=1;k<=tot;k++)rmibKolom[id][k]=Array(12).fill(null);
+  answers[id]={qs:[],type:'ranking',ua:{},ans:[]};
+  $('meta-'+id).textContent=`${tot} kolom · ranking 1–12 tiap kolom`;$('sbo-'+id).textContent=`dari ${tot} kolom`;
+  let kTabs='';
+  for(let k=1;k<=tot;k++)kTabs+=`<button class="kolom-tab${k===1?' active':''}" id="ktab-${id}-${k}" onclick="switchKolom('${id}',${k})">Kolom ${k}</button>`;
+  $('body-'+id).innerHTML=`<div class="kolom-tabs">${kTabs}</div><div id="kbody-${id}"></div>`;
+  renderKolom(id,1,raw);
+}
+
+function switchKolom(id,k){
+  document.querySelectorAll(`[id^="ktab-${id}-"]`).forEach(b=>b.classList.remove('active'));
+  $(`ktab-${id}-${k}`)?.classList.add('active');renderKolom(id,k,qaData[id]);
+}
+
+function renderKolom(id,k,raw){
+  const body=$(`kbody-${id}`);if(!body)return;
+  const data=getQs(raw),kd=data.find?data.find(d=>d.kolom===k):null,rows=kd?kd.soal:[];
+  if(!rows.length){body.innerHTML=`<div class="panel-err">Data kolom ${k} tidak ditemukan</div>`;return}
+  const rSel=rmibKolom[id][k];
+  const used=()=>rSel.filter(n=>n!==null);
+  const tableRows=rows.map((text,r)=>{
+    const btns=[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>{
+      const isSel=rSel[r]===n,isGone=!isSel&&used().includes(n);
+      return`<button class="rank-btn${isSel?' sel':''}${isGone?' gone':''}" id="rb-${id}-${k}-${r}-${n}" onclick="rankSel('${id}',${k},${r},${n})">${n}</button>`;
+    }).join('');
+    return`<tr><td style="color:var(--muted);font-family:var(--mono);font-size:.73em">${r+1}</td><td>${text}</td><td><div class="rank-btns">${btns}</div></td></tr>`;
+  }).join('');
+  body.innerHTML=`<div class="rank-wrap"><table class="rank-table"><thead><tr><th style="width:34px">No</th><th>Pernyataan</th><th>Ranking</th></tr></thead><tbody>${tableRows}</tbody></table></div>`;
+}
+
+function rankSel(id,k,r,v){
+  const rSel=rmibKolom[id][k];
+  if(rSel[r]===v)rSel[r]=null;
+  else{if(rSel.filter(n=>n!==null).includes(v))return;rSel[r]=v;}
+  const used=rSel.filter(n=>n!==null);
+  for(let ri=0;ri<rSel.length;ri++)for(let n=1;n<=12;n++){const b=$(`rb-${id}-${k}-${ri}-${n}`);if(!b)continue;b.classList.remove('sel','gone');if(rSel[ri]===n)b.classList.add('sel');else if(used.includes(n))b.classList.add('gone')}
+  if(rSel.filter(n=>n!==null).length===12){answers[id].ua[k]=rSel.join(';');$(`ktab-${id}-${k}`)?.classList.add('done')}
+  else{delete answers[id].ua[k];$(`ktab-${id}-${k}`)?.classList.remove('done')}
+  updateScoreBox(id);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// SCORE BOX & PROGRESS
+// ═══════════════════════════════════════════════════
+function updateScoreBox(id){
+  const st=answers[id];if(!st)return;
+  const el=$('sbv-'+id);if(!el)return;
+  if(st.type==='ranking')el.textContent=Object.keys(st.ua).length;
+  else if(st.type==='ab_choice')el.textContent=(st.ua||[]).filter(Boolean).length;
+  else if(st.tkd6Check!==undefined)el.textContent=Object.values(st.tkd6Check).filter(Boolean).length;
+  else el.textContent=(st.ans||[]).length;
+}
+function updateProgress(){
+  const tot=activeConfigs.length,done=activeConfigs.filter(c=>savedState[c.id]!==undefined).length;
+  $('progSummary').innerHTML=`Tersimpan: <strong>${done}/${tot}</strong> subtes`;
+}
+
+// ═══════════════════════════════════════════════════
+// RESTORE ANSWERS (dari savedState)
+// ═══════════════════════════════════════════════════
+function restoreAnswers(id,cfg){
+  const saved=savedState[id];if(saved===undefined||saved===null||saved==='')return;
+  if(cfg.type==='ab_choice'){
+    const choices=typeof saved==='string'?saved.replace(/;$/,'').split(';'):[];
+    choices.forEach((c,i)=>{
+      if(!['A','B'].includes(c))return;
+      $(`ab-${id}-${i}-${c}`)?.classList.add('sel');$(`ai-${id}-${i}`)?.classList.add('answered');
+      if(!answers[id].ua)answers[id].ua=[];answers[id].ua[i]=c;if(!answers[id].ans.includes(i))answers[id].ans.push(i);
+    });
+  }else if(cfg.type==='ranking'){
+    const o=typeof saved==='object'?saved:{};
+    Object.entries(o).forEach(([kStr,v])=>{
+      const kNum=parseInt(kStr);if(isNaN(kNum)||!v)return;
+      const vals=String(v).split(';').map(Number);
+      if(vals.length===12){rmibKolom[id][kNum]=[...vals];answers[id].ua[kNum]=v}
+      $(`ktab-${id}-${kNum}`)?.classList.add('done');
+    });
+  }
+  updateScoreBox(id);
+}
+
+// ═══════════════════════════════════════════════════
+// SAVE TAB — format identik dengan tes asli
+// ═══════════════════════════════════════════════════
+async function saveTab(){
+  if(!currentTabId)return;
+  const cfg=activeConfigs.find(c=>c.id===currentTabId),st=answers[currentTabId];
+  if(!cfg||!st)return;
+  setSaveStatus('saving');$('btnSave').disabled=true;
+  try{
+    const id=cu.id_x,sf=cfg.saveField;
+    const cur=await aG(id);
+    let o={};try{o=JSON.parse(cur.data[sf]||'{}')}catch{}
+    let valForState;
+    if(cfg.type==='ab_choice'){
+      // "A;B;A;..." + ";" — IDENTIK asli
+      const val=(st.ua||[]).join(';')+';';
+      o[cfg.id]=val;valForState=val;
+    }else if(cfg.type==='ranking'){
+      // rmib_k1, rmib_k2, ... — IDENTIK asli
+      const uaMap=st.ua||{};
+      Object.entries(uaMap).forEach(([k,v])=>{o[`${cfg.id}_k${k}`]=v});
+      valForState=uaMap;
+    }else{
+      // Skor integer — IDENTIK asli
+      const val=st.sc||0;o[cfg.id]=val;valForState=val;
+    }
+    await aP(id,{[sf]:JSON.stringify(o)});
+    savedState[currentTabId]=valForState;
+    const tabBtn=$('tab-btn-'+currentTabId);
+    if(tabBtn&&!tabBtn.querySelector('.tab-done-dot'))tabBtn.innerHTML=`<span class="tab-done-dot"></span>`+tabBtn.innerHTML;
+    dirty=false;updateProgress();setSaveStatus('saved');
+  }catch(e){alert('❌ Gagal menyimpan: '+e.message);setSaveStatus('unsaved')}
+  $('btnSave').disabled=false;
+}
+
+// ═══════════════════════════════════════════════════
+// SAVE STATUS
+// ═══════════════════════════════════════════════════
+function setSaveStatus(s){
+  const dot=$('saveDot'),txt=$('saveStatus');dot.className='save-dot';
+  if(s==='saved'){dot.classList.add('saved');txt.textContent='✓ Tersimpan'}
+  else if(s==='saving'){dot.classList.add('saving');txt.textContent='Menyimpan...'}
+  else txt.textContent='Ada perubahan belum disimpan';
+}
+function markDirty(){dirty=true;setSaveStatus('unsaved')}
+
+// ═══════════════════════════════════════════════════
+// CLEAR TAB
+// ═══════════════════════════════════════════════════
+function clearTab(){
+  const cfg=activeConfigs.find(c=>c.id===currentTabId);
+  if(!confirm(`Reset semua jawaban tab "${cfg?.label||currentTabId}"?`))return;
+  const panel=$('panel-'+currentTabId);
+  if(panel){delete panel.dataset.rendered;panel.innerHTML=''}
+  answers[currentTabId]={};
+  if(dcState[currentTabId])dcState[currentTabId]=getQs(qaData[currentTabId]).map(()=>[]);
+  if(rmibKolom[currentTabId]){const tot=cfg?.totalKolom||8;rmibKolom[currentTabId]={};for(let k=1;k<=tot;k++)rmibKolom[currentTabId][k]=Array(12).fill(null)}
+  renderPanel(currentTabId);markDirty();
+}
+
+// ═══════════════════════════════════════════════════
+// PESERTA BARU — clear localStorage & reset semua
+// ═══════════════════════════════════════════════════
+function konfirmasiPesertaBaru(){
+  const msg=dirty
+    ?'Ada perubahan yang belum disimpan!\n\nYakin ingin mulai peserta baru?\nData sesi ini akan dihapus dari perangkat (data di server tetap aman).'
+    :'Mulai sesi peserta baru?\n\nData sesi saat ini akan dihapus dari perangkat ini.';
+  if(!confirm(msg))return;
+  clearLS();
+  cu=null;sPaket=null;activeConfigs=[];qaData={};answers={};
+  savedState={};rmibKolom={};dcState={};dirty=false;currentTabId=null;
+  ['bioNama','bioUsia','bioPend','bioTelp'].forEach(id=>{const el=$(id);if(el)el.value=''});
+  const g=$('bioGender');if(g)g.value='';
+  document.querySelectorAll('input[name="bioKesediaan"]').forEach(r=>r.checked=false);syncRadio();
+  document.querySelectorAll('.paket-btn').forEach(b=>b.classList.remove('selected'));sPaket=null;
+  $('daftarErr').classList.remove('show');$('hdrSub').textContent='Lidan Psikologi';
+  ss('screenDaftar');
+}
+
+function clearLS(){
+  localStorage.removeItem('koreks_token');
+  localStorage.removeItem('koreks_db_id');
+  localStorage.removeItem('koreks_paket');
+}
+
+window.onbeforeunload=e=>{if(dirty){e.preventDefault();return ''}};
+</script>
+</body>
+</html>

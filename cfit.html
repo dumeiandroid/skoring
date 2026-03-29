@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Culture Fair Intelligence Test – Skala 3A & 3B</title>
+<script src="https://psikogram.lidan.co.id/psikogram-engine-json.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+  :root {
+    --blue: #1a6ab5;
+    --blue-light: #2a85d8;
+    --border: #1a6ab5;
+    --bg: #f5f8fc;
+    --paper: #ffffff;
+    --text: #0d2a4a;
+    --line: #b0c8e8;
+    --correct: #16a34a;
+    --wrong: #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    min-height: 100vh;
+    gap: 18px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+    flex-wrap: wrap;
+  }
+  .search-panel label {
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  .search-panel input {
+    flex: 1;
+    min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+    background: #f5f8fc;
+    transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: var(--blue); background: #fff; }
+  .btn {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .err-box {
+    width: 100%; max-width: 900px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600;
+    display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── SHEET ── */
+  .sheet {
+    background: var(--paper);
+    width: 100%;
+    max-width: 900px;
+    border: 2px solid var(--border);
+    padding: 18px 22px 22px;
+    box-shadow: 0 4px 24px rgba(26,106,181,0.10);
+  }
+
+  /* ── HEADER ── */
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 11px;
+    margin-bottom: 6px;
+    gap: 12px;
+  }
+  .field-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 3px; font-size: 11px; }
+  .field-row label { white-space: nowrap; font-weight: 600; }
+  .field-line { border-bottom: 1.5px solid var(--blue); min-width: 80px; height: 14px; display: inline-block; }
+  .field-line.xs { min-width: 28px; }
+  .field-filled {
+    border-bottom: 1.5px solid var(--blue);
+    min-width: 80px; height: 14px;
+    display: inline-flex; align-items: flex-end;
+    font-weight: 700; font-size: 12px; color: var(--text);
+    padding-bottom: 1px;
+  }
+  .header-identity { margin-bottom: 4px; }
+  .header-identity .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; font-size: 11px; margin-bottom: 3px; }
+  .lp-box {
+    border: 1.5px solid var(--blue);
+    padding: 0 5px; font-size: 10.5px; font-weight: 600;
+    line-height: 18px; margin-right: 4px;
+  }
+  .nomor-box { display: flex; align-items: baseline; gap: 5px; font-size: 11px; font-weight: 600; }
+
+  /* ── TITLE ── */
+  .title-block {
+    text-align: center;
+    border-top: 2px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    padding: 7px 0 5px;
+    margin: 8px 0 10px;
+    position: relative;
+  }
+  .title-block h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 1px; color: var(--blue); text-transform: uppercase;
+  }
+  .title-block h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 13px; font-weight: 400; color: var(--blue); margin-top: 2px;
+  }
+  .code-box {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    border: 1.5px solid var(--blue); font-size: 10px;
+    padding: 3px 7px; font-weight: 600; letter-spacing: 0.5px;
+  }
+
+  /* ── SUBTESTS GRID ── */
+  .subtests {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+    border: 1.5px solid var(--border);
+  }
+  .subtest {
+    border-right: 1.5px solid var(--border);
+    padding: 10px 8px 10px;
+    position: relative;
+  }
+  .subtest:last-child { border-right: none; }
+  .subtest-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px; font-weight: 700;
+    color: var(--blue); line-height: 1; margin-bottom: 4px;
+  }
+  .contoh-label {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 12px; font-style: italic; font-weight: 700;
+    text-decoration: underline; color: var(--blue);
+    margin-bottom: 5px; display: block;
+  }
+
+  /* ── ITEM LIST ── */
+  .items { list-style: none; }
+  .items li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    line-height: 1.9;
+    color: var(--blue);
+  }
+  .items li .num { min-width: 18px; text-align: right; font-weight: 600; font-size: 11px; }
+  .items li .opts { display: flex; gap: 4px; align-items: center; }
+  .items li .opts span {
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-size: 11.5px;
+    user-select: none;
+  }
+
+  /* ── JAWABAN STYLING ── */
+  /* Pilihan biasa (contoh) */
+  .items.contoh-items li .opts span { cursor: default; }
+
+  /* Jawaban dari data: benar */
+  .opts span.ans-correct {
+    background: #dcfce7;
+    color: var(--correct);
+    font-weight: 800;
+    border-radius: 50%;
+    outline: 2px solid var(--correct);
+  }
+  /* Jawaban dari data: salah */
+  .opts span.ans-wrong {
+    background: #fee2e2;
+    color: var(--wrong);
+    font-weight: 800;
+    border-radius: 50%;
+    outline: 2px solid var(--wrong);
+  }
+  /* SKIP / tidak dijawab */
+  .items li.skipped .num { color: #94a3b8; }
+  .items li.skipped .opts { color: #94a3b8; font-size: 10px; font-style: italic; }
+
+  /* Tanda centang/silang di samping opsi */
+  .mark-correct { color: var(--correct); font-size: 13px; font-weight: 900; margin-left: 2px; }
+  .mark-wrong   { color: var(--wrong);   font-size: 13px; font-weight: 900; margin-left: 2px; }
+
+  /* SEL (cfit2) */
+  .opts span.ans-sel {
+    background: #eff6ff;
+    color: var(--blue);
+    font-weight: 800;
+    border-radius: 3px;
+    outline: 2px solid var(--blue);
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  .divider-line { border: none; border-top: 1px solid var(--line); margin: 8px 0 6px; }
+
+  /* subtest 4 bottom area */
+  .score-box {
+    margin-top: 14px;
+    border: 2px solid var(--blue);
+    padding: 10px 14px 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--blue); line-height: 2;
+  }
+  .score-box .score-line {
+    border-bottom: 1.5px solid var(--blue);
+    min-width: 60px; display: inline-block;
+    height: 14px; margin-left: 4px;
+  }
+  .score-val {
+    font-weight: 800; color: var(--text);
+    min-width: 60px; display: inline-block;
+    border-bottom: 1.5px solid var(--blue);
+    margin-left: 4px; padding-bottom: 1px;
+  }
+
+  /* ── SKOR SUMMARY ── */
+  .skor-summary {
+    margin-top: 14px;
+    background: #eff6ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .skor-summary .skor-row {
+    display: flex; gap: 8px; align-items: center;
+    justify-content: space-between; flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .skor-summary .skor-label { font-weight: 600; }
+  .skor-summary .skor-num   { font-weight: 800; font-size: 14px; color: var(--blue); }
+  .skor-total { font-size: 15px; font-weight: 800; color: var(--text); border-top: 1px solid #bfdbfe; padding-top: 8px; margin-top: 4px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px; font-size: 10px; color: var(--blue);
+  }
+  .footer-text { line-height: 1.4; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .search-panel { display: none !important; }
+    .err-box { display: none !important; }
+    .sheet { box-shadow: none; border: 1px solid #000; }
+    .skor-summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .opts span.ans-correct, .opts span.ans-wrong { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media (max-width: 600px) {
+    .subtests { grid-template-columns: 1fr 1fr; }
+    .subtest:nth-child(2) { border-right: none; }
+    .subtest:nth-child(3) { border-top: 1.5px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..." autocomplete="off"
+    onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<!-- SHEET -->
+<div class="sheet" id="mainSheet">
+
+  <!-- HEADER -->
+  <div class="header-top">
+    <div>
+      <div class="header-identity">
+        <div class="row">
+          <span class="lp-box" id="lpBox">(L/P)</span>
+          <span style="font-weight:600;">PENDIDIKAN FORMAL :</span>
+          <span class="field-filled" id="fieldPendidikan" style="min-width:120px;"></span>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>NAMA :</label>
+        <span class="field-filled" id="fieldNama" style="min-width:180px;"></span>
+      </div>
+      <div class="field-row">
+        <label>TANGGAL PEMERIKSAAN : TAHUN</label>
+        <span class="field-line xs"></span>
+        <label>BULAN</label>
+        <span class="field-line xs"></span>
+        <label>HARI KE</label>
+        <span class="field-line xs"></span>
+      </div>
+      <div class="field-row">
+        <label>TANGGAL LAHIR : TAHUN</label>
+        <span class="field-line xs"></span>
+        <label>BULAN</label>
+        <span class="field-line xs"></span>
+        <label>HARI KE</label>
+        <span class="field-line xs"></span>
+      </div>
+      <div class="field-row">
+        <label>USIA :</label>
+        <span class="field-filled" id="fieldUsia" style="min-width:30px;"></span>
+        <label>TAHUN</label>
+        <span class="field-line xs"></span>
+        <label>BULAN</label>
+      </div>
+    </div>
+    <div class="nomor-box">
+      <span>NOMOR :</span>
+      <span class="field-filled" id="fieldNomor" style="min-width:80px;"></span>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <h1>Culture Fair Intelligence Test</h1>
+    <h2>SKALA 3A &amp; SKALA 3B</h2>
+    <span class="code-box">UI – 10443 – 05</span>
+  </div>
+
+  <!-- SUBTESTS -->
+  <div class="subtests">
+
+    <!-- SUBTEST 1 — 13 soal, opsi a b c d e f -->
+    <div class="subtest">
+      <div class="subtest-num">1</div>
+      <span class="contoh-label">Contoh</span>
+      <ul class="items contoh-items">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+      </ul>
+      <hr class="divider-line">
+      <ul class="items" id="s1">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">4.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">5.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">6.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">7.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">8.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">9.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">10.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">11.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">12.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">13.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+      </ul>
+      <hr class="divider-line" style="margin-top:10px;">
+    </div>
+
+    <!-- SUBTEST 2 — 14 soal, opsi a b c d e -->
+    <div class="subtest">
+      <div class="subtest-num">2</div>
+      <span class="contoh-label">Contoh</span>
+      <ul class="items contoh-items">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+      </ul>
+      <hr class="divider-line">
+      <ul class="items" id="s2">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">4.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">5.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">6.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">7.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">8.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">9.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">10.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">11.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">12.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">13.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">14.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+      </ul>
+      <hr class="divider-line" style="margin-top:10px;">
+    </div>
+
+    <!-- SUBTEST 3 — 13 soal, opsi a b c d e f -->
+    <div class="subtest">
+      <div class="subtest-num">3</div>
+      <span class="contoh-label">Contoh</span>
+      <ul class="items contoh-items">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+      </ul>
+      <hr class="divider-line">
+      <ul class="items" id="s3">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">4.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">5.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">6.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">7.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">8.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">9.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">10.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">11.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">12.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+        <li><span class="num">13.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></span></li>
+      </ul>
+      <hr class="divider-line" style="margin-top:10px;">
+    </div>
+
+    <!-- SUBTEST 4 — 10 soal, opsi a b c d e -->
+    <div class="subtest" style="border-right:none;">
+      <div class="subtest-num">4</div>
+      <span class="contoh-label">Contoh</span>
+      <ul class="items contoh-items">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+      </ul>
+      <hr class="divider-line">
+      <ul class="items" id="s4">
+        <li><span class="num">1.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">2.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">3.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">4.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">5.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">6.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">7.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">8.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">9.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+        <li><span class="num">10.</span><span class="opts"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></span></li>
+      </ul>
+      <hr class="divider-line" style="margin-top:10px;">
+
+      <!-- SKOR TOTAL & IQ -->
+      <div class="score-box">
+        <div>SKOR TOTAL = <span class="score-val" id="skorTotal"></span></div>
+        <div style="font-size:16px; margin-top:4px;">IQ = <span class="score-val" id="skorIQ"></span></div>
+      </div>
+    </div>
+
+  </div><!-- end subtests -->
+
+  <!-- SKOR RINGKASAN -->
+  <div class="skor-summary" id="skorSummary" style="display:none;">
+    <div class="skor-row">
+      <span class="skor-label">Subtest 1 (cfit1)</span>
+      <span class="skor-num" id="sk1">–</span>
+    </div>
+    <div class="skor-row">
+      <span class="skor-label">Subtest 2 (cfit2)</span>
+      <span class="skor-num" id="sk2">–</span>
+    </div>
+    <div class="skor-row">
+      <span class="skor-label">Subtest 3 (cfit3)</span>
+      <span class="skor-num" id="sk3">–</span>
+    </div>
+    <div class="skor-row">
+      <span class="skor-label">Subtest 4 (cfit4)</span>
+      <span class="skor-num" id="sk4">–</span>
+    </div>
+    <div class="skor-row skor-total">
+      <span>TOTAL SKOR BENAR</span>
+      <span class="skor-num" id="skTotal">–</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#1a6ab5" stroke-width="4"/>
+      <text x="50" y="57" text-anchor="middle" font-size="36" font-family="serif" fill="#1a6ab5" font-weight="bold">UI</text>
+    </svg>
+    <div class="footer-text">
+      <div style="font-weight:600;">Lembaga Pengembangan Sarana Pengukuran dan Pendidikan Psikologi</div>
+      <div>Fakultas Psikologi Universitas Indonesia</div>
+    </div>
+  </div>
+
+</div><!-- end sheet -->
+
+<script>
+// ─── KONFIGURASI API (sama dengan who_engine.js) ───────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── PARSER FORMAT x_08 ────────────────────────────────────────
+// Format tiap token: "urutan.nomor[JAWABAN][v/x]✗"
+// Contoh: "1.1Cv✗"  → soal 1, jawab C, BENAR
+//         "2.2Cx✗"  → soal 2, jawab C, SALAH
+//         "3.3SKIPx✗" → soal 3, SKIP
+//         "1.1BEv✗"  → soal 1, pilihan B dan E (cfit2)
+function parseSubtest(str) {
+  if (!str) return [];
+  const tokens = str.split(';').map(s => s.trim()).filter(s => s !== '');
+  return tokens.map(token => {
+    // Hapus karakter ✗ di akhir
+    const t = token.replace(/✗/g, '').trim();
+
+    // Format: "urutan.nomor[JAWABAN][v/x]"
+    // JAWABAN bisa: huruf tunggal (A-F), dua huruf (BE/BD/dll), "SKIP", "SEL"
+    const m = t.match(/^\d+\.(\d+)(SKIP|SEL|[A-Fa-f]{1,2})(v|x)$/i);
+    if (!m) return null;
+
+    const nomor   = parseInt(m[1]);
+    const jawaban = m[2].toUpperCase(); // A-F, BE, BD, SKIP, SEL
+    const benar   = m[3].toLowerCase() === 'v';
+
+    return { nomor, jawaban, benar };
+  }).filter(Boolean);
+}
+
+// ─── RENDER SUBTEST ────────────────────────────────────────────
+// listId   : id ul element (s1, s2, s3, s4)
+// data     : hasil parseSubtest()
+// isCfit2  : true jika subtest 2 (format SEL)
+function renderSubtest(listId, data, isCfit2) {
+  const ul = document.getElementById(listId);
+  if (!ul) return 0;
+  const items = ul.querySelectorAll('li');
+  let benarCount = 0;
+
+  // Reset dulu
+  items.forEach(li => {
+    li.classList.remove('skipped');
+    li.querySelectorAll('span.opts span').forEach(s => {
+      s.classList.remove('ans-correct', 'ans-wrong', 'ans-sel');
+    });
+    // Hapus tanda ✓/✗ lama
+    li.querySelectorAll('.mark-correct, .mark-wrong').forEach(m => m.remove());
+  });
+
+  data.forEach(d => {
+    const idx = d.nomor - 1;
+    if (idx < 0 || idx >= items.length) return;
+    const li   = items[idx];
+    const opts = li.querySelector('.opts');
+
+    if (d.jawaban === 'SKIP') {
+      li.classList.add('skipped');
+      if (opts) opts.innerHTML = '<span style="color:#94a3b8;font-size:10px;font-style:italic;">–</span>';
+      return;
+    }
+
+    if ((d.jawaban === 'SEL' || d.jawaban.length === 2) && isCfit2) {
+      // cfit2: highlight huruf-huruf yang dipilih
+      if (opts) {
+        const spans = opts.querySelectorAll('span');
+        const opsiList = ['A','B','C','D','E','F'];
+        if (d.jawaban === 'SEL') {
+          // format lama: highlight span pertama saja
+          if (spans[0]) spans[0].classList.add('ans-sel');
+        } else {
+          // format baru: highlight tiap huruf yang dipilih
+          [...d.jawaban].forEach(h => {
+            const i = opsiList.indexOf(h);
+            if (i >= 0 && spans[i]) spans[i].classList.add(d.benar ? 'ans-correct' : 'ans-wrong');
+          });
+        }
+      }
+      const mark = document.createElement('span');
+      mark.className = d.benar ? 'mark-correct' : 'mark-wrong';
+      mark.textContent = d.benar ? '✓' : '✗';
+      li.appendChild(mark);
+      if (d.benar) benarCount++;
+      return;
+    }
+
+    // Jawaban huruf biasa (a-f)
+    if (opts) {
+      const spans = opts.querySelectorAll('span');
+      const jawabanLower = d.jawaban.toLowerCase();
+      const opsiList = ['a','b','c','d','e','f'];
+      const idxOpts  = opsiList.indexOf(jawabanLower);
+      if (idxOpts >= 0 && idxOpts < spans.length) {
+        spans[idxOpts].classList.add(d.benar ? 'ans-correct' : 'ans-wrong');
+      }
+    }
+
+    // Tanda ✓ atau ✗ di samping li
+    const mark = document.createElement('span');
+    mark.className = d.benar ? 'mark-correct' : 'mark-wrong';
+    mark.textContent = d.benar ? '✓' : '✗';
+    li.appendChild(mark);
+
+    if (d.benar) benarCount++;
+  });
+
+  return benarCount;
+}
+
+// ─── RENDER BIO ────────────────────────────────────────────────
+function renderBio(x02Str) {
+  let bio = {};
+  try { bio = JSON.parse(x02Str || '{}'); } catch {}
+
+  const nama = bio.nama || '';
+  const usia = bio.usia || '';
+  const jk   = bio.jenis_kelamin || '';
+  const pend = bio.pendidikan || '';
+  const id   = bio.id_x || bio.nomor || '';
+
+  document.getElementById('fieldNama').textContent        = nama;
+  document.getElementById('fieldUsia').textContent        = usia;
+  document.getElementById('fieldPendidikan').textContent  = pend;
+  document.getElementById('fieldNomor').textContent       = id;
+  const lpBox = document.getElementById('lpBox');
+  if (jk) lpBox.textContent = '(' + jk + ')';
+}
+
+// ─── UI HELPERS ────────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErr() {
+  const el = document.getElementById('errBox');
+  el.textContent = '';
+  el.classList.remove('show');
+}
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner"></span> Mencari...'
+    : 'Cari';
+}
+
+function resetLembar() {
+  // Reset semua opsi ke default
+  ['s1','s2','s3','s4'].forEach(id => {
+    const ul = document.getElementById(id);
+    if (!ul) return;
+    ul.querySelectorAll('li').forEach(li => {
+      li.classList.remove('skipped');
+      li.querySelectorAll('.mark-correct, .mark-wrong').forEach(m => m.remove());
+      li.querySelectorAll('span.opts span').forEach(s => {
+        s.classList.remove('ans-correct','ans-wrong','ans-sel');
+      });
+    });
+  });
+  // Reset header bio
+  ['fieldNama','fieldUsia','fieldPendidikan','fieldNomor'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+  document.getElementById('lpBox').textContent = '(L/P)';
+  // Reset skor
+  ['skorTotal','skorIQ','sk1','sk2','sk3','sk4','skTotal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+  document.getElementById('skorSummary').style.display = 'none';
+}
+
+function resetAll() {
+  clearErr();
+  resetLembar();
+  document.getElementById('inputId').value = '';
+}
+
+// ─── HITUNG IQ CFIT (inline, getIQ_cfit tidak di-export engine) ─
+function getIQ_cfit(skorTotal, usia) {
+  const iqTable = {
+    49:[183,183,183,183,183], 48:[183,183,183,179,179], 47:[183,183,179,176,176],
+    46:[183,179,176,173,173], 45:[179,176,173,169,169], 44:[176,173,169,167,167],
+    43:[175,171,168,165,165], 42:[171,168,165,161,161], 41:[167,163,160,157,157],
+    40:[165,161,159,155,155], 39:[161,159,155,152,152], 38:[159,155,152,149,149],
+    37:[155,152,149,145,145], 36:[152,149,145,142,142], 35:[150,147,144,140,140],
+    34:[147,144,140,137,137], 33:[142,139,136,133,133], 32:[140,137,134,131,131],
+    31:[137,134,131,128,128], 30:[134,131,128,126,124], 29:[131,128,124,123,121],
+    28:[129,126,123,121,119], 27:[126,123,119,117,116], 26:[123,119,116,114,113],
+    25:[119,116,113,111,109], 24:[116,113,109,108,106], 23:[113,109,106,104,103],
+    22:[109,106,103,101,100], 21:[106,103,100,98,96],   20:[104,101,98,96,94],
+    19:[101,98,94,93,91],     18:[98,94,91,89,88],      17:[94,91,88,86,85],
+    16:[91,88,85,83,81],      15:[88,85,81,80,78],      14:[85,81,78,76,75],
+    13:[81,78,75,73,72],      12:[80,76,73,72,70],      11:[76,73,70,68,67],
+    10:[73,70,67,65,63],      9:[70,67,63,62,60],       8:[67,63,60,58,57],
+    7:[63,60,57,56,55],       6:[60,57,55,53,52],       5:[57,55,53,51,48],
+    4:[55,54,52,50,47],       3:[53,52,48,47,45],       2:[52,51,47,46,43],
+    1:[50,50,46,45,40],       0:[48,48,45,43,38]
+  };
+  const u = parseFloat(usia) || 16;
+  let ageIndex;
+  if      (u >= 13.0 && u <= 13.4)  ageIndex = 0;
+  else if (u >= 13.5 && u <= 13.11) ageIndex = 1;
+  else if (u >= 14.0 && u <= 14.11) ageIndex = 2;
+  else if (u >= 15.0 && u <= 15.11) ageIndex = 3;
+  else                               ageIndex = 4;
+  const row = iqTable[Math.floor(skorTotal)];
+  return row ? row[ageIndex] : 0;
+}
+
+// ─── MAIN FETCH ────────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+
+  clearErr();
+  resetLembar();
+  setBtn(true);
+
+  try {
+    const res = await fetch(
+      `${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } }
+    );
+    const d = await res.json();
+
+    if (!d.success || !d.data) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal);
+      return;
+    }
+
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal);
+      return;
+    }
+
+    // Render bio dari x_02
+    renderBio(row.x_02 || '');
+
+    // Ambil & parse x_08
+    let x08 = {};
+    try { x08 = JSON.parse(row.x_08 || '{}'); } catch {}
+
+    // Parse setiap subtest
+    const d1 = parseSubtest(x08.cfit1 || '');
+    const d2 = parseSubtest(x08.cfit2 || '');
+    const d3 = parseSubtest(x08.cfit3 || '');
+    const d4 = parseSubtest(x08.cfit4 || '');
+
+    // Render ke lembar
+    const b1 = renderSubtest('s1', d1, false);
+    const b2 = renderSubtest('s2', d2, true);
+    const b3 = renderSubtest('s3', d3, false);
+    const b4 = renderSubtest('s4', d4, false);
+
+    const total = b1 + b2 + b3 + b4;
+
+    // Tampilkan skor ringkasan
+    const n1 = d1.filter(x=>x.jawaban!=='SKIP').length;
+    const n2 = d2.filter(x=>x.jawaban!=='SKIP').length;
+    const n3 = d3.filter(x=>x.jawaban!=='SKIP').length;
+    const n4 = d4.filter(x=>x.jawaban!=='SKIP').length;
+
+    document.getElementById('sk1').textContent = `${b1} / ${n1}`;
+    document.getElementById('sk2').textContent = `${b2} / ${n2}`;
+    document.getElementById('sk3').textContent = `${b3} / ${n3}`;
+    document.getElementById('sk4').textContent = `${b4} / ${n4}`;
+    document.getElementById('skTotal').textContent = total;
+    document.getElementById('skorTotal').textContent = total;
+    document.getElementById('skorSummary').style.display = 'block';
+
+    // Hitung IQ langsung (getIQ_cfit tidak di-export oleh engine)
+    let bio = {};
+    try { bio = JSON.parse(row.x_02 || '{}'); } catch {}
+    const usia = parseFloat(bio.usia) || 16;
+    const iq = getIQ_cfit(total, usia);
+    document.getElementById('skorIQ').textContent = iq || '–';
+
+  } catch (e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+    console.error(e);
+  } finally {
+    setBtn(false);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rangkuman RMIB</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: #f0f0eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 14px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 660px;
+    background: #fff;
+    border: 2px solid #1a6ab5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: #0d2a4a; }
+  .search-panel input {
+    flex: 1; min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid #b0c8e8; border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: #0d2a4a;
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: #1a6ab5; background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: #1a6ab5; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .err-box {
+    width: 660px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── PAGE ── */
+  .page {
+    background: #fff;
+    width: 660px;
+    padding: 30px 30px 40px 30px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    border: 1px solid #ccc;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* TABLE */
+  .rangkuman-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .rangkuman-table col.label-col { width: 100px; }
+  .rangkuman-table col.data-col  { width: calc((100% - 200px) / 8); }
+  .rangkuman-table col.total-col { width: 50px; }
+  .rangkuman-table col.rank-col  { width: 50px; }
+
+  .rangkuman-table th {
+    text-align: center;
+    font-size: 11px;
+    font-weight: normal;
+    padding: 2px 0 3px 0;
+    border: none;
+  }
+  .rangkuman-table th.label-hdr { text-align: left; }
+
+  .rangkuman-table td {
+    border: 1px solid #333;
+    height: 28px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11px;
+  }
+
+  .rangkuman-table td.label-cell {
+    text-align: left;
+    padding-left: 6px;
+    font-size: 11px;
+    border: 1px solid #333;
+  }
+
+  /* Sel X — huruf X bold, nilai di bawahnya kecil */
+  .rangkuman-table td.x-cell {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1.1;
+    padding: 1px 0;
+  }
+  .x-mark {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.1;
+  }
+  .x-val {
+    display: block;
+    font-size: 9px;
+    font-weight: normal;
+    color: #888;
+    line-height: 1.1;
+  }
+
+  /* Sel data biasa */
+  .rangkuman-table td.data-cell {
+    font-size: 11px;
+  }
+
+  /* Total & Rank */
+  .rangkuman-table td.total-cell {
+    font-size: 11px;
+    font-weight: bold;
+  }
+  .rangkuman-table td.rank-cell {
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .search-panel, .err-box { display: none !important; }
+    .page { box-shadow: none; border: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<div class="page">
+  <div class="title">Rangkuman</div>
+
+  <table class="rangkuman-table" id="mainTable">
+    <colgroup>
+      <col class="label-col">
+      <col class="data-col"><!-- A -->
+      <col class="data-col"><!-- B -->
+      <col class="data-col"><!-- C -->
+      <col class="data-col"><!-- D -->
+      <col class="data-col"><!-- E -->
+      <col class="data-col"><!-- F -->
+      <col class="data-col"><!-- G -->
+      <col class="data-col"><!-- H -->
+      <col class="total-col">
+      <col class="rank-col">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="label-hdr"></th>
+        <th>A</th><th>B</th><th>C</th><th>D</th>
+        <th>E</th><th>F</th><th>G</th><th>H</th>
+        <th>Total</th>
+        <th>Rank</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+// ─── API CONFIG ───────────────────────────────────────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── DEFINISI BARIS ───────────────────────────────────────────
+// xCol: kolom mana (0=A..7=H) yang bertanda X untuk baris ini
+// -1 = tidak ada X
+const rowDefs = [
+  { no: 1,  label: 'Outd', xCol: 0 }, // X di A
+  { no: 2,  label: 'Mech', xCol: 1 }, // X di B
+  { no: 3,  label: 'Comp', xCol: 2 }, // X di C
+  { no: 4,  label: 'Scie', xCol: 3 }, // X di D
+  { no: 5,  label: 'Pers', xCol: 4 }, // X di E
+  { no: 6,  label: 'Aest', xCol: 5 }, // X di F
+  { no: 7,  label: 'Musi', xCol: 6 }, // X di G
+  { no: 8,  label: 'Lite', xCol: 7 }, // X di H
+  { no: 9,  label: 'Soci', xCol: -1 },
+  { no: 10, label: 'Cler', xCol: -1 },
+  { no: 11, label: 'Prac', xCol: -1 },
+  { no: 12, label: 'Medi', xCol: -1 },
+];
+
+// ─── PARSER ──────────────────────────────────────────────────
+// "1;2;3;..." → [1,2,3,...] (12 nilai, index 0=baris1)
+function parseKol(str) {
+  if (!str) return new Array(12).fill(null);
+  return str.split(';').map(s => {
+    const v = s.trim();
+    return v === '' ? null : Number(v);
+  }).slice(0, 12);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────
+function renderTable(kolData) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  const anyData = kolData.some(k => k.some(v => v !== null && !isNaN(v)));
+
+  // Total per baris: jumlah A–H kecuali sel X
+  const rowTotals = rowDefs.map((row, rowIdx) => {
+    let sum = 0;
+    for (let col = 0; col < 8; col++) {
+      if (col === row.xCol) continue;
+      const val = kolData[col][rowIdx];
+      if (val !== null && !isNaN(val)) sum += val;
+    }
+    return sum;
+  });
+
+  // Rank per baris: rank 1 = total terbesar (dari 12 baris)
+  const rowRanks = anyData ? rankOf(rowTotals, 12) : null;
+
+  rowDefs.forEach((row, rowIdx) => {
+    const tr = document.createElement('tr');
+
+    // Label
+    const labelTd = document.createElement('td');
+    labelTd.className = 'label-cell';
+    labelTd.textContent = `${row.no}.  ${row.label}`;
+    tr.appendChild(labelTd);
+
+    // 8 kolom data
+    for (let col = 0; col < 8; col++) {
+      const td = document.createElement('td');
+      const val = kolData[col][rowIdx];
+      if (col === row.xCol) {
+        td.className = 'x-cell';
+        const xMark = document.createElement('span');
+        xMark.className = 'x-mark';
+        xMark.textContent = 'X';
+        td.appendChild(xMark);
+        if (val !== null && !isNaN(val)) {
+          const xVal = document.createElement('span');
+          xVal.className = 'x-val';
+          xVal.textContent = val;
+          td.appendChild(xVal);
+        }
+      } else {
+        td.className = 'data-cell';
+        td.textContent = (val !== null && !isNaN(val)) ? val : '';
+      }
+      tr.appendChild(td);
+    }
+
+    // Total kolom
+    const totalTd = document.createElement('td');
+    totalTd.className = 'total-cell';
+    totalTd.textContent = anyData ? rowTotals[rowIdx] : '';
+    tr.appendChild(totalTd);
+
+    // Rank kolom
+    const rankTd = document.createElement('td');
+    rankTd.className = 'rank-cell';
+    rankTd.textContent = rowRanks ? rowRanks[rowIdx] : '';
+    tr.appendChild(rankTd);
+
+    tbody.appendChild(tr);
+  });
+}
+
+// Rank: nilai terbesar = rank 1
+function rankOf(values, n) {
+  const indexed = values.map((v, i) => ({ v, i }));
+  const sorted  = [...indexed].sort((a, b) => a.v - b.v);
+  const ranks   = new Array(n);
+  sorted.forEach((item, rank) => { ranks[item.i] = rank + 1; });
+  return ranks;
+}
+
+// ─── RESET ───────────────────────────────────────────────────
+function emptyKolData() {
+  return Array.from({ length: 8 }, () => new Array(12).fill(null));
+}
+
+function resetTable() {
+  renderTable(emptyKolData());
+}
+
+function resetAll() {
+  clearErr();
+  resetTable();
+  document.getElementById('inputId').value = '';
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg; el.classList.add('show');
+}
+function clearErr() {
+  const el = document.getElementById('errBox');
+  el.textContent = ''; el.classList.remove('show');
+}
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Mencari...' : 'Cari';
+}
+
+// ─── MAIN FETCH ──────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+
+  clearErr();
+  resetTable();
+  setBtn(true);
+
+  try {
+    const res = await fetch(
+      `${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } }
+    );
+    const d = await res.json();
+
+    if (!d.success || !d.data) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
+    }
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
+    }
+
+    // Ambil x_06 (atau sesuaikan key jika berbeda)
+    let x07 = {};
+    try { x07 = JSON.parse(row.x_06 || '{}'); } catch {}
+
+    // Bangun kolData[0..7] dari rmib_k1..rmib_k8
+    const kolData = [];
+    for (let k = 1; k <= 8; k++) {
+      kolData.push(parseKol(x07[`rmib_k${k}`] || ''));
+    }
+
+    renderTable(kolData);
+
+  } catch (e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+    console.error(e);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+resetTable();
+</script>
+
+</body>
+</html>

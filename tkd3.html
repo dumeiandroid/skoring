@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kemampuan Differensial – Subtes III</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --blue: #1a6ab5;
+    --border: #1a6ab5;
+    --bg: #f5f8fc;
+    --paper: #ffffff;
+    --text: #0d2a4a;
+    --line: #b0c8e8;
+    --row-alt: #f0f6fd;
+    --correct: #16a34a;
+    --wrong:   #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+    gap: 20px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 100%; max-width: 780px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: var(--text); }
+  .search-panel input {
+    flex: 1; min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid var(--line); border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: var(--text);
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: var(--blue); background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .err-box {
+    width: 100%; max-width: 780px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600; display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── PAGE SHEET ── */
+  .sheet {
+    background: var(--paper);
+    width: 100%; max-width: 780px;
+    border: 2px solid var(--border);
+    padding: 20px 24px 22px;
+    box-shadow: 0 4px 24px rgba(26,106,181,0.10);
+  }
+
+  /* ── HEADER ── */
+  .header-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-bottom: 10px;
+  }
+  .header-left table { border-collapse: collapse; font-size: 11px; color: var(--blue); width: 100%; }
+  .header-left table td { border: 1.5px solid var(--blue); padding: 2px 6px; min-width: 28px; height: 20px; }
+  .header-left table td.label { border: none; font-weight: 600; padding-left: 0; white-space: nowrap; width: 46px; }
+  .header-left table td.filled { font-weight: 700; color: var(--text); font-size: 11.5px; }
+  .header-right { font-size: 11px; color: var(--blue); }
+  .header-right .field-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 4px; }
+  .header-right .field-row label { font-weight: 600; white-space: nowrap; }
+  .field-line { border-bottom: 1.5px solid var(--blue); min-width: 140px; height: 14px; display: inline-block; }
+  .field-filled-inline {
+    border-bottom: 1.5px solid var(--blue); min-width: 140px;
+    display: inline-flex; align-items: flex-end;
+    font-weight: 700; font-size: 11.5px; color: var(--text); padding-bottom: 1px;
+  }
+
+  /* ── TITLE ── */
+  .title-block { text-align: center; margin: 10px 0 12px; }
+  .title-block h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue);
+  }
+  .title-block .sub { font-size: 12px; font-weight: 600; color: var(--blue); margin-top: 2px; letter-spacing: 0.5px; }
+
+  /* ── QUESTION TABLE ── */
+  .q-table { width: 100%; border-collapse: collapse; font-size: 12px; color: var(--blue); }
+  .q-table thead tr th {
+    border: 1.5px solid var(--border); padding: 5px 8px;
+    font-weight: 700; font-size: 12px; background: var(--paper); text-align: center;
+  }
+  .q-table thead tr th.th-soal { text-align: left; }
+  .q-table tbody tr { border-bottom: 1px solid var(--line); }
+  .q-table tbody tr:nth-child(even) { background: var(--row-alt); }
+  .q-table tbody tr:last-child { border-bottom: 1.5px solid var(--border); }
+  .q-table td { padding: 5px 8px; vertical-align: top; }
+  .q-table td.td-num {
+    width: 28px; text-align: right; font-weight: 700;
+    white-space: nowrap; padding-right: 4px; border-left: 1.5px solid var(--border);
+  }
+  .q-table td.td-soal { line-height: 1.5; }
+  .q-table td.td-jawaban {
+    width: 100px; border-left: 1.5px solid var(--border);
+    border-right: 1.5px solid var(--border);
+    text-align: center; vertical-align: middle;
+  }
+
+  .soal-text { font-weight: 600; margin-bottom: 2px; }
+
+  /* Pilihan jawaban di soal */
+  .opts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+  .opts span {
+    font-size: 11.5px; padding: 1px 5px; border-radius: 3px;
+    user-select: none;
+  }
+  /* Jawaban yang ditandai dari data */
+  .opts span.ans-correct {
+    background: #dcfce7; color: var(--correct);
+    font-weight: 800; border-radius: 4px; outline: 2px solid var(--correct);
+  }
+  .opts span.ans-wrong {
+    background: #fee2e2; color: var(--wrong);
+    font-weight: 800; border-radius: 4px; outline: 2px solid var(--wrong);
+  }
+  /* Soal yang di-skip */
+  tr.row-skip td.td-num { color: #94a3b8; }
+  tr.row-skip td.td-soal { color: #94a3b8; }
+
+  /* Kolom jawaban — menampilkan huruf + tanda */
+  .jawaban-display { font-size: 14px; font-weight: 800; min-height: 20px; letter-spacing: 1px; }
+  .jawaban-display.jd-correct { color: var(--correct); }
+  .jawaban-display.jd-wrong   { color: var(--wrong); }
+  .jawaban-display.jd-skip    { color: #94a3b8; font-size: 11px; font-style: italic; font-weight: 600; }
+  .jd-mark { font-size: 12px; margin-left: 2px; }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    text-align: center; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.8px; color: var(--blue);
+    border-top: 1px dashed var(--line); padding-top: 10px; margin-top: 6px;
+  }
+
+  /* ── SCORE BOX ── */
+  .score-area { display: flex; justify-content: flex-end; margin-top: 14px; }
+  .score-box {
+    border: 2px solid var(--blue); padding: 10px 20px;
+    font-size: 13px; font-weight: 700; color: var(--blue);
+    line-height: 2.4; min-width: 150px;
+  }
+  .score-box .score-line { border-bottom: 1.5px solid var(--blue); min-width: 50px; display: inline-block; height: 14px; margin-left: 6px; }
+  .score-val { font-weight: 800; color: var(--text); border-bottom: 1.5px solid var(--blue); min-width: 50px; display: inline-block; margin-left: 6px; padding-bottom: 1px; }
+
+  /* ── SHEET FOOTER ── */
+  .sheet-footer {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 16px; font-size: 10px; color: var(--blue);
+    border-top: 1px solid var(--line); padding-top: 10px;
+  }
+  .sheet-footer .footer-text { line-height: 1.5; }
+  .sheet-footer .footer-text strong { font-size: 10.5px; }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .search-panel, .err-box { display: none !important; }
+    .sheet { box-shadow: none; page-break-after: always; }
+    .sheet:last-child { page-break-after: auto; }
+    .opts span.ans-correct, .opts span.ans-wrong { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media (max-width: 600px) {
+    .header-grid { grid-template-columns: 1fr; }
+    .opts { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="err-box" id="errBox"></div>
+
+<!-- ═══════════════════════════ PAGE 1 ═══════════════════════════ -->
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header-grid">
+    <div class="header-left">
+      <table>
+        <tr>
+          <td class="label">TES</td>
+          <td class="filled" id="hTes1"></td>
+          <td class="filled" id="hTes2"></td>
+          <td class="filled" id="hTes3"></td>
+          <td class="label" style="padding-left:10px;">Nama</td>
+          <td colspan="3" style="min-width:160px; border:none; border-bottom:1.5px solid var(--blue);">
+            <span class="filled" id="hNama" style="font-size:11px;font-weight:700;color:var(--text);"></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">LAHIR</td>
+          <td class="filled" id="hLahir1"></td>
+          <td class="filled" id="hLahir2"></td>
+          <td class="filled" id="hLahir3"></td>
+          <td class="label" style="padding-left:10px;">Pekerjaan/Jabatan</td>
+          <td colspan="3" style="border:none; border-bottom:1.5px solid var(--blue);"></td>
+        </tr>
+        <tr>
+          <td class="label">USIA</td>
+          <td class="filled" id="hUsia" colspan="2"></td>
+          <td colspan="5"></td>
+        </tr>
+      </table>
+      <div style="font-size:10px;margin-top:3px;opacity:.7;">(Tahun / Bulan)</div>
+    </div>
+    <div class="header-right">
+      <div class="field-row">
+        <label>Pendidikan Akhir :</label>
+        <span class="field-filled-inline" id="hPendidikan"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <h1>Kemampuan Differensial</h1>
+    <div class="sub">SUBTES III</div>
+    <div class="sub">No. 1 – 40</div>
+  </div>
+
+  <!-- QUESTIONS 1–20 -->
+  <table class="q-table">
+    <thead>
+      <tr>
+        <th class="th-soal" colspan="2">Soal</th>
+        <th style="width:100px;">Jawaban</th>
+      </tr>
+    </thead>
+    <tbody id="tbody1"></tbody>
+  </table>
+
+  <div class="footer-note">— SEGERALAH LANJUTKAN KE HALAMAN BERIKUTNYA —</div>
+
+  <div class="sheet-footer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#1a6ab5" stroke-width="4"/>
+      <text x="50" y="57" text-anchor="middle" font-size="36" font-family="serif" fill="#1a6ab5" font-weight="bold">UI</text>
+    </svg>
+    <div class="footer-text">
+      <strong>Lembaga Pengembangan Sarana Pengukuran dan Pendidikan Psikologi</strong><br>
+      Fakultas Psikologi Universitas Indonesia
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PAGE 2 ═══════════════════════════ -->
+<div class="sheet">
+
+  <!-- QUESTIONS 21–40 -->
+  <table class="q-table">
+    <thead>
+      <tr>
+        <th class="th-soal" colspan="2">Soal (lanjutan)</th>
+        <th style="width:100px;">Jawaban</th>
+      </tr>
+    </thead>
+    <tbody id="tbody2"></tbody>
+  </table>
+
+  <!-- SCORE BOX -->
+  <div class="score-area">
+    <div class="score-box">
+      <div>RS = <span id="skorRS" class="score-line"></span></div>
+      <div>SS = <span class="score-line"></span></div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#1a6ab5" stroke-width="4"/>
+      <text x="50" y="57" text-anchor="middle" font-size="36" font-family="serif" fill="#1a6ab5" font-weight="bold">UI</text>
+    </svg>
+    <div class="footer-text">
+      <strong>Lembaga Pengembangan Sarana Pengukuran dan Pendidikan Psikologi</strong><br>
+      Fakultas Psikologi Universitas Indonesia
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── API CONFIG (sama dengan who_engine.js) ───────────────────
+const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── DATA SOAL TKD3 ──────────────────────────────────────────
+const questions = [
+  { n:1,  soal:"Nuri : Burung = Sepat : ?",               opts:["a. Mangkuk","b. Ikan","c. Aquarium","d. Merah"] },
+  { n:2,  soal:"Panas : Dingin = Suka : ?",               opts:["a. Bekerja","b. Tertawa","c. Duka","d. Getir"] },
+  { n:3,  soal:"Putera : Puteri = Dewa : ?",              opts:["a. Bidadari","b. Kayangan","c. Dewi","d. Resi"] },
+  { n:4,  soal:"Kapten : Kapal = Pilot : ?",              opts:["a. Udara","b. Cepat","c. Pemboman","d. Kapal terbang"] },
+  { n:5,  soal:"Wanita : Kebaya = Pria : ?",              opts:["a. Sepatu","b. Baju","c. Topi","d. Jas"] },
+  { n:6,  soal:"Makan : Gemuk = Kelaparan : ?",           opts:["a. Makan","b. Kurus","c. Mati","d. Dahaga"] },
+  { n:7,  soal:"Mobil : Bensin = Kereta : ?",             opts:["a. Perlahan-lahan","b. Kusir","c. Mengendarai","d. Kuda"] },
+  { n:8,  soal:"Gerobak : Roda = Kacamata : ?",           opts:["a. Lensa","b. Hidung","c. Melihat","d. Teropong"] },
+  { n:9,  soal:"Siang : Matahari = Malam : ?",            opts:["a. Gelap","b. Bintang","c. Jauh","d. Tidur"] },
+  { n:10, soal:"Menjahit : Jarum = Menebang : ?",         opts:["a. Pisau","b. Rotan","c. Pohon","d. Kampak"] },
+  { n:11, soal:"Teman : Kenalan = Marah : ?",             opts:["a. Ganas","b. Bengis","c. Murka","d. Berbahaya"] },
+  { n:12, soal:"Besar : Lebih besar = Lebih besar : ?",   opts:["a. Raksasa","b. Besar","c. Lebih besar","d. Paling besar"] },
+  { n:13, soal:"Menggerutu : Memaki = Membohong : ?",     opts:["a. Buruk","b. Penipu","c. Membual","d. Menghukum"] },
+  { n:14, soal:"Es : Dingin = Air : ?",                   opts:["a. Basah","b. Minum","c. Sungai","d. Kering"] },
+  { n:15, soal:"Kuda : Cepat = Siput : ?",                opts:["a. Merayap","b. Lambat","c. Berlendir","d. Berumah"] },
+  { n:16, soal:"Beras : Padi = Kacang : ?",               opts:["a. Hijau","b. Buah polong-polongan","c. Tanah","d. Panjang"] },
+  { n:17, soal:"Saya : Kami = Ia : ?",                    opts:["a. Kita","b. Mereka","c. Kalian","d. Anda"] },
+  { n:18, soal:"Minum : Dahaga = Bernafas : ?",           opts:["a. Sesak","b. Paru-paru","c. Udara","d. Jantung"] },
+  { n:19, soal:"Enam : Delapanbelas = Dua : ?",           opts:["a. Delapan","b. Empat","c. Dua","d. Enam"] },
+  { n:20, soal:"Busur : Panah = Senapan : ?",             opts:["a. Peluru","b. Laras","c. Tembakau","d. Letusan"] },
+  { n:21, soal:"Bangau : Katak = Ular : ?",               opts:["a. Reptil","b. Bisa","c. Tikus","d. Melingkar"] },
+  { n:22, soal:"Gelas : Susu = Piring : ?",               opts:["a. Batu","b. Bundar","c. Bubur","d. Makan"] },
+  { n:23, soal:"Ayam : Berkokok = Kambing : ?",           opts:["a. Memanggil","b. Mengembik","c. Padang rumput","d. Domba"] },
+  { n:24, soal:"Kutilang : Burung = Mujair : ?",          opts:["a. Air","b. Hasil Penangkapan","c. Ikan","d. Umpan"] },
+  { n:25, soal:"Kelakuan : Laku = Perjalanan : ?",        opts:["a. Menjalankan","b. Berjalan-jalan","c. Jalan","d. Berjalan"] },
+  { n:26, soal:"Rumah : Batu = Tungku : ?",               opts:["a. Pipa","b. Panas","c. Cerobong","d. Besi"] },
+  { n:27, soal:"Matahari : Bulat = Balok : ?",            opts:["a. Panjang","b. Berat","c. Kayu","d. Bundar"] },
+  { n:28, soal:"Cemara : Pohon = Putih : ?",              opts:["a. Merah","b. Susu","c. Warna","d. Bunga"] },
+  { n:29, soal:"Menyakiti : Menyayangi = Melukai : ?",    opts:["a. Sakit","b. Luka","c. Mencium","d. Merawat"] },
+  { n:30, soal:"Kenari : Burung = Kemarahan : ?",         opts:["a. Kerusakan","b. Perasaan","c. Orang","d. Berang"] },
+  { n:31, soal:"Bersalah : Hukuman = Jasa : ?",           opts:["a. Tanda-tanda","b. Anugerah","c. Uang","d. Pekerja"] },
+  { n:32, soal:"Es : Air = Air : ?",                      opts:["a. Mendidih","b. Uap","c. Es","d. Basah"] },
+  { n:33, soal:"Jam tangan : Waktu = Termometer : ?",     opts:["a. Iklim","b. Derajat","c. Suhu","d. Cuaca"] },
+  { n:34, soal:"Kanvas : Melukis = Tanah liat : ?",       opts:["a. Patung","b. Kesenian","c. Membentuk","d. Estetika"] },
+  { n:35, soal:"Imigran : Tiba = Emigrasi : ?",           opts:["a. Pergi","b. Emigran","c. Asing","d. Penduduk"] },
+  { n:36, soal:"Fisiologi : Ilmu = Hukum : ?",            opts:["a. Ahli hukum","b. Pengadilan","c. Jabatan","d. Undang-undang"] },
+  { n:37, soal:"Keuntungan : Penjualan = Kemasyuran : ?", opts:["a. Pembelian","b. Penipuan","c. Keberanian","d. Jenderal"] },
+  { n:38, soal:"Bulan : Bumi = Bumi : ?",                 opts:["a. Mars","b. Bulan","c. Orbit","d. Matahari"] },
+  { n:39, soal:"Kesulitan : Kelalaian = Respon : ?",      opts:["a. Jawaban-jawaban","b. Stimuli","c. Dampak","d. Baik"] },
+  { n:40, soal:"Kubus : Piramid = Empat Persegi : ?",     opts:["a. Peti","b. Mesir","c. Pentagon","d. Segitiga"] },
+];
+
+// ─── PARSER FORMAT x_08.tkd3 ─────────────────────────────────
+// Token: "urutan.nomor[JAWABAN][v/x]✗"
+// Contoh: "1.1Cv✗" → soal 1, jawab C, BENAR
+//         "2.2Cx✗" → soal 2, jawab C, SALAH
+//         "3.3SKIPx✗" → soal 3, tidak dijawab
+function parseSubtest(str) {
+  if (!str) return {};
+  const map = {};
+  str.split(';').map(s => s.trim()).filter(Boolean).forEach(token => {
+    const t = token.replace(/✗/g, '').trim();
+    // pola: urutan.nomor + JAWABAN (SKIP atau huruf a-d) + v/x
+    const m = t.match(/^\d+\.(\d+)(SKIP|[A-Fa-f])(v|x)$/i);
+    if (!m) return;
+    const nomor   = parseInt(m[1]);
+    const jawaban = m[2].toUpperCase();
+    const benar   = m[3].toLowerCase() === 'v';
+    map[nomor] = { jawaban, benar };
+  });
+  return map;
+}
+
+// ─── BUILD ROW ───────────────────────────────────────────────
+// data: objek {nomor: {jawaban, benar}} dari parseSubtest
+function buildRow(q, data) {
+  const d = data[q.n]; // data untuk soal ini, bisa undefined
+  const tr = document.createElement('tr');
+
+  // Baris skip
+  if (d && d.jawaban === 'SKIP') {
+    tr.classList.add('row-skip');
+  }
+
+  // Kolom nomor
+  const tdNum = document.createElement('td');
+  tdNum.className = 'td-num';
+  tdNum.textContent = q.n + '.';
+  tr.appendChild(tdNum);
+
+  // Kolom soal + opsi
+  const tdSoal = document.createElement('td');
+  tdSoal.className = 'td-soal';
+
+  const soalDiv = document.createElement('div');
+  soalDiv.className = 'soal-text';
+  soalDiv.textContent = q.soal;
+  tdSoal.appendChild(soalDiv);
+
+  if (!(d && d.jawaban === 'SKIP')) {
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'opts';
+
+    q.opts.forEach(opt => {
+      const optHuruf = opt.charAt(0).toUpperCase(); // A, B, C, D
+      const span = document.createElement('span');
+      span.textContent = opt;
+
+      // Tandai jika ini adalah jawaban peserta
+      if (d && d.jawaban === optHuruf) {
+        span.classList.add(d.benar ? 'ans-correct' : 'ans-wrong');
+      }
+      optsDiv.appendChild(span);
+    });
+
+    tdSoal.appendChild(optsDiv);
+  } else {
+    // Baris skip: tampilkan teks muted
+    const skipDiv = document.createElement('div');
+    skipDiv.style.cssText = 'color:#94a3b8;font-size:10.5px;font-style:italic;margin-top:2px;';
+    skipDiv.textContent = '(tidak dijawab)';
+    tdSoal.appendChild(skipDiv);
+  }
+
+  tr.appendChild(tdSoal);
+
+  // Kolom jawaban — huruf + tanda ✓/✗
+  const tdJaw = document.createElement('td');
+  tdJaw.className = 'td-jawaban';
+
+  const disp = document.createElement('div');
+  disp.className = 'jawaban-display';
+
+  if (!d) {
+    // Belum ada data (kosong)
+    disp.textContent = '';
+  } else if (d.jawaban === 'SKIP') {
+    disp.classList.add('jd-skip');
+    disp.textContent = '–';
+  } else {
+    disp.classList.add(d.benar ? 'jd-correct' : 'jd-wrong');
+    const mark = document.createElement('span');
+    mark.className = 'jd-mark';
+    mark.textContent = d.benar ? '✓' : '✗';
+    disp.textContent = d.jawaban;
+    disp.appendChild(mark);
+  }
+
+  tdJaw.appendChild(disp);
+  tr.appendChild(tdJaw);
+
+  return tr;
+}
+
+// ─── RENDER TABEL ────────────────────────────────────────────
+function renderTabel(data) {
+  const tbody1 = document.getElementById('tbody1');
+  const tbody2 = document.getElementById('tbody2');
+  tbody1.innerHTML = '';
+  tbody2.innerHTML = '';
+
+  let benar = 0;
+  questions.forEach(q => {
+    const row = buildRow(q, data);
+    if (q.n <= 20) tbody1.appendChild(row);
+    else           tbody2.appendChild(row);
+
+    const d = data[q.n];
+    if (d && d.benar) benar++;
+  });
+  return benar;
+}
+
+// ─── RENDER BIO ──────────────────────────────────────────────
+function renderBio(x02Str) {
+  let bio = {};
+  try { bio = JSON.parse(x02Str || '{}'); } catch {}
+
+  setText('hNama',      bio.nama       || '');
+  setText('hUsia',      bio.usia       || '');
+  setText('hPendidikan',bio.pendidikan || '');
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ─── RESET TABEL ─────────────────────────────────────────────
+function resetTabel() {
+  const tbody1 = document.getElementById('tbody1');
+  const tbody2 = document.getElementById('tbody2');
+  // Rebuild tanpa data
+  tbody1.innerHTML = '';
+  tbody2.innerHTML = '';
+  questions.forEach(q => {
+    const row = buildRow(q, {});
+    if (q.n <= 20) tbody1.appendChild(row);
+    else           tbody2.appendChild(row);
+  });
+  // Reset skor
+  const skorEl = document.getElementById('skorRS');
+  if (skorEl) { skorEl.className = 'score-line'; skorEl.textContent = ''; }
+  // Reset bio
+  ['hNama','hUsia','hPendidikan'].forEach(id => setText(id, ''));
+}
+
+function resetAll() {
+  clearErr();
+  resetTabel();
+  document.getElementById('inputId').value = '';
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErr() {
+  const el = document.getElementById('errBox');
+  el.textContent = '';
+  el.classList.remove('show');
+}
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner"></span> Mencari...'
+    : 'Cari';
+}
+
+// ─── MAIN FETCH ──────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+
+  clearErr();
+  resetTabel();
+  setBtn(true);
+
+  try {
+    const res = await fetch(
+      `${API_R}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } }
+    );
+    const d = await res.json();
+
+    if (!d.success || !d.data) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal);
+      return;
+    }
+
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal);
+      return;
+    }
+
+    // Render bio dari x_02
+    renderBio(row.x_02 || '');
+
+    // Parse x_08.tkd3
+    let x08 = {};
+    try { x08 = JSON.parse(row.x_08 || '{}'); } catch {}
+
+    const dataMap = parseSubtest(x08.tkd3 || '');
+    const totalBenar = renderTabel(dataMap);
+
+    // Tampilkan RS (Raw Score = jumlah benar)
+    const skorEl = document.getElementById('skorRS');
+    if (skorEl) {
+      skorEl.className = 'score-val';
+      skorEl.textContent = totalBenar;
+    }
+
+  } catch (e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+    console.error(e);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── INIT: render kosong saat halaman load ────────────────────
+(function init() {
+  const tbody1 = document.getElementById('tbody1');
+  const tbody2 = document.getElementById('tbody2');
+  questions.forEach(q => {
+    const row = buildRow(q, {});
+    if (q.n <= 20) tbody1.appendChild(row);
+    else           tbody2.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>
