@@ -384,173 +384,9 @@
 
   @media print {
     body { background: white; padding: 0; gap: 0; }
-    .search-panel, .err-box, .tab-bar { display: none !important; }
+    .search-panel, .err-box { display: none !important; }
     .page { box-shadow: none; border: none; width: 100%; }
-    .tab-panel { display: block !important; }
   }
-
-  /* ── TAB BAR ── */
-  .tab-bar {
-    width: 1020px;
-    display: flex;
-    gap: 0;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  .tab-btn {
-    padding: 10px 28px;
-    border: 2px solid #b0c8e8;
-    border-bottom: none;
-    background: #e8f0fa;
-    color: #4a6080;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    border-radius: 10px 10px 0 0;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .tab-btn:hover { background: #d4e4f7; }
-  .tab-btn.active {
-    background: #fff;
-    color: #1a6ab5;
-    border-color: #1a6ab5;
-    border-bottom: 2px solid #fff;
-    margin-bottom: -2px;
-    z-index: 1;
-  }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* ── INTERPRETASI PANEL ── */
-  .interp-panel {
-    width: 1020px;
-    background: #fff;
-    border: 2px solid #1a6ab5;
-    border-radius: 0 10px 10px 10px;
-    padding: 20px 22px 24px;
-    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  .interp-empty {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 13px;
-    padding: 40px 0;
-  }
-  .interp-header-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .interp-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #0d2a4a;
-  }
-  .interp-subtitle {
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 2px;
-  }
-  .interp-legend {
-    display: flex;
-    gap: 12px;
-    font-size: 11px;
-    color: #475569;
-    align-items: center;
-  }
-  .legend-dot {
-    font-weight: 900;
-    font-size: 13px;
-    margin-right: 2px;
-  }
-  .interp-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-  }
-  .interp-card {
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    transition: box-shadow 0.15s;
-  }
-  .interp-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.10); }
-  .interp-card-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 12px 8px;
-    border-bottom: 1px solid #f1f5f9;
-  }
-  .icard-symbol {
-    font-size: 16px;
-    font-weight: 900;
-    line-height: 1;
-    min-width: 18px;
-    text-align: center;
-  }
-  .icard-name {
-    font-size: 13px;
-    font-weight: 800;
-    color: #0d2a4a;
-    flex: 1;
-  }
-  .icard-desc-lbl {
-    font-size: 10px;
-    color: #64748b;
-  }
-  .icard-badge {
-    display: inline-block;
-    padding: 1px 9px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-  }
-  .icard-scores {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid #f1f5f9;
-  }
-  .icard-score-item {
-    flex: 1;
-    text-align: center;
-    padding: 5px 0;
-    border-right: 1px solid #f1f5f9;
-  }
-  .icard-score-item:last-child { border-right: none; }
-  .icard-score-val {
-    font-size: 13px;
-    font-weight: 900;
-    color: #0d2a4a;
-    line-height: 1.1;
-  }
-  .icard-score-lbl {
-    font-size: 8px;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-  .icard-text {
-    font-size: 11px;
-    line-height: 1.6;
-    color: #334155;
-    padding: 10px 12px;
-    border-left: 3px solid #ccc;
-    margin: 10px 10px 10px 10px;
-    background: #f8fafc;
-    border-radius: 0 6px 6px 0;
-  }
-
 </style>
 </head>
 <body>
@@ -566,14 +402,6 @@
 
 <div class="err-box" id="errBox"></div>
 
-<!-- TAB BAR -->
-<div class="tab-bar">
-  <button class="tab-btn active" id="tabBtnLembar" onclick="switchTab('lembar')">📋 Lembar Jawab</button>
-  <button class="tab-btn" id="tabBtnInterp" onclick="switchTab('interp')">📊 Interpretasi</button>
-</div>
-
-<!-- TAB: LEMBAR JAWAB -->
-<div class="tab-panel active" id="tabLembar">
 <div class="page">
 
   <div class="title">Edward's Personal Preference Schedule</div>
@@ -615,16 +443,6 @@
 
   <div id="gridArea"></div>
 
-</div>
-</div>
-
-<!-- TAB: INTERPRETASI -->
-<div class="tab-panel" id="tabInterp">
-<div class="interp-panel">
-  <div id="interpContent">
-    <div class="interp-empty">⚠ Belum ada data. Silakan cari peserta terlebih dahulu.</div>
-  </div>
-</div>
 </div>
 
 <script>
@@ -1062,84 +880,6 @@ function renderGrid() {
   for (let b = 0; b < 3; b++) gridArea.appendChild(buildBlock(b));
 }
 
-// ─── RENDER INTERPRETASI ─────────────────────────────────────
-function renderInterpretasi() {
-  const container = document.getElementById('interpContent');
-  const hasData = letters.some(l => l !== '');
-  if (!hasData) {
-    container.innerHTML = '<div class="interp-empty">⚠ Belum ada data. Silakan cari peserta terlebih dahulu.</div>';
-    return;
-  }
-
-  const allNeeds = needGroups.flat(); // 15 need dalam urutan
-  let cards = '';
-  const summary = { T: 0, S: 0, R: 0 };
-
-  allNeeds.forEach((needName, idx) => {
-    const blockIndex = Math.floor(idx / 5);
-    const rowIndex   = idx % 5;
-    const needCol    = idx;
-    const r  = calcRowScore(blockIndex, rowIndex);
-    const c  = calcColScore(needCol);
-    const s  = r + c;
-    const needKey = needKeys[idx];
-    const ss = getWS(s, needKey);
-    const desc = needDesc[needName] || '';
-
-    let katLabel, katColor, katSymbol, katKey;
-    if (ss >= 14)     { katLabel='Tinggi'; katColor='#c0392b'; katSymbol='▲'; katKey='T'; summary.T++; }
-    else if (ss >= 7) { katLabel='Sedang'; katColor='#e67e22'; katSymbol='●'; katKey='S'; summary.S++; }
-    else              { katLabel='Rendah'; katColor='#2980b9'; katSymbol='▼'; katKey='R'; summary.R++; }
-
-    const explain = (needExplain[needName] || {})[katKey] || 'Penjelasan belum tersedia.';
-
-    cards += `
-    <div class="interp-card">
-      <div class="interp-card-header" style="background:${katColor}12">
-        <span class="icard-symbol" style="color:${katColor}">${katSymbol}</span>
-        <div style="flex:1">
-          <div class="icard-name">${needName} <span class="icard-desc-lbl">— ${desc}</span></div>
-        </div>
-        <span class="icard-badge" style="background:${katColor}">${katLabel}</span>
-      </div>
-      <div class="icard-scores">
-        <div class="icard-score-item"><div class="icard-score-val">${r}</div><div class="icard-score-lbl">r</div></div>
-        <div class="icard-score-item"><div class="icard-score-val">${c}</div><div class="icard-score-lbl">c</div></div>
-        <div class="icard-score-item"><div class="icard-score-val">${s}</div><div class="icard-score-lbl">s</div></div>
-        <div class="icard-score-item"><div class="icard-score-val" style="color:${katColor}">${ss}</div><div class="icard-score-lbl">ss</div></div>
-      </div>
-      <div class="icard-text" style="border-left-color:${katColor}">${explain}</div>
-    </div>`;
-  });
-
-  const namaEl = document.getElementById('hNama');
-  const namaText = namaEl ? namaEl.textContent.trim() : '';
-
-  container.innerHTML = `
-    <div class="interp-header-bar">
-      <div>
-        <div class="interp-title">📊 Interpretasi EPPS${namaText ? ' — ' + namaText : ''}</div>
-        <div class="interp-subtitle">Hasil interpretasi 15 kebutuhan berdasarkan skor weighted (ss)</div>
-      </div>
-      <div class="interp-legend">
-        <span><span class="legend-dot" style="color:#c0392b">▲</span> Tinggi ≥14 &nbsp;<b style="color:#c0392b">(${summary.T})</b></span>
-        <span><span class="legend-dot" style="color:#e67e22">●</span> Sedang 7–13 &nbsp;<b style="color:#e67e22">(${summary.S})</b></span>
-        <span><span class="legend-dot" style="color:#2980b9">▼</span> Rendah ≤6 &nbsp;<b style="color:#2980b9">(${summary.R})</b></span>
-      </div>
-    </div>
-    <div class="interp-grid">${cards}</div>
-  `;
-}
-
-// ─── TAB SWITCH ───────────────────────────────────────────────
-function switchTab(tab) {
-  document.getElementById('tabBtnLembar').classList.toggle('active', tab === 'lembar');
-  document.getElementById('tabBtnInterp').classList.toggle('active', tab === 'interp');
-  document.getElementById('tabLembar').classList.toggle('active', tab === 'lembar');
-  document.getElementById('tabInterp').classList.toggle('active', tab === 'interp');
-  if (tab === 'interp') renderInterpretasi();
-}
-
 // ─── BIO ──────────────────────────────────────────────────────
 function renderBio(x02Str) {
   let bio = {};
@@ -1157,7 +897,6 @@ function resetAll() {
   renderGrid();
   ['hNama','hNomor','hPendidikan'].forEach(id => setEl(id,''));
   document.getElementById('inputId').value = '';
-  document.getElementById('interpContent').innerHTML = '<div class="interp-empty">⚠ Belum ada data. Silakan cari peserta terlebih dahulu.</div>';
 }
 
 // ─── UI HELPERS ───────────────────────────────────────────────
@@ -1188,10 +927,6 @@ async function cariData() {
     try { x06 = JSON.parse(row.x_06 || '{}'); } catch {}
     letters = parseEpps(x06.epps || '');
     renderGrid();
-    // Jika tab interpretasi sedang aktif, langsung render ulang
-    if (document.getElementById('tabInterp').classList.contains('active')) {
-      renderInterpretasi();
-    }
 
   } catch(e) {
     showErr('⚠ Gagal: ' + e.message);

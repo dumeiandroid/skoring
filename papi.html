@@ -154,6 +154,130 @@
   }
   .chart-subtitle { font-size: 11px; font-style: italic; color: #555; margin-bottom: 16px; }
 
+  /* ── BIODATA ── */
+  .biodata-bar {
+    width: 720px;
+    background: #fff;
+    border: 1.5px solid #1a6ab5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    display: none;
+    box-shadow: 0 2px 10px rgba(26,106,181,0.08);
+  }
+  .biodata-bar.show { display: block; }
+  .biodata-title {
+    font-size: 11px; font-weight: 700; color: #1a6ab5;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;
+  }
+  .biodata-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px;
+  }
+  .biodata-item { display: flex; flex-direction: column; gap: 2px; }
+  .biodata-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .biodata-value { font-size: 13px; color: #0d2a4a; font-weight: 600; }
+  .status-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+  }
+  .status-aktif { background: #dcfce7; color: #16a34a; }
+  .status-nonaktif { background: #fee2e2; color: #dc2626; }
+
+  /* ── INTERPRETASI TAB ── */
+  .page-interp {
+    background: #fff;
+    width: 720px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+    border: 1px solid #bbb;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .interp-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .interp-header h2 { font-size: 16px; font-weight: 800; color: #0d2a4a; letter-spacing: 0.5px; }
+  .btn-gen-all {
+    padding: 8px 18px; background: #1a6ab5; color: #fff;
+    border: none; border-radius: 8px; font-size: 12px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-gen-all:hover { background: #1354a0; }
+  .interp-empty {
+    text-align: center; padding: 50px 20px;
+    color: #94a3b8; font-size: 14px; font-style: italic;
+  }
+  .interp-category {
+    margin-bottom: 22px;
+  }
+  .interp-cat-title {
+    font-size: 10px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; color: #1a6ab5;
+    background: #f0f6ff; border-left: 3px solid #1a6ab5;
+    padding: 5px 10px; margin-bottom: 10px; border-radius: 0 4px 4px 0;
+  }
+  .interp-card {
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 10px;
+    transition: box-shadow 0.2s;
+  }
+  .interp-card:hover { box-shadow: 0 2px 10px rgba(26,106,181,0.10); }
+  .interp-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .interp-letter-badge {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .letter-box {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: #fff;
+    background: #1a6ab5; flex-shrink: 0;
+  }
+  .letter-box.reversed { background: #7c3aed; }
+  .letter-info { display: flex; flex-direction: column; gap: 1px; }
+  .letter-name { font-size: 12px; font-weight: 700; color: #0d2a4a; }
+  .letter-desc { font-size: 10px; color: #64748b; }
+  .interp-score-area { display: flex; align-items: center; gap: 10px; }
+  .score-pill {
+    padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 900;
+    min-width: 40px; text-align: center;
+  }
+  .score-low    { background: #fee2e2; color: #dc2626; }
+  .score-mid    { background: #fef9c3; color: #854d0e; }
+  .score-high   { background: #dcfce7; color: #16a34a; }
+  .score-rev-low  { background: #dcfce7; color: #16a34a; }
+  .score-rev-mid  { background: #fef9c3; color: #854d0e; }
+  .score-rev-high { background: #fee2e2; color: #dc2626; }
+  .score-label { font-size: 10px; color: #94a3b8; font-weight: 600; }
+  .btn-gen-one {
+    padding: 5px 12px; background: #f1f5f9; color: #475569;
+    border: 1px solid #cbd5e1; border-radius: 6px;
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-gen-one:hover { background: #e2e8f0; color: #0d2a4a; }
+  .interp-text {
+    font-size: 13px; line-height: 1.7; color: #334155;
+    background: #f8fafc; border-radius: 8px; padding: 12px 14px;
+    border-left: 3px solid #cbd5e1; transition: opacity 0.3s;
+  }
+  .interp-text.fade { opacity: 0.3; }
+  .score-bar-wrap { margin-bottom: 10px; }
+  .score-bar-bg {
+    height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%; border-radius: 3px; transition: width 0.4s ease;
+    background: linear-gradient(90deg, #1a6ab5, #3b82f6);
+  }
+  .score-bar-fill.reversed { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+
   @media print {
     body { background: white; padding: 0; }
     .page, .page-chart { box-shadow: none; border: none; }
@@ -163,6 +287,41 @@
 </style>
 </head>
 <body>
+
+<!-- BIODATA BAR -->
+<div class="biodata-bar" id="biodataBar">
+  <div class="biodata-title">📋 Data Peserta</div>
+  <div class="biodata-grid">
+    <div class="biodata-item">
+      <span class="biodata-label">Nama</span>
+      <span class="biodata-value" id="bd-nama">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Jenis Kelamin</span>
+      <span class="biodata-value" id="bd-jk">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Usia</span>
+      <span class="biodata-value" id="bd-usia">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Pendidikan</span>
+      <span class="biodata-value" id="bd-pendidikan">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Telepon</span>
+      <span class="biodata-value" id="bd-telepon">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Tanggal Tes</span>
+      <span class="biodata-value" id="bd-tgl">—</span>
+    </div>
+    <div class="biodata-item">
+      <span class="biodata-label">Status</span>
+      <span class="biodata-value" id="bd-status">—</span>
+    </div>
+  </div>
+</div>
 
 <!-- SEARCH PANEL -->
 <div class="search-panel">
@@ -178,6 +337,7 @@
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('tab-grid', this)">📋 Lembar Jawaban</button>
   <button class="tab-btn" onclick="switchTab('tab-chart', this)">🎯 Profil PAPI</button>
+  <button class="tab-btn" onclick="switchTab('tab-interp', this)">📝 Interpretasi</button>
 </div>
 
 <!-- TAB 1: GRID -->
@@ -229,6 +389,19 @@
 </div>
 </div>
 
+<!-- TAB 3: INTERPRETASI -->
+<div id="tab-interp" class="tab-content">
+<div class="page-interp">
+  <div class="interp-header">
+    <h2>📝 Interpretasi Hasil PAPI Kostick</h2>
+    <button class="btn-gen-all" onclick="generateAll()">🔄 Generate Semua Ulang</button>
+  </div>
+  <div id="interpContent">
+    <div class="interp-empty">Silakan cari data peserta terlebih dahulu untuk melihat interpretasi.</div>
+  </div>
+</div>
+</div>
+
 <script>
 // ─── TABS ─────────────────────────────────────────────────────
 function switchTab(id, btn) {
@@ -242,6 +415,668 @@ function switchTab(id, btn) {
 const API_R = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
 const TBL   = 'nilai1_json';
 const AUTH  = 'admin';
+
+// ─── BIODATA ──────────────────────────────────────────────────
+function tampilkanBiodata(x02) {
+  let bio = {};
+  try { bio = JSON.parse(x02 || '{}'); } catch {}
+  const jkMap = { 'L':'Laki-laki', 'P':'Perempuan', 'l':'Laki-laki', 'p':'Perempuan' };
+  const pendMap = { 'sd':'SD','smp':'SMP','sma':'SMA/SMK','d3':'D3','s1':'S1','s2':'S2','s3':'S3' };
+  document.getElementById('bd-nama').textContent      = bio.nama || '—';
+  document.getElementById('bd-jk').textContent        = jkMap[bio.jenis_kelamin] || bio.jenis_kelamin || '—';
+  document.getElementById('bd-usia').textContent      = bio.usia ? bio.usia + ' tahun' : '—';
+  document.getElementById('bd-pendidikan').textContent= pendMap[(bio.pendidikan||'').toLowerCase()] || bio.pendidikan || '—';
+  document.getElementById('bd-telepon').textContent   = bio.telepon || '—';
+  const tgl = bio.tgl_tes ? new Date(bio.tgl_tes).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}) : '—';
+  document.getElementById('bd-tgl').textContent = tgl;
+  const statusEl = document.getElementById('bd-status');
+  const st = (bio.status || '').toLowerCase();
+  statusEl.innerHTML = `<span class="status-badge ${st==='aktif'?'status-aktif':'status-nonaktif'}">${bio.status||'—'}</span>`;
+  document.getElementById('biodataBar').classList.add('show');
+}
+
+function sembunyikanBiodata() {
+  document.getElementById('biodataBar').classList.remove('show');
+}
+
+// ─── INTERPRETASI DATA ────────────────────────────────────────
+// Setiap skala punya 3 band: rendah (0-3), sedang (4-6), tinggi (7-9)
+// K dan Z: REVERSED — skor rendah = intensitas tinggi, skor tinggi = intensitas rendah
+const INTERP_META = {
+  G: { nama: 'Peran Sebagai Pekerja Keras', kategori: 'ARAH KERJA', reversed: false },
+  L: { nama: 'Peran Sebagai Pemimpin',       kategori: 'KEPEMIMPINAN', reversed: false },
+  I: { nama: 'Mudah Membuat Keputusan',      kategori: 'KEPEMIMPINAN', reversed: false },
+  T: { nama: 'Tempo Kerja',                  kategori: 'AKTIFITAS', reversed: false },
+  V: { nama: 'Stamina',                      kategori: 'AKTIFITAS', reversed: false },
+  S: { nama: 'Pergaulan Luas',               kategori: 'PERGAULAN', reversed: false },
+  R: { nama: 'Tipe Teoritis',                kategori: 'GAYA KERJA', reversed: false },
+  D: { nama: 'Suka Pekerjaan yang Terperinci', kategori: 'GAYA KERJA', reversed: false },
+  C: { nama: 'Suka Pekerjaan yang Teratur',  kategori: 'GAYA KERJA', reversed: false },
+  E: { nama: 'Pengendalian Emosi',           kategori: 'SIFAT', reversed: false },
+  N: { nama: 'Menyelesaikan Tugas Secara Pribadi', kategori: 'ARAH KERJA', reversed: false },
+  A: { nama: 'Hasrat untuk Berprestasi',     kategori: 'ARAH KERJA', reversed: false },
+  P: { nama: 'Mengendalikan Orang Lain',     kategori: 'KEPEMIMPINAN', reversed: false },
+  X: { nama: 'Memperoleh Perhatian',         kategori: 'PERGAULAN', reversed: false },
+  B: { nama: 'Kebutuhan Betah dalam Kelompok', kategori: 'PERGAULAN', reversed: false },
+  O: { nama: 'Kebutuhan untuk Menyayangi',   kategori: 'PERGAULAN', reversed: false },
+  Z: { nama: 'Hasil Kreasi',                 kategori: 'SIFAT', reversed: true  },
+  K: { nama: 'Agresif',                      kategori: 'SIFAT', reversed: true  },
+  F: { nama: 'Dorongan untuk Ketaatan',      kategori: 'KETAATAN', reversed: false },
+  W: { nama: 'Kebutuhan Taat Atasan & Peraturan', kategori: 'KETAATAN', reversed: false },
+};
+
+// Kalimat interpretasi: 5 variasi per band, pembuka bervariasi
+const INTERP_KALIMAT = {
+  G: {
+    rendah: [
+      'Ritme kerja yang santai dan tidak tergesa-gesa menjadi pola yang cukup dominan pada dirinya. Ia lebih suka menjalani pekerjaan sesuai kapasitas yang ada tanpa memaksakan diri.',
+      'Dorongan untuk tampil sebagai pekerja keras tergolong rendah. Ia tidak terlalu mempermasalahkan penilaian orang lain soal ketekunannya, dan cenderung mengerjakan sesuatu sebatas yang dirasa perlu.',
+      'Baginya, bekerja keras bukan sesuatu yang perlu dibuktikan setiap saat. Ia lebih memilih ritme yang nyaman dan konsisten daripada mendorong diri melampaui batas kemampuannya.',
+      'Etos kerja yang tinggi bukan prioritas utama dalam kesehariannya. Ia cenderung mengerjakan tugas secukupnya tanpa terlalu termotivasi untuk melampaui ekspektasi.',
+      'Tidak ada dorongan kuat untuk menampilkan diri sebagai sosok yang pantang menyerah. Ia lebih nyaman bekerja dengan standar yang cukup dan tidak membebani diri secara berlebihan.',
+    ],
+    sedang: [
+      'Etos kerja yang dimilikinya cukup seimbang — mampu bekerja keras saat diperlukan, namun tidak selalu memaksakan diri di setiap situasi.',
+      'Dalam kesehariannya, ia mampu menyesuaikan intensitas kerja sesuai tuntutan. Tidak terlalu santai, namun juga tidak mendorong diri secara berlebihan.',
+      'Ketekunannya berada pada level yang proporsional. Cukup gigih untuk menyelesaikan tugas, namun tetap menjaga keseimbangan antara usaha dan hasil.',
+      'Sosok yang tidak mudah menyerah, namun juga tidak mendorong dirinya sampai batas maksimal. Ia mengelola energi kerja dengan cukup bijak sesuai situasi.',
+      'Dorongan untuk bekerja keras ada dan bisa diandalkan, meski tidak selalu berada di gigi tertinggi. Ia tahu kapan harus memberi lebih dan kapan harus berhenti.',
+    ],
+    tinggi: [
+      'Dedikasi dan ketekunan adalah salah satu ciri paling menonjol dari dirinya. Ia tidak suka mengerjakan sesuatu setengah-setengah dan selalu berusaha memberikan yang terbaik.',
+      'Etos kerjanya sangat tinggi — ia bersedia mengerahkan energi ekstra dan pantang berhenti sebelum tugas selesai dengan baik.',
+      'Pekerja keras bukan sekadar label, melainkan cerminan nyata dari cara ia menjalani pekerjaan. Ia sering melakukan lebih dari yang diminta tanpa perlu disuruh.',
+      'Baginya, menyelesaikan pekerjaan dengan sungguh-sungguh adalah sebuah keharusan. Ia merasa tidak puas jika belum memberikan usaha yang maksimal.',
+      'Stamina kerja yang tinggi dan semangat pantang menyerah menjadi kekuatan utamanya. Ia dikenal sebagai sosok yang bisa diandalkan dalam situasi yang menuntut kerja keras.',
+    ],
+  },
+  L: {
+    rendah: [
+      'Peran sebagai pemimpin bukan sesuatu yang ia cari atau ia nikmati. Ia lebih nyaman berada di posisi mengikuti arahan daripada memberikan arahan kepada orang lain.',
+      'Kecenderungan untuk memimpin tergolong rendah. Ia lebih suka bekerja dalam struktur yang sudah ada tanpa harus mengelola atau mengoordinasikan orang lain.',
+      'Tidak tampak antusiasme saat diberi tanggung jawab memimpin. Peran sebagai anggota tim yang mendukung justru terasa lebih sesuai baginya.',
+      'Posisi yang mengharuskan pengambilan keputusan atas nama banyak orang cenderung ia hindari. Ia merasa lebih produktif saat bisa fokus pada kontribusi individualnya.',
+      'Dorongan untuk mendominasi atau mengarahkan kelompok tidak menonjol. Baginya, memberikan kontribusi yang solid jauh lebih penting dari sekadar posisi kepemimpinan.',
+    ],
+    sedang: [
+      'Kemampuan kepemimpinannya cukup memadai. Ia dapat memimpin ketika diminta, meskipun tidak selalu aktif mencari posisi tersebut.',
+      'Peran kepemimpinan bukan sesuatu yang ia hindari, namun juga bukan ambisi utamanya. Ia bisa menjadi pemimpin yang efektif dalam situasi yang tepat.',
+      'Fleksibel dalam peran — bisa memimpin maupun mengikuti tergantung kebutuhan tim dan organisasi. Ia tidak terikat pada satu posisi tertentu.',
+      'Kepemimpinannya bersifat situasional; ketika diminta tampil sebagai pemimpin ia bisa melakukannya dengan baik, namun ia tidak secara aktif mencari otoritas.',
+      'Ia bisa mengambil alih kepemimpinan jika dibutuhkan, namun tidak ada urgensi personal untuk selalu berada di posisi terdepan.',
+    ],
+    tinggi: [
+      'Hasrat untuk mengambil peran sebagai pemimpin sangat kuat pada dirinya. Ia cenderung proaktif dalam mengambil kendali dan mengoordinasikan kelompok.',
+      'Dorongan kepemimpinan sangat dominan — bukan hanya nyaman memimpin, tetapi memang menikmati posisi yang memberinya otoritas dan tanggung jawab atas orang lain.',
+      'Secara alami ia cenderung mengarahkan orang lain dan menyukai posisi terdepan. Kepemimpinan baginya adalah cara nyata untuk memberikan dampak yang lebih besar.',
+      'Keinginan untuk memimpin dan membimbing orang lain sangat tinggi. Inisiatif kepemimpinan sering ia ambil bahkan tanpa diminta secara eksplisit.',
+      'Baginya, kepemimpinan adalah panggilan, bukan sekadar jabatan. Ia merasa paling hidup dan produktif saat diberi kepercayaan untuk mengelola dan mengarahkan tim.',
+    ],
+  },
+  I: {
+    rendah: [
+      'Dalam mengambil keputusan, ia cenderung memerlukan waktu yang cukup lama. Dukungan informasi yang memadai dan konfirmasi dari orang lain sering kali menjadi kebutuhannya sebelum bertindak.',
+      'Pengambilan keputusan bukan kekuatan utamanya. Keraguan sering muncul, dan ia lebih nyaman jika ada yang memvalidasi pilihannya sebelum melangkah.',
+      'Situasi yang menuntut keputusan cepat bisa menjadi sumber tekanan tersendiri. Ia lebih suka mengumpulkan sebanyak mungkin data dan pendapat sebelum menyimpulkan.',
+      'Kecenderungan untuk menunda keputusan cukup terlihat. Ia merasa lebih aman ketika bisa mempertimbangkan semua kemungkinan terlebih dahulu.',
+      'Kurang percaya diri saat harus memutuskan sesuatu secara mandiri. Ia membutuhkan lingkungan yang suportif dan informasi yang cukup sebelum bisa bergerak dengan yakin.',
+    ],
+    sedang: [
+      'Kemampuan pengambilan keputusan cukup baik dalam kondisi normal. Ia bisa memutuskan dengan efektif, meski terkadang butuh waktu untuk mempertimbangkan opsi yang ada.',
+      'Tidak impulsif namun juga tidak terlalu lambat. Ia berusaha menyeimbangkan antara kecepatan dan ketepatan dalam setiap keputusan yang dihadapinya.',
+      'Dalam situasi rutin, keputusan bisa diambil dengan relatif mudah. Namun pada situasi yang lebih kompleks, ia mungkin membutuhkan sedikit lebih banyak waktu.',
+      'Keputusannya cukup terukur — ia mempertimbangkan dengan wajar sebelum bertindak, tanpa berlarut-larut dalam keraguan yang tidak perlu.',
+      'Ia bisa diandalkan untuk membuat keputusan yang cukup baik di sebagian besar situasi, meski sesekali memerlukan diskusi tambahan sebelum finalkan pilihan.',
+    ],
+    tinggi: [
+      'Ketegasan dalam mengambil keputusan adalah salah satu kekuatan utamanya. Ia percaya pada intuisinya dan tidak suka berlama-lama dalam kondisi ketidakpastian.',
+      'Kemampuan pengambilan keputusan sangat menonjol — mampu memutuskan dengan tegas bahkan dalam situasi penuh tekanan atau informasi yang terbatas.',
+      'Decisif adalah kata yang tepat untuk menggambarkannya. Ia tidak mudah ragu dan berani bertanggung jawab penuh atas keputusan yang telah diambilnya.',
+      'Kecepatan dan ketegasan adalah dua hal yang melekat kuat dalam gaya pengambilan keputusannya. Ia segera bergerak setelah keputusan diambil tanpa banyak menoleh ke belakang.',
+      'Baginya, keputusan yang dibuat dengan cepat dan penuh keyakinan lebih baik daripada berlama-lama ragu. Ia menikmati tantangan yang menuntut respons sigap.',
+    ],
+  },
+  T: {
+    rendah: [
+      'Tempo kerjanya cenderung lambat dan ia tidak merasa terganggu dengan hal itu. Lingkungan kerja yang santai dan tidak diburu-buru jauh lebih nyaman baginya.',
+      'Kecepatan bukan prioritasnya. Ia lebih mengutamakan ketenangan dalam bekerja daripada menyelesaikan banyak hal dalam waktu yang singkat.',
+      'Ia bekerja dengan ritme yang tenang dan tidak tergesa-gesa. Tekanan waktu yang ketat bisa mengganggu produktivitas dan kenyamanan kerjanya.',
+      'Tidak ada dorongan kuat untuk bergerak cepat. Ia lebih suka mengambil waktu yang cukup untuk setiap pekerjaan daripada merasa terdesak oleh batas waktu.',
+      'Ritme lamban yang ia jalani bukan kelemahan, melainkan preferensi. Ia bekerja paling baik ketika ada ruang yang cukup untuk bergerak tanpa tekanan.',
+    ],
+    sedang: [
+      'Tempo kerjanya moderat — mampu bekerja dengan kecepatan yang cukup tanpa terlalu tergesa-gesa, dan bisa menyesuaikan ritme dengan tuntutan situasi.',
+      'Ia memiliki kecepatan kerja yang wajar. Tidak terlalu lambat, namun juga tidak terburu-buru. Ia bisa menyesuaikan diri dengan deadline yang realistis.',
+      'Dalam kondisi normal ia bekerja dengan ritme yang stabil. Ketika deadline mendekat, ia bisa meningkatkan temponya meski kondisi tenang tetap lebih ia sukai.',
+      'Tempo kerjanya fleksibel — santai dalam kondisi normal, namun mampu meningkatkan kecepatan ketika situasi benar-benar menuntutnya.',
+      'Ia tidak termasuk yang paling lambat maupun paling cepat. Ritme kerjanya stabil dan dapat disesuaikan dengan baik sesuai kebutuhan tugas.',
+    ],
+    tinggi: [
+      'Energi dan kecepatan dalam bekerja adalah salah satu keunggulan yang paling tampak dari dirinya. Ia suka bergerak cepat dan tidak nyaman dalam ritme yang lamban.',
+      'Tempo kerjanya sangat tinggi — ia mampu menyelesaikan banyak hal dalam waktu singkat dan cenderung multitasking dengan baik.',
+      'Ritme kerja yang cepat dan penuh energi mencerminkan antusiasme dan dorongannya yang besar. Pekerjaan yang bergerak lambat bisa membuatnya cepat kehilangan fokus.',
+      'Ia beroperasi dengan energi tinggi dan selalu ingin terus melangkah. Tantangan yang bergerak cepat justru memotivasinya untuk tampil lebih baik.',
+      'Kecepatan bukan sekadar kebiasaan, melainkan gaya alaminya dalam bekerja. Ia paling produktif ketika ada banyak hal yang perlu diselesaikan dalam waktu terbatas.',
+    ],
+  },
+  V: {
+    rendah: [
+      'Stamina dan daya tahan kerjanya tergolong rendah. Ia mudah lelah dan membutuhkan waktu istirahat yang lebih banyak dibandingkan orang lain.',
+      'Ketahanan fisik dan mental dalam bekerja cukup terbatas. Pekerjaan yang menuntut jam kerja panjang atau tekanan berkelanjutan kurang cocok untuknya.',
+      'Ia cepat merasa kelelahan, baik secara fisik maupun mental. Ritme kerja yang santai dan waktu istirahat yang memadai sangat penting bagi produktivitasnya.',
+      'Manajemen energi menjadi hal yang sangat penting baginya. Ia lebih produktif jika diberi jeda yang cukup di antara tugas-tugas yang berat.',
+      'Daya tahannya dalam menghadapi tekanan berkepanjangan tergolong rendah. Ia perlu lingkungan kerja yang memperhatikan keseimbangan antara kerja dan istirahat.',
+    ],
+    sedang: [
+      'Staminanya cukup memadai untuk menangani pekerjaan sehari-hari tanpa masalah berarti. Ia bisa bertahan dalam tekanan kerja yang normal.',
+      'Daya tahannya dalam bekerja cukup baik dalam kondisi normal. Namun pada situasi yang sangat menekan atau jam kerja yang sangat panjang, jeda tetap dibutuhkan.',
+      'Ia memiliki ketahanan kerja yang moderat — mampu menyelesaikan tugas-tugas dengan baik selama tuntutan tidak melampaui batas kemampuannya.',
+      'Staminanya berada pada level yang cukup. Ia bisa diandalkan dalam kondisi kerja normal, meski mungkin membutuhkan dukungan dalam situasi yang sangat menuntut.',
+      'Tidak mudah kehabisan energi dalam situasi kerja biasa, namun tekanan yang berkepanjangan tetap akan berdampak pada ketahanannya.',
+    ],
+    tinggi: [
+      'Stamina dan daya tahan kerjanya sangat tinggi. Ia mampu bekerja dalam jangka waktu lama dan di bawah tekanan yang besar tanpa kehilangan fokus.',
+      'Daya tahannya luar biasa — tidak mudah menyerah meski menghadapi tekanan kerja yang intens, dan terus berperforma baik dalam kondisi penuh tantangan.',
+      'Ketahanan fisik dan mentalnya sangat kuat. Ia cocok untuk pekerjaan yang menuntut ketekunan tinggi, jam kerja panjang, dan tekanan yang berkelanjutan.',
+      'Staminanya jauh di atas rata-rata. Ia bisa diandalkan bahkan dalam situasi krisis yang berkepanjangan, dan tidak mudah goyah meski kondisi sangat menekan.',
+      'Baginya, tekanan dan jam kerja yang panjang bukan hambatan besar. Ia memiliki cadangan energi yang kuat untuk terus tampil optimal dalam jangka panjang.',
+    ],
+  },
+  S: {
+    rendah: [
+      'Pergaulan yang luas bukan sesuatu yang ia kejar. Ia lebih nyaman dengan lingkaran pertemanan yang kecil dan akrab daripada mengenal banyak orang secara dangkal.',
+      'Ia tergolong selektif dalam berteman dan tidak merasa perlu memiliki jaringan sosial yang luas. Kualitas hubungan jauh lebih penting baginya daripada kuantitas.',
+      'Dalam konteks sosial, ia lebih bersifat introvert. Tidak terlalu aktif mencari kenalan baru dan lebih suka menjaga hubungan yang sudah ada.',
+      'Keramaian dan pergaulan yang luas bukan lingkungan yang paling nyaman baginya. Ia lebih memilih interaksi yang bermakna dan intim daripada yang luas namun superfisial.',
+      'Jaringan sosialnya cenderung kecil dan terpilih. Baginya, memiliki beberapa hubungan yang dalam jauh lebih berharga daripada banyak kenalan yang tidak bermakna.',
+    ],
+    sedang: [
+      'Kemampuan bergaulnya cukup baik. Ia bisa berbaur dalam berbagai kelompok meski tidak selalu aktif mencari pertemanan baru.',
+      'Cukup mudah bergaul namun tidak berlebihan. Ia mampu menyesuaikan diri di lingkungan sosial baru tanpa kesulitan berarti.',
+      'Pergaulannya moderat — memiliki cukup banyak kenalan dan bisa berinteraksi dengan berbagai jenis orang, namun tetap selektif dalam menentukan siapa yang benar-benar dekat.',
+      'Ia fleksibel secara sosial — bisa menikmati acara sosial maupun waktu sendiri tergantung situasi yang dihadapi.',
+      'Tidak termasuk sosok yang sangat pendiam, namun juga tidak terlalu ekspansif dalam bergaul. Ia berada di titik seimbang yang nyaman baginya.',
+    ],
+    tinggi: [
+      'Pergaulan yang luas adalah sesuatu yang benar-benar ia nikmati. Ia mudah berbaur dengan siapa saja dan selalu antusias bertemu orang-orang baru.',
+      'Ia dikenal sebagai sosok yang ramah dan mudah akrab. Jaringan sosialnya luas, dan ia secara aktif membangun serta menjaga hubungan-hubungan tersebut.',
+      'Keramaian dan interaksi sosial adalah sumber energinya. Memiliki banyak teman dan kenalan adalah sesuatu yang sangat ia hargai dalam kehidupan sehari-harinya.',
+      'Di mana pun ia berada, ia cenderung menjadi orang yang mudah dikenal dan disukai. Kemampuan sosialnya yang tinggi membuatnya nyaman di berbagai lingkungan.',
+      'Baginya, membangun koneksi dengan orang baru adalah hal yang menyenangkan, bukan beban. Ia sangat menikmati keberagaman dalam pergaulan sosialnya.',
+    ],
+  },
+  R: {
+    rendah: [
+      'Pendekatan teoritis atau konseptual kurang menarik baginya. Ia jauh lebih suka cara-cara praktis yang langsung bisa diterapkan tanpa perlu banyak landasan teori.',
+      'Orientasi teoritisnya tergolong rendah. Membaca literatur, menganalisis teori, atau mendiskusikan konsep abstrak bukan sesuatu yang ia cari.',
+      'Ia berpikir secara konkret dan pragmatis. Teori dan abstraksi terasa kurang relevan dibandingkan solusi praktis yang nyata dan bisa langsung digunakan.',
+      'Belajar melalui pengalaman langsung jauh lebih efektif baginya daripada membaca atau merenungkan kerangka teori yang panjang.',
+      'Ketertarikan pada hal-hal teoritis sangat minim. Ia lebih suka bergerak dan melakukan daripada berdiam merenungkan konsep-konsep yang abstrak.',
+    ],
+    sedang: [
+      'Minatnya terhadap pendekatan teoritis cukup memadai. Ia bisa menggunakan kerangka konseptual bila diperlukan, namun tidak menjadikannya acuan utama.',
+      'Orientasinya cukup seimbang antara teori dan praktik. Ia mampu memahami konsep-konsep teoritis sekaligus menerapkannya dalam situasi nyata.',
+      'Ia cukup tertarik pada teori, namun lebih senang jika teori tersebut memiliki relevansi dan aplikasi yang jelas dalam pekerjaan nyata.',
+      'Minat teoritisnya moderat — bisa mengikuti diskusi konseptual dengan baik, namun tetap memprioritaskan hasil yang bisa dirasakan secara konkret.',
+      'Antara teori dan praktik, ia bisa bergerak di keduanya dengan nyaman. Ia tidak menolak kerangka konseptual, namun selalu mencari nilai praktisnya.',
+    ],
+    tinggi: [
+      'Pemikiran teoritis dan analitis adalah zona di mana ia merasa paling nyaman. Ia menikmati membaca, menganalisis, dan mendiskusikan konsep-konsep yang kompleks.',
+      'Orientasi teoritisnya sangat kuat. Ia suka mencari hubungan antar konsep dan membangun pemahaman yang mendalam sebelum melangkah ke tindakan.',
+      'Sebagai pemikir yang mendalam, ia sering menggali ide dari berbagai sumber dan membangun kerangka konseptual yang solid terlebih dahulu.',
+      'Di dalam tim, ia sering menjadi sumber analisis mendalam dan pemikiran kritis. Gagasan dan konsep adalah bahasa yang paling ia kuasai.',
+      'Baginya, memahami "mengapa" jauh lebih penting dari sekadar tahu "bagaimana". Orientasi teoritisnya menjadi kekuatan dalam pekerjaan yang menuntut analisis mendalam.',
+    ],
+  },
+  D: {
+    rendah: [
+      'Detail kecil bukan sesuatu yang menarik perhatiannya. Ia jauh lebih suka gambaran besar daripada harus menekuni rincian teknis yang panjang.',
+      'Orientasi pada detail tergolong rendah. Ia cenderung melewatkan hal-hal kecil dan lebih fokus pada hasil akhir secara keseluruhan.',
+      'Pekerjaan yang menuntut akurasi tinggi dan perhatian mendetail bisa menjadi beban tersendiri baginya. Ia lebih nyaman dengan pekerjaan yang berorientasi pada visi besar.',
+      'Baginya, detail dan kerincian bukan sesuatu yang ia nikmati. Ia lebih cepat bergerak ketika tidak terlalu terikat pada hal-hal teknis yang kecil.',
+      'Ia bukan tipe yang menekuni setiap rincian dengan seksama. Selama gambaran besar sudah tepat, ia cenderung membiarkan detail diselesaikan oleh yang lain.',
+    ],
+    sedang: [
+      'Perhatian terhadap detail cukup memadai. Ia bisa bekerja dengan cukup teliti bila situasi menuntutnya, meski tidak selalu mendetail dalam setiap hal.',
+      'Ia memiliki keseimbangan yang baik antara memperhatikan detail dan melihat gambaran besar. Tergantung situasi, ia bisa menyesuaikan tingkat ketelitiannya.',
+      'Cukup teliti dalam bekerja, namun tidak sampai obsesif terhadap detail kecil. Ia bisa memilah mana detail yang penting dan mana yang bisa diabaikan.',
+      'Orientasi pada detail cukup baik — ia tidak melewatkan hal-hal yang krusial, namun juga tidak terjebak dalam kerincian yang berlebihan.',
+      'Ia bisa menjadi cukup teliti ketika dibutuhkan, namun secara alami lebih tertarik pada gambaran besar dan arah umum dari suatu pekerjaan.',
+    ],
+    tinggi: [
+      'Perhatian yang sangat tinggi terhadap detail adalah salah satu karakteristik kuat yang ia miliki. Ia tidak nyaman jika ada sesuatu yang tidak lengkap atau kurang tepat.',
+      'Ketelitian dan akurasi adalah standar yang ia pegang teguh. Ia tidak mudah puas jika ada detail yang terlewat dan selalu memastikan setiap aspek pekerjaan sudah sempurna.',
+      'Ia dikenal sangat cermat dan mendetail. Setiap pekerjaan yang ia lakukan cenderung lengkap karena ia tidak suka meninggalkan celah ketidaksempurnaan.',
+      'Baginya, mengerjakan sesuatu dengan detail yang benar adalah bagian dari integritas kerja. Ia adalah orang yang bisa diandalkan untuk pekerjaan yang menuntut presisi tinggi.',
+      'Tidak ada hal kecil yang luput dari perhatiannya. Ketelitian tinggi ini menjadi aset berharga dalam pekerjaan yang membutuhkan akurasi dan kelengkapan data.',
+    ],
+  },
+  C: {
+    rendah: [
+      'Rutinitas dan keteraturan yang ketat bukan sesuatu yang ia sukai. Ia lebih nyaman bekerja dalam lingkungan yang fleksibel dan tidak terlalu terstruktur.',
+      'Situasi yang dinamis dan berubah-ubah justru lebih memotivasinya. Prosedur kaku dan pola kerja yang monoton cenderung membuatnya cepat bosan.',
+      'Kebebasan dalam menentukan cara dan urutan kerjanya sendiri jauh lebih ia sukai daripada mengikuti sistem atau prosedur yang sudah ditetapkan secara ketat.',
+      'Ia cenderung bekerja secara spontan dan tidak selalu mengikuti pola yang sudah ada. Baginya, fleksibilitas adalah kunci produktivitas.',
+      'Lingkungan kerja yang terlalu teratur dan terprediksi bisa terasa membatasi baginya. Ia lebih hidup dalam situasi yang memberinya ruang untuk bergerak bebas.',
+    ],
+    sedang: [
+      'Ia cukup teratur dalam bekerja dan bisa mengikuti prosedur yang ada, namun tetap membutuhkan fleksibilitas dalam situasi tertentu.',
+      'Keseimbangan yang baik antara keteraturan dan fleksibilitas menjadi ciri khasnya. Ia bisa bekerja dalam sistem yang terstruktur tanpa merasa terkekang.',
+      'Ia cukup disiplin mengikuti prosedur namun tidak kaku. Ia bisa beradaptasi ketika aturan atau sistem perlu disesuaikan dengan kondisi nyata.',
+      'Orientasi pada keteraturan cukup baik — ia menghargai sistem dan prosedur, namun tidak sampai terlalu bergantung padanya.',
+      'Ia menghargai keteraturan sebagai alat, bukan tujuan. Ia bisa mengikuti sistem yang ada sambil tetap memberikan ruang bagi adaptasi yang diperlukan.',
+    ],
+    tinggi: [
+      'Keteraturan dan sistem yang jelas adalah kebutuhannya. Ia bekerja paling baik dalam lingkungan yang terstruktur dengan prosedur yang konsisten.',
+      'Ia suka merencanakan, mengatur, dan menjalankan pekerjaan sesuai sistem yang sudah ditetapkan. Keteraturan adalah fondasi produktivitasnya.',
+      'Ketidakpastian dan kekacauan membuatnya tidak nyaman. Lingkungan kerja yang teratur, terprediksi, dan memiliki prosedur yang jelas sangat cocok untuknya.',
+      'Ia bahkan cenderung membuat sistemnya sendiri jika tidak ada yang tersedia. Baginya, keteraturan bukan pilihan, melainkan syarat utama untuk bekerja dengan baik.',
+      'Kepercayaannya terhadap sistem dan prosedur sangat tinggi. Ia merasa paling tenang dan produktif ketika segala sesuatunya berjalan sesuai rencana yang telah ia susun.',
+    ],
+  },
+  E: {
+    rendah: [
+      'Kontrol emosi yang lemah menjadi salah satu hal yang perlu diperhatikan. Ia mudah terpancing dalam situasi yang menekan dan sulit menyembunyikan perasaannya.',
+      'Ia bisa bereaksi secara impulsif ketika merasa tertekan, kecewa, atau frustrasi. Pengelolaan respons emosionalnya membutuhkan latihan dan dukungan lebih lanjut.',
+      'Ekspresi emosionalnya cukup terbuka dan mudah terbaca oleh orang sekitarnya. Dalam situasi konflik, emosinya bisa muncul sebelum ia sempat menahannya.',
+      'Ia tidak selalu berhasil mengelola emosinya di depan orang lain. Tekanan yang berlebihan bisa memicu respons yang tidak selalu proporsional.',
+      'Pengendalian diri dalam situasi emosional tergolong rendah. Ia perlu lingkungan yang suportif dan strategi pengelolaan stres yang lebih baik.',
+    ],
+    sedang: [
+      'Pengendalian emosinya cukup baik dalam kondisi normal. Ia bisa tetap tenang dalam situasi yang tidak terlalu menekan.',
+      'Umumnya ia mampu mengelola emosinya dengan wajar. Meski terkadang emosi bisa muncul, ia biasanya berhasil menahannya sebelum bereaksi berlebihan.',
+      'Kontrol emosinya moderat — cukup stabil secara emosional meski tidak selalu bisa menyembunyikan perasaannya sepenuhnya dalam situasi yang sangat menekan.',
+      'Ia memiliki kematangan emosional yang cukup untuk mengelola tekanan kerja sehari-hari, meski situasi ekstrem tetap bisa menguji pengendalian dirinya.',
+      'Dalam sebagian besar situasi ia bisa menampilkan sikap yang tenang dan profesional. Hanya dalam tekanan yang sangat besar emosinya mungkin sulit ditahan.',
+    ],
+    tinggi: [
+      'Pengendalian emosi yang sangat baik menjadi salah satu keunggulan yang ia miliki. Ia mampu tetap tenang dan rasional bahkan dalam situasi yang sangat menekan.',
+      'Ia dikenal sebagai pribadi yang stabil secara emosional — tidak mudah panik, jarang bereaksi berlebihan, dan selalu berusaha merespons situasi dengan kepala dingin.',
+      'Kemampuan mengelola emosi adalah kekuatan nyata yang ia miliki. Dalam situasi konflik atau tekanan tinggi, ia bisa bersikap profesional tanpa terbawa suasana.',
+      'Baginya, memisahkan perasaan pribadi dari keputusan profesional adalah hal yang cukup alami. Ia tidak mudah terprovokasi meski dalam kondisi yang sangat menantang.',
+      'Kematangan emosionalnya sangat tinggi. Ia menjadi sumber ketenangan bagi orang-orang di sekitarnya, terutama dalam situasi yang penuh tekanan.',
+    ],
+  },
+  N: {
+    rendah: [
+      'Menyelesaikan tugas secara mandiri bukan sesuatu yang ia butuhkan atau kejar. Ia lebih suka bekerja dalam tim dan mendapat dukungan dari orang-orang di sekitarnya.',
+      'Kemandirian dalam menyelesaikan tugas tergolong rendah. Kolaborasi dan kerja bersama justru menjadi sumber kenyamanan dan produktivitasnya.',
+      'Ia tidak selalu merasa perlu mengerjakan sesuatu sendirian. Keterlibatan orang lain dalam proses kerja justru membuatnya lebih termotivasi.',
+      'Dorongan untuk mandiri dalam pekerjaan tidak terlalu kuat. Ia lebih efektif dan nyaman ketika ada orang lain yang turut serta dalam proses penyelesaian tugas.',
+      'Bergantung pada tim bukan hal yang ia anggap sebagai kelemahan. Baginya, bekerja bersama secara kolaboratif adalah cara terbaik untuk mencapai hasil.',
+    ],
+    sedang: [
+      'Cukup mandiri namun juga terbuka untuk bekerja dalam tim. Ia bisa menyelesaikan tugas sendirian maupun berkolaborasi tergantung situasi.',
+      'Ia memiliki keseimbangan yang baik antara kemandirian dan kolaborasi. Bisa menjadi anggota tim yang solid sekaligus bisa diandalkan untuk bekerja sendiri.',
+      'Kemandiriannya cukup — tidak terlalu bergantung pada orang lain, namun juga tidak menolak bantuan atau masukan ketika dibutuhkan.',
+      'Ia bekerja dengan baik baik secara mandiri maupun dalam kelompok. Pendekatannya disesuaikan dengan tuntutan situasi yang dihadapi.',
+      'Ia tidak memiliki preferensi yang sangat kuat antara kerja mandiri dan kolaborasi. Keduanya ia jalani dengan cukup efektif.',
+    ],
+    tinggi: [
+      'Mengerjakan tugas secara mandiri adalah sesuatu yang benar-benar ia sukai dan cari. Ia merasa paling efektif ketika bisa bekerja tanpa terlalu banyak campur tangan orang lain.',
+      'Kemandirian adalah nilai yang sangat ia jaga. Ia tidak suka bergantung pada orang lain dan selalu berusaha menyelesaikan tanggung jawabnya dengan kemampuan sendiri.',
+      'Keterlibatan orang lain terkadang ia rasakan sebagai gangguan terhadap efektivitas kerjanya. Ia paling produktif ketika bisa menjadi pengelola tunggal atas pekerjaannya.',
+      'Sebelum meminta bantuan, ia selalu berusaha menyelesaikan sendiri terlebih dahulu. Dorongan untuk mandiri ini sangat kuat dan menjadi bagian dari identitas kerjanya.',
+      'Baginya, menyelesaikan tugas tanpa harus mengandalkan orang lain adalah pencapaian tersendiri. Kemandirian adalah sumber kepuasan dan kebanggaan yang nyata baginya.',
+    ],
+  },
+  A: {
+    rendah: [
+      'Prestasi dan pencapaian bukan hal yang mendominasi motivasinya. Ia lebih fokus pada kenyamanan dan stabilitas daripada mendorong diri untuk terus unggul.',
+      'Hasrat untuk berprestasi tergolong rendah. Hasil yang cukup memuaskan sudah terasa memadai baginya, tanpa perlu melampaui standar yang ada.',
+      'Ia tidak terlalu terdorong untuk bersaing atau membuktikan dirinya melalui pencapaian. Kenyamanan dalam bekerja lebih ia utamakan.',
+      'Motivasi berprestasi yang rendah tidak berarti ia tidak kompeten. Ia hanya tidak merasa perlu mendorong diri untuk selalu melampaui ekspektasi orang lain.',
+      'Target yang ambisius bukan sesuatu yang ia kejar. Baginya, bekerja dengan nyaman dan stabil sudah lebih dari cukup sebagai ukuran keberhasilan.',
+    ],
+    sedang: [
+      'Motivasi berprestasinya cukup memadai. Ia mau berusaha meraih hasil yang baik, meski tidak selalu mendorong diri ke batas paling maksimal.',
+      'Cukup ambisius dalam ukuran yang wajar. Ia menetapkan target yang realistis dan berusaha mencapainya tanpa membebani diri sendiri secara berlebihan.',
+      'Hasrat berprestasinya moderat — ia peduli pada kualitas kerjanya dan ingin melakukan yang terbaik, namun tidak terobsesi dengan kesempurnaan atau kompetisi.',
+      'Ia termotivasi oleh pencapaian namun dalam batas yang sehat. Ia menikmati proses dan merasa puas ketika hasilnya memuaskan.',
+      'Ia berusaha memberikan hasil yang baik dalam pekerjaannya, namun tetap menjaga keseimbangan agar dorongan berprestasi tidak berubah menjadi tekanan berlebih.',
+    ],
+    tinggi: [
+      'Hasrat untuk berprestasi yang sangat tinggi menjadi salah satu penggerak utama dalam hidupnya. Ia tidak puas dengan hasil yang biasa dan selalu ingin memberikan yang terbaik.',
+      'Motivasi intrinsiknya sangat kuat — ia terdorong untuk terus berkembang, melampaui standar, dan mencapai hal-hal yang bermakna dalam kariernya.',
+      'Ia sangat kompetitif dan berorientasi pada pencapaian. Target dan tantangan justru menjadi bahan bakar yang membuatnya bekerja lebih keras dan lebih baik.',
+      'Baginya, berkembang dan meraih prestasi bukan pilihan, melainkan keharusan. Ia tidak nyaman berdiam di tempat tanpa ada kemajuan yang nyata.',
+      'Dorongan untuk terus belajar, berkembang, dan memberikan performa terbaik sangat kuat. Ia adalah tipe yang akan terus mendorong diri bahkan ketika hasilnya sudah baik.',
+    ],
+  },
+  P: {
+    rendah: [
+      'Dorongan untuk mengendalikan atau mengarahkan orang lain tergolong rendah. Ia cenderung membiarkan orang lain bekerja sesuai cara mereka sendiri.',
+      'Keinginan untuk mengontrol orang lain tidak terlalu kuat. Ia lebih menghargai otonomi rekan kerjanya daripada memastikan segalanya berjalan sesuai arahannya.',
+      'Ia tidak suka ikut campur dalam cara kerja orang lain. Delegasi yang bebas jauh lebih sesuai dengan gayanya daripada kontrol yang ketat.',
+      'Membiarkan setiap orang bertanggung jawab atas tugasnya sendiri adalah pendekatan yang ia sukai. Ia tidak merasa perlu mendiktekan cara atau metode kepada orang lain.',
+      'Dorongan untuk mengendalikan orang lain tidak tampak menonjol. Baginya, setiap orang memiliki cara kerja terbaiknya sendiri yang perlu dihargai.',
+    ],
+    sedang: [
+      'Kecenderungan mengendalikan orang lain berada pada level moderat. Ia bisa mengarahkan ketika diperlukan, namun tidak bersifat kontrolatif secara berlebihan.',
+      'Ia bisa menjadi pengarah yang efektif tanpa menjadi terlalu dominan. Ia tahu kapan harus memberi arahan dan kapan harus memberi ruang.',
+      'Kemampuannya mengendalikan orang lain cukup baik — ia bisa memimpin dengan tegas ketika perlu, namun juga bisa bersikap fleksibel.',
+      'Kecenderungan mengontrol ada namun tidak berlebihan. Ia menggunakannya secara situasional untuk memastikan pekerjaan berjalan sesuai rencana.',
+      'Ia tidak berlebihan dalam mengontrol, namun juga tidak melepaskan kendali sepenuhnya. Ia menjaga keseimbangan antara arahan dan otonomi.',
+    ],
+    tinggi: [
+      'Dorongan yang sangat kuat untuk mengendalikan dan mengarahkan orang lain menjadi ciri yang menonjol. Ia suka memiliki kontrol atas bagaimana pekerjaan dilakukan oleh timnya.',
+      'Ia sangat terbiasa mengarahkan orang lain dan merasa kurang nyaman jika tidak bisa memastikan segalanya berjalan sesuai arahannya.',
+      'Keinginan untuk mengontrol sangat menonjol — ia bisa sangat detail dalam mengarahkan tim dan cenderung ingin terlibat dalam setiap aspek pekerjaan.',
+      'Baginya, memiliki kendali atas arah dan cara kerja tim adalah kebutuhan nyata. Ia paling efektif saat berada dalam posisi yang memberinya otoritas langsung.',
+      'Ia tidak nyaman ketika sesuatu berjalan di luar kontrolnya. Dorongan untuk mengarahkan sangat kuat dan menjadi bagian penting dari gaya kepemimpinannya.',
+    ],
+  },
+  X: {
+    rendah: [
+      'Perhatian dan pengakuan dari orang lain bukan sesuatu yang ia butuhkan untuk merasa puas. Ia lebih suka bekerja di balik layar tanpa harus menonjolkan diri.',
+      'Kebutuhan untuk diperhatikan atau diakui tergolong rendah. Menjadi pusat perhatian bukan hal yang ia cari, bahkan mungkin ia hindari.',
+      'Ia tidak terdorong untuk tampil menonjol atau mencari pujian. Pekerjaan itu sendiri lebih penting baginya daripada bagaimana orang lain menilai atau memperhatikannya.',
+      'Bekerja tanpa sorotan adalah zona nyamannya. Ia tidak merasa ada yang kurang meski kontribusinya tidak selalu diakui secara eksplisit.',
+      'Dorongan untuk mendapat perhatian sangat rendah — fokus utamanya adalah pada pekerjaan dan hasil, bukan pada citra diri di mata orang lain.',
+    ],
+    sedang: [
+      'Kebutuhan perhatiannya cukup wajar. Ia senang mendapat pengakuan, namun tidak berlebihan dan tidak menjadikannya sumber motivasi utama.',
+      'Ia menikmati saat diperhatikan namun tidak bergantung padanya. Ia bisa bekerja dengan baik meski tidak selalu mendapat sorotan.',
+      'Kebutuhan perhatiannya moderat — senang diakui atas prestasinya, namun tidak sampai aktif mencari-cari perhatian secara berlebihan.',
+      'Ia cukup nyaman baik saat menjadi pusat perhatian maupun saat bekerja di belakang layar, tergantung konteks situasinya.',
+      'Pengakuan adalah hal yang ia hargai namun tidak ia kejar secara berlebihan. Ia bisa berperforma baik dengan atau tanpa sorotan eksternal.',
+    ],
+    tinggi: [
+      'Kebutuhan yang tinggi untuk diperhatikan dan diakui oleh orang-orang di sekitarnya sangat terasa. Ia menikmati saat menjadi pusat perhatian.',
+      'Pengakuan dan apresiasi adalah bahan bakar motivasinya. Menjadi yang diperhatikan dan dibicarakan secara positif memberikan energi tambahan yang nyata baginya.',
+      'Kebutuhan untuk tampil dan diperhatikan sangat kuat. Ia pandai menempatkan diri agar dikenali dan diingat oleh orang-orang di sekitarnya.',
+      'Ia aktif mencari cara untuk menonjolkan diri dan mendapat pengakuan. Lingkungan yang memberikan banyak umpan balik positif sangat cocok untuknya.',
+      'Baginya, diakui dan dihargai bukan sekadar menyenangkan, tetapi menjadi bagian penting dari motivasi kerjanya sehari-hari.',
+    ],
+  },
+  B: {
+    rendah: [
+      'Kebutuhan untuk selalu berada dalam kelompok tidak terlalu kuat. Ia bisa merasa nyaman sendiri dan tidak bergantung pada kebersamaan tim untuk produktif.',
+      'Ia lebih nyaman bekerja secara independen tanpa harus selalu terhubung dengan kelompok. Waktu sendiri justru bisa menjadi sumber produktivitas baginya.',
+      'Bergabung dalam kelompok bukan sesuatu yang ia butuhkan secara emosional. Ia tidak merasa ada yang kurang meski bekerja dengan sedikit interaksi sosial.',
+      'Dorongan untuk menjadi bagian dari kelompok tidak kuat. Ia lebih suka mandiri dan tidak terlalu bergantung pada dinamika tim untuk merasa nyaman.',
+      'Ia tidak terlalu merasakan kebutuhan untuk terus bersama orang lain. Kemandirian dalam bekerja justru menjadi kekuatannya.',
+    ],
+    sedang: [
+      'Cukup nyaman baik dalam kelompok maupun sendiri. Ia bisa menikmati dinamika tim tanpa menjadi terlalu bergantung pada kebersamaan.',
+      'Kebutuhannya untuk berada dalam kelompok moderat. Ia menghargai kerja tim namun tidak merasa tidak nyaman saat harus bekerja mandiri.',
+      'Fleksibel dalam hal interaksi sosial — menikmati kebersamaan kelompok namun juga bisa produktif tanpa bergantung pada dukungan kelompok.',
+      'Kebutuhan kelompoknya seimbang — ia suka berkolaborasi namun juga tidak keberatan bekerja sendiri sesuai situasi.',
+      'Ia tidak terlalu bergantung pada kelompok, namun juga tidak menolaknya. Ia bisa menyesuaikan diri dengan baik di berbagai kondisi.',
+    ],
+    tinggi: [
+      'Kebersamaan kelompok adalah sesuatu yang sangat ia butuhkan. Ia merasa paling nyaman dan produktif saat berada di tengah tim yang solid dan suportif.',
+      'Kebutuhan untuk betah dalam kelompok sangat tinggi. Rasa memiliki dan diterima dalam tim menjadi sumber motivasi utama yang sangat nyata baginya.',
+      'Bekerja sendirian dalam waktu lama bisa membuatnya tidak nyaman dan kurang bersemangat. Ia membutuhkan energi dari interaksi dan kebersamaan tim.',
+      'Ia tumbuh dan berkembang dalam lingkungan yang kooperatif dan kolaboratif. Rasa kebersamaan adalah fondasi penting bagi kesejahteraan dan produktivitasnya.',
+      'Baginya, tim bukan sekadar alat kerja, melainkan komunitas yang ia butuhkan secara emosional. Ia paling bahagia dan produktif saat merasa benar-benar diterima oleh kelompok.',
+    ],
+  },
+  O: {
+    rendah: [
+      'Kebutuhan untuk menyayangi atau memperhatikan orang lain secara emosional tidak terlalu kuat. Ia lebih fokus pada tugas daripada hubungan interpersonal.',
+      'Ia cenderung lebih task-oriented daripada people-oriented. Kebutuhan memberikan perhatian dan kasih sayang kepada orang lain secara emosional tergolong rendah.',
+      'Hubungan kerja yang profesional dan tidak terlalu personal lebih ia sukai. Ia tidak merasa perlu terlibat secara emosional mendalam dengan rekan-rekannya.',
+      'Dorongan untuk menyayangi dan memperhatikan orang lain tidak tampak kuat. Jarak profesional dalam hubungan kerja adalah sesuatu yang ia pertahankan dengan nyaman.',
+      'Ia tidak terlalu tergerak untuk terlibat secara emosional dengan orang lain. Keterlibatan yang lebih impersonal dan berbasis tugas justru terasa lebih nyaman baginya.',
+    ],
+    sedang: [
+      'Empati dan kepeduliannya terhadap orang lain cukup memadai. Ia bisa menunjukkan perhatian ketika dibutuhkan tanpa menjadi terlalu emosional.',
+      'Ia peduli pada kesejahteraan orang-orang di sekitarnya dengan cara yang wajar dan proporsional. Ia bisa menjadi pendengar yang baik ketika situasi menuntutnya.',
+      'Kebutuhan untuk menyayangi ada, namun tidak mendominasi. Ia menjaga keseimbangan yang cukup baik antara hubungan personal dan profesional.',
+      'Ia cukup empatik dan peduli, namun juga bisa memisahkan urusan perasaan dengan tuntutan pekerjaan secara efektif.',
+      'Kepeduliannya ada dan tulus, namun ia tidak membiarkannya mendominasi setiap hubungan kerjanya. Ia tahu kapan harus berempati dan kapan harus tetap profesional.',
+    ],
+    tinggi: [
+      'Kebutuhan yang sangat tinggi untuk menyayangi dan memperhatikan orang lain sangat terasa dalam cara ia berinteraksi. Ia sangat peduli pada kesejahteraan emosional orang-orang di sekitarnya.',
+      'Empati dan kasih sayangnya sangat kuat. Ia mudah tergerak oleh kondisi orang lain dan selalu berusaha memberikan dukungan emosional kepada rekan-rekannya.',
+      'Ia sangat berorientasi pada manusia — hubungan yang hangat, penuh perhatian, dan saling mendukung adalah sesuatu yang sangat ia jaga dan hargai.',
+      'Baginya, peduli dan menyayangi orang lain bukan sekadar sikap, melainkan kebutuhan yang mendalam. Ia merasa paling berarti saat bisa membantu dan mendukung orang-orang di sekitarnya.',
+      'Dorongan untuk menyayangi sangat dominan. Ia adalah sosok yang menghadirkan kehangatan dan dukungan emosional dalam timnya, dan kehadirannya dirasakan secara nyata.',
+    ],
+  },
+  K: {
+    rendah: [
+      'Agresivitasnya sangat tinggi. Ia cenderung konfrontatif, berani bersaing secara langsung, dan tidak ragu menghadapi konflik secara terbuka untuk mempertahankan posisinya.',
+      'Tingkat agresivitasnya sangat tinggi — ia tidak segan bersikap tegas bahkan konfrontatif dalam mempertahankan pendapat atau posisinya, dan sering memulai konfrontasi langsung.',
+      'Dorongan agresif yang kuat membuatnya sangat kompetitif dan tegas dalam lingkungan kerja. Ia tidak mudah menyerah dalam persaingan atau debat apapun.',
+      'Semangat bersaingnya sangat tinggi dan tidak segan diwujudkan dalam bentuk konfrontasi langsung. Ia merasa tidak ada gunanya menghindari konflik jika itu berarti mempertahankan yang benar.',
+      'Ia adalah sosok yang sangat asertif hingga agresif. Ketika merasa pendapatnya benar, ia akan mempertahankannya dengan sangat gigih bahkan jika harus berhadapan langsung.',
+    ],
+    sedang: [
+      'Agresivitasnya berada pada level moderat. Ia cukup asertif dalam menyatakan pendapat, namun masih bisa mengendalikan dorongan konfrontasinya.',
+      'Ia cukup berani mempertahankan posisinya tanpa sampai merusak hubungan. Ia bisa bersaing dengan sehat tanpa harus menjadi agresif secara berlebihan.',
+      'Dorongan agresifnya ada namun terkontrol. Ia memanfaatkannya sebagai energi untuk bersaing dan berpendapat tanpa kehilangan kemampuan berkolaborasi.',
+      'Agresivitasnya moderat — cukup berani untuk mempertahankan pandangannya, namun tetap menjaga hubungan yang harmonis dengan orang lain.',
+      'Ia tidak pemalu dalam berpendapat, namun juga tidak terlalu agresif. Ia menemukan keseimbangan yang cukup baik antara ketegasan dan kesopanan.',
+    ],
+    tinggi: [
+      'Tingkat agresivitasnya sangat rendah. Ia cenderung sangat kooperatif, menghindari konflik, dan selalu memilih pendekatan yang harmonis dalam setiap situasi.',
+      'Ia sangat tidak konfrontatif dan lebih suka menghindari benturan langsung. Kerja sama dan kompromi jauh lebih ia utamakan daripada persaingan terbuka.',
+      'Dorongan agresifnya sangat kecil — ia sangat sabar, kooperatif, dan tidak mudah terprovokasi bahkan dalam situasi yang paling menekan sekalipun.',
+      'Ia sangat menghindari konflik dan lebih memilih jalur damai dalam menyelesaikan perbedaan. Sifat ini membuatnya sangat mudah bekerja sama dengan berbagai jenis orang.',
+      'Baginya, konfrontasi adalah pilihan terakhir. Ia sangat mengutamakan harmoni dan kesepakatan, dan kerap menjadi perekat dalam tim yang mengalami ketegangan.',
+    ],
+  },
+  Z: {
+    rendah: [
+      'Dorongan kreativitas yang sangat tinggi menjadi ciri khasnya. Ia selalu ingin menciptakan sesuatu yang baru, orisinal, dan berbeda dari yang sudah ada.',
+      'Kreativitasnya sangat menonjol — ia tidak puas dengan cara-cara lama dan selalu mencari inovasi serta pendekatan baru dalam setiap aspek pekerjaannya.',
+      'Menghasilkan ide-ide segar dan solusi kreatif adalah kebutuhan mendasar baginya, bukan sekadar bonus. Tanpa ruang berkreasi, ia cepat merasa terkekang.',
+      'Dorongan untuk berkreasi dan berinovasi sangat kuat. Ia adalah sumber ide-ide segar dalam tim dan tidak nyaman jika harus bekerja dengan cara yang terlalu konvensional.',
+      'Baginya, cara yang sudah ada selalu bisa ditingkatkan. Ia terus-menerus mencari inovasi dan sangat tidak nyaman jika dipaksa bekerja dalam batas-batas yang kaku.',
+    ],
+    sedang: [
+      'Kreativitasnya cukup memadai. Ia bisa menghasilkan ide-ide baru ketika dibutuhkan, namun tidak selalu merasa terdorong untuk berinovasi setiap saat.',
+      'Kreativitasnya moderat — bisa berpikir out-of-the-box bila diminta, namun juga nyaman bekerja dengan metode yang sudah terbukti efektif.',
+      'Ia cukup inovatif untuk menghadapi tantangan-tantangan baru, namun tidak terlalu gelisah jika harus bekerja dalam kerangka yang sudah ada.',
+      'Dorongan kreatifnya ada namun proporsional. Ia bisa menyeimbangkan antara inovasi dan pendekatan yang lebih terstruktur tergantung kebutuhan.',
+      'Ia tidak antipati terhadap cara baru, namun juga tidak selalu merasa perlu mengubah sesuatu yang sudah berjalan baik. Pendekatannya cukup pragmatis.',
+    ],
+    tinggi: [
+      'Dorongan kreativitas yang rendah mencerminkan preferensinya pada hal-hal yang sudah terbukti. Ia lebih nyaman menggunakan metode yang ada daripada menciptakan cara baru.',
+      'Ia lebih suka mengikuti prosedur dan metode yang sudah ada. Stabilitas dan prediktabilitas jauh lebih ia hargai daripada kebaruan yang penuh ketidakpastian.',
+      'Dorongan untuk berinovasi tidak terlalu kuat. Ia lebih efektif saat menjalankan tugas dengan cara yang sudah jelas dan teruji daripada bereksperimen dengan pendekatan baru.',
+      'Baginya, cara yang sudah ada dan terbukti efektif adalah pilihan terbaik. Ia tidak terlalu tertarik menghabiskan energi untuk menemukan cara-cara baru jika yang lama sudah berjalan.',
+      'Ia lebih efektif sebagai pelaksana yang handal daripada sebagai inovator. Kekuatannya ada pada konsistensi dan keandalan, bukan pada penciptaan hal-hal baru.',
+    ],
+  },
+  F: {
+    rendah: [
+      'Dorongan untuk mengikuti aturan dan prosedur yang ditetapkan tergolong lemah. Ia lebih cenderung mengikuti penilaian pribadinya daripada tunduk pada ketentuan.',
+      'Kepatuhan terhadap aturan bukan sesuatu yang ia prioritaskan. Ia sering merasa bahwa aturan bisa fleksibel dan disesuaikan dengan konteks yang ada.',
+      'Ia tidak terlalu terdorong untuk mengikuti prosedur secara ketat. Ia lebih suka bekerja dengan cara yang ia rasa paling efektif, meski mungkin tidak sesuai standar.',
+      'Dorongan ketaatannya rendah — efisiensi dan kenyamanan pribadi lebih ia utamakan daripada kepatuhan pada aturan yang sudah ditetapkan.',
+      'Aturan baginya adalah panduan, bukan hukum mutlak. Ia tidak segan mengambil jalur alternatif jika dirasa lebih efektif meskipun tidak sesuai prosedur resmi.',
+    ],
+    sedang: [
+      'Dorongan ketaatan cukup memadai. Ia umumnya mengikuti aturan dan prosedur, namun tidak secara kaku jika situasi menuntut fleksibilitas.',
+      'Ia cukup taat pada aturan dalam kondisi normal, namun bisa bersikap fleksibel ketika ia merasa ada alasan kuat untuk menyesuaikan prosedur.',
+      'Dorongan ketaatannya moderat — ia menghargai aturan sebagai panduan, namun tidak menganggapnya sebagai sesuatu yang tidak bisa dikompromikan dalam situasi tertentu.',
+      'Ia mengikuti prosedur dengan cukup konsisten, namun tetap mempertimbangkan konteks sebelum memutuskan seberapa ketat ia perlu mematuhinya.',
+      'Ia patuh pada aturan yang ia anggap masuk akal dan relevan. Namun ketika aturan terasa tidak sesuai konteks, ia tidak segan menyampaikan atau menyesuaikannya.',
+    ],
+    tinggi: [
+      'Dorongan ketaatan yang sangat tinggi menjadi salah satu ciri yang menonjol. Ia sangat menghargai aturan, prosedur, dan norma yang berlaku, serta selalu berusaha mematuhinya.',
+      'Kepatuhan pada aturan adalah nilai penting yang ia pegang. Ia tidak nyaman melakukan sesuatu yang melanggar ketentuan, meskipun mungkin menguntungkan dalam jangka pendek.',
+      'Ia sangat disiplin dalam mengikuti prosedur dan aturan yang ditetapkan. Baginya, kepatuhan bukan sekadar kewajiban, melainkan cerminan dari integritas.',
+      'Dorongan untuk taat sangat kuat — ia selalu bertindak sesuai aturan dan jarang membuat pengecualian untuk dirinya sendiri, apapun situasinya.',
+      'Baginya, aturan ada untuk diikuti, bukan untuk ditafsirkan sesuka hati. Ia adalah orang yang bisa diandalkan untuk menjalankan prosedur dengan sangat konsisten.',
+    ],
+  },
+  W: {
+    rendah: [
+      'Kebutuhan untuk mematuhi atasan atau peraturan yang ada tidak terlalu kuat. Ia lebih mementingkan penilaian pribadinya daripada hierarki yang ada.',
+      'Ketundukan pada otoritas bukan sesuatu yang ia cari atau hargai secara berlebihan. Ia bisa mempertanyakan bahkan mengabaikan arahan jika ia tidak merasa sejalan.',
+      'Ia tidak terlalu terpengaruh oleh otoritas formal. Lingkungan yang memberikan otonomi jauh lebih ia sukai daripada yang penuh dengan hierarki ketat.',
+      'Kebutuhan untuk mengikuti atasan dan peraturan sangat rendah — ia lebih nyaman bekerja atas dasar kesepakatan dan pemahaman daripada perintah.',
+      'Baginya, menghormati seseorang bukan berarti harus selalu mengikuti arahannya. Ia lebih menghargai gagasan yang masuk akal daripada posisi jabatan semata.',
+    ],
+    sedang: [
+      'Kebutuhan ketaatannya moderat. Ia umumnya menghormati otoritas dan mengikuti peraturan, namun juga bisa bersikap kritis jika diperlukan.',
+      'Ia menghargai struktur dan hierarki dalam batas yang wajar. Ia bisa bekerja dengan baik di bawah pengawasan tanpa merasa terkekang.',
+      'Kebutuhannya untuk taat pada atasan cukup seimbang — ia menghormati otoritas namun juga tidak segan menyampaikan pandangannya jika ada hal yang perlu didiskusikan.',
+      'Ia cukup patuh pada peraturan dan atasan dalam konteks yang wajar, namun tetap mempertahankan kemampuan berpikir kritis dan independennya.',
+      'Ia menghormati hierarki sebagai struktur, namun tidak secara buta mengikuti setiap arahan tanpa pemahaman. Ia lebih suka tahu alasan di balik setiap keputusan.',
+    ],
+    tinggi: [
+      'Kebutuhan yang sangat tinggi untuk taat pada atasan dan peraturan menjadi ciri khasnya. Ia sangat menghargai hierarki dan otoritas dalam lingkungan kerja.',
+      'Ia sangat patuh pada sistem dan aturan yang berlaku. Baginya, menghormati atasan dan mengikuti peraturan adalah fondasi dari lingkungan kerja yang sehat.',
+      'Kebutuhan untuk mengikuti arahan atasan sangat kuat. Ia bekerja paling efektif dalam lingkungan yang memiliki struktur jelas dan komando yang tegas.',
+      'Baginya, ketaatan pada aturan dan otoritas adalah bagian dari profesionalisme. Ia adalah sosok yang sangat bisa diandalkan dalam menjalankan setiap arahan.',
+      'Ia sangat menghargai hierarki dan otoritas yang jelas. Lingkungan kerja yang teratur dengan komando yang tegas adalah tempat di mana ia paling nyaman dan produktif.',
+    ],
+  },
+};
+const KATEGORI_ORDER = ['ARAH KERJA','KEPEMIMPINAN','AKTIFITAS','PERGAULAN','GAYA KERJA','SIFAT','KETAATAN'];
+const LETTER_ORDER_DISPLAY = ['G','N','A','L','P','I','T','V','S','X','B','O','R','D','C','E','Z','K','F','W'];
+
+// Track current sentence index per letter
+const currentVariant = {};
+
+function getBand(score, reversed) {
+  if (reversed) {
+    // Skor rendah = intensitas tinggi
+    if (score <= 3) return 'rendah';
+    if (score <= 6) return 'sedang';
+    return 'tinggi';
+  } else {
+    if (score <= 3) return 'rendah';
+    if (score <= 6) return 'sedang';
+    return 'tinggi';
+  }
+}
+
+function getBandLabel(score, reversed) {
+  if (reversed) {
+    if (score <= 3) return { label: 'Tinggi ↑', cls: 'score-rev-low' };
+    if (score <= 6) return { label: 'Sedang', cls: 'score-rev-mid' };
+    return { label: 'Rendah ↓', cls: 'score-rev-high' };
+  } else {
+    if (score <= 3) return { label: 'Rendah ↓', cls: 'score-low' };
+    if (score <= 6) return { label: 'Sedang', cls: 'score-mid' };
+    return { label: 'Tinggi ↑', cls: 'score-high' };
+  }
+}
+
+function getKalimat(letter, score) {
+  const meta = INTERP_META[letter];
+  if (!meta) return '';
+  const band = getBand(score, meta.reversed);
+  const arr = INTERP_KALIMAT[letter]?.[band];
+  if (!arr || arr.length === 0) return '';
+  const idx = currentVariant[letter] ?? 0;
+  return arr[idx % arr.length];
+}
+
+function nextVariant(letter) {
+  const score = window._lastScores?.[letter];
+  if (score === undefined) return;
+  const meta = INTERP_META[letter];
+  const band = getBand(score, meta.reversed);
+  const arr = INTERP_KALIMAT[letter]?.[band];
+  if (!arr) return;
+  currentVariant[letter] = ((currentVariant[letter] ?? 0) + 1) % arr.length;
+  const el = document.getElementById('interp-text-' + letter);
+  if (el) {
+    el.classList.add('fade');
+    setTimeout(() => {
+      el.textContent = getKalimat(letter, score);
+      el.classList.remove('fade');
+    }, 200);
+  }
+}
+
+function generateAll() {
+  if (!window._lastScores) return;
+  LETTER_ORDER_DISPLAY.forEach(letter => {
+    const score = window._lastScores[letter];
+    if (score === undefined) return;
+    const meta = INTERP_META[letter];
+    const band = getBand(score, meta.reversed);
+    const arr = INTERP_KALIMAT[letter]?.[band];
+    if (!arr) return;
+    currentVariant[letter] = ((currentVariant[letter] ?? 0) + 1) % arr.length;
+    const el = document.getElementById('interp-text-' + letter);
+    if (el) {
+      el.classList.add('fade');
+      setTimeout(() => {
+        el.textContent = getKalimat(letter, score);
+        el.classList.remove('fade');
+      }, 150);
+    }
+  });
+}
+
+function buildInterpretasi(scores) {
+  window._lastScores = scores;
+  // Randomize starting variant for each letter agar tidak selalu mulai dari kalimat yg sama
+  LETTER_ORDER_DISPLAY.forEach(l => {
+    const meta = INTERP_META[l];
+    const band = getBand(scores[l] ?? 0, meta?.reversed ?? false);
+    const arr = INTERP_KALIMAT[l]?.[band];
+    const len = arr ? arr.length : 1;
+    currentVariant[l] = Math.floor(Math.random() * len);
+  });
+
+  const container = document.getElementById('interpContent');
+  container.innerHTML = '';
+
+  KATEGORI_ORDER.forEach(kat => {
+    const letters = LETTER_ORDER_DISPLAY.filter(l => INTERP_META[l]?.kategori === kat);
+    if (!letters.length) return;
+
+    const catDiv = document.createElement('div');
+    catDiv.className = 'interp-category';
+    catDiv.innerHTML = `<div class="interp-cat-title">${kat}</div>`;
+
+    letters.forEach(letter => {
+      const score = scores[letter];
+      if (score === undefined) return;
+      const meta = INTERP_META[letter];
+      const { label, cls } = getBandLabel(score, meta.reversed);
+      const kalimat = getKalimat(letter, score);
+      const barPct = meta.reversed ? Math.round((1 - score / 9) * 100) : Math.round((score / 9) * 100);
+      const barCls = meta.reversed ? 'reversed' : '';
+
+      const card = document.createElement('div');
+      card.className = 'interp-card';
+      card.innerHTML = `
+        <div class="interp-card-header">
+          <div class="interp-letter-badge">
+            <div class="letter-box${meta.reversed ? ' reversed' : ''}">${letter}</div>
+            <div class="letter-info">
+              <span class="letter-name">${meta.nama}</span>
+              <span class="letter-desc">${meta.reversed ? '⚠ Skala terbalik (0 = intensitas tinggi)' : 'Skala normal (9 = intensitas tinggi)'}</span>
+            </div>
+          </div>
+          <div class="interp-score-area">
+            <div>
+              <div class="score-pill ${cls}">${score}</div>
+              <div class="score-label" style="text-align:center;margin-top:2px">${label}</div>
+            </div>
+            <button class="btn-gen-one" onclick="nextVariant('${letter}')">🔄 Ganti</button>
+          </div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-bg">
+            <div class="score-bar-fill ${barCls}" style="width:${barPct}%"></div>
+          </div>
+        </div>
+        <div class="interp-text" id="interp-text-${letter}">${kalimat}</div>
+      `;
+      catDiv.appendChild(card);
+    });
+
+    container.appendChild(catDiv);
+  });
+}
+
+function clearInterpretasi() {
+  window._lastScores = null;
+  document.getElementById('interpContent').innerHTML =
+    '<div class="interp-empty">Silakan cari data peserta terlebih dahulu untuk melihat interpretasi.</div>';
+}
 
 // ─── GRID HELPER ──────────────────────────────────────────────
 function soalAt(col, row) { return (8 - col) * 10 + (row + 1); }
@@ -583,6 +1418,8 @@ function drawScoreCircles(svg, scores) {
 function resetAll() {
   clearErr(); buildGrid([]); clearKotakHeader();
   buildChart(null);
+  sembunyikanBiodata();
+  clearInterpretasi();
   document.getElementById('inputId').value = '';
 }
 function showErr(msg) { const el=document.getElementById('errBox'); el.textContent=msg; el.classList.add('show'); }
@@ -605,6 +1442,9 @@ async function cariData() {
     if (!d.success || !d.data) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
     const row = Array.isArray(d.data) ? d.data[0] : d.data;
     if (!row) { showErr('⚠ Tidak ada data untuk ID: ' + idVal); return; }
+    // Biodata dari x_02
+    tampilkanBiodata(row.x_02 || '{}');
+    // Jawaban dari x_06
     let x06 = {};
     try { x06 = JSON.parse(row.x_06 || '{}'); } catch {}
     const answers = parsePapi(x06.papi || '');
@@ -612,6 +1452,7 @@ async function cariData() {
     const sc = hitungSemua(answers);
     isiKotakHeader(sc);
     buildChart(sc);
+    buildInterpretasi(sc);
   } catch (e) {
     showErr('⚠ Gagal: ' + e.message);
   } finally {
