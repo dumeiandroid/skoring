@@ -1,0 +1,2988 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Psikotest</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+    --primary: #667eea;
+    --primary-dark: #5a67d8;
+    --purple: #764ba2;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --today: #f59e0b;
+    --bg: #f0f2ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* ── TOP NAV ── */
+.topnav {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding: 0 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.topnav-brand {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    padding: 14px 16px 14px 0;
+    border-right: 1px solid rgba(255,255,255,0.25);
+    margin-right: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.nav-tab {
+    padding: 14px 16px;
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    user-select: none;
+}
+.nav-tab:hover { color: white; background: rgba(255,255,255,0.08); }
+.nav-tab.active { color: white; border-bottom-color: white; background: rgba(255,255,255,0.12); }
+
+/* ── MAIN CONTENT ── */
+.main { padding: 20px; max-width: 1500px; margin: 0 auto; }
+
+/* ── PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── CARD ── */
+.card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--bg);
+}
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── INFO BAR ── */
+.info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+.info-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.pill-blue   { background: #dbeafe; color: #1d4ed8; }
+.pill-green  { background: #dcfce7; color: #16a34a; }
+.pill-yellow { background: #fef3c7; color: #d97706; }
+.pill-purple { background: #ede9fe; color: #6d28d9; }
+.pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #28a745; flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── STATS ROW ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.stat-box {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.stat-num  { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ── CONTROLS ── */
+.controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+.ctrl-input {
+    padding: 8px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+    background: white;
+    color: var(--text);
+}
+.ctrl-input:focus { border-color: var(--primary); }
+
+/* ── BUTTONS ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn-primary  { background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; box-shadow: 0 3px 10px rgba(102,126,234,.3); }
+.btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn-success  { background: linear-gradient(135deg, #28a745, #20c997); color: white; box-shadow: 0 3px 10px rgba(40,167,69,.25); }
+.btn-success:hover:not(:disabled) { opacity: 0.9; }
+.btn-warning  { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; }
+.btn-warning:hover:not(:disabled) { opacity: 0.9; }
+.btn-outline  { background: white; color: var(--muted); border: 2px solid var(--border); }
+.btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.btn-danger   { background: #dc3545; color: white; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-qr { background: #7c3aed; color: white; }
+.btn-qr:hover { background: #6d28d9; }
+
+/* ── PAKET FILTER BAR ── */
+.paket-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #f0f4ff;
+    border-bottom: 1px solid #d0d9f0;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+    border-radius: 8px;
+}
+.paket-filter-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    white-space: nowrap;
+    margin-right: 2px;
+}
+.pf-btn {
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 2px solid #6366f1;
+    border-radius: 20px;
+    background: #fff;
+    color: #6366f1;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.pf-btn:hover { background: #6366f1; color: #fff; }
+.pf-btn.active { background: #6366f1; color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+.pf-btn-all { border-color: #6c757d; color: #6c757d; }
+.pf-btn-all:hover, .pf-btn-all.active { background: #6c757d; color: #fff; border-color: #6c757d; }
+
+/* ── DATATABLES ── */
+.dataTables_wrapper { overflow-x: auto; width: 100%; }
+table.dataTable {
+    width: 100% !important; border-collapse: collapse;
+    font-size: 13px; min-width: 500px; table-layout: auto;
+}
+table.dataTable thead th {
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    color: white; padding: 10px 8px; font-weight: 700;
+    border: none; white-space: nowrap; font-size: 13px;
+}
+table.dataTable thead th, table.dataTable tbody td { white-space: nowrap; }
+/* Kolom Biodata, Skor, Skor 1, Skor 2 boleh wrap */
+table.dataTable tbody td:nth-child(3),
+table.dataTable tbody td:nth-child(4),
+table.dataTable tbody td:nth-child(6),
+table.dataTable tbody td:nth-child(7) { white-space: normal; vertical-align: top; max-width: 250px; }
+table.dataTable tbody td {
+    padding: 9px 8px; border-bottom: 1px solid #eef0f6;
+    vertical-align: middle; font-size: 13px;
+}
+table.dataTable tbody tr:hover { background: #f5f7ff; }
+table.dataTable tbody tr:nth-child(even) { background: #fafbff; }
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border: 2px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; font-size: 13px; outline: none;
+}
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus { border-color: var(--primary); }
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 6px 12px; margin: 2px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, var(--primary), var(--purple)); color: white !important; border: none;
+}
+.dataTables_wrapper .dataTables_info { font-size: 12px; }
+
+/* ── STATUS BADGE ── */
+.badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700;
+}
+.badge-empty   { background: #fee2e2; color: #dc2626; }
+.badge-partial { background: #fef3c7; color: #b45309; }
+.badge-done    { background: #dcfce7; color: #16a34a; }
+.badge-active  { background: #dbeafe; color: #1d4ed8; animation: pulse 2s infinite; }
+
+/* ── TIMER CELLS ── */
+.timer-live {
+    display: inline-block; background: #fff3cd; color: #856404;
+    border: 1.5px solid #ffc107; border-radius: 8px; padding: 3px 10px;
+    font-weight: 700; font-size: 13px; font-family: 'Courier New', monospace;
+    min-width: 72px; text-align: center;
+}
+.timer-live.danger { background: #f8d7da; color: #842029; border-color: #f5c2c7; animation: blink 1s infinite; }
+.timer-live.done   { background: #d1e7dd; color: #0f5132; border-color: #badbcc; }
+.timer-live.stopwatch { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+.btn-stop-timer {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #dc2626; color: white; border: none; border-radius: 6px;
+    padding: 3px 8px; font-size: 11px; font-weight: 600; cursor: pointer;
+    margin-left: 4px; transition: opacity .15s;
+}
+.btn-stop-timer:hover { opacity: .82; }
+
+/* ── TRUNCATE ── */
+.truncate {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: block; cursor: pointer; max-width: 160px;
+}
+.truncate:hover { color: var(--primary); }
+
+/* ── LOADING ── */
+.loading-block { text-align: center; padding: 50px 20px; color: var(--muted); }
+.spinner {
+    border: 4px solid #f3f3f3; border-top: 4px solid var(--primary);
+    border-radius: 50%; width: 40px; height: 40px;
+    animation: spin 1s linear infinite; margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── MODAL ── */
+.modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.55); z-index: 10000;
+    align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+    background: white; border-radius: 20px; padding: 30px 28px;
+    width: 90%; max-width: 460px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    position: relative; max-height: 90vh; overflow-y: auto;
+}
+.modal-box h2 { font-size: 18px; color: var(--text); margin-bottom: 6px; }
+.modal-box .sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.modal-close {
+    position: absolute; top: 14px; right: 16px;
+    background: #f1f3f5; border: none; width: 32px; height: 32px;
+    border-radius: 50%; font-size: 18px; cursor: pointer; color: #555;
+    display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: #e2e6ea; color: #333; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; }
+.token-log {
+    margin-top: 14px; max-height: 180px; overflow-y: auto;
+    background: #f8f9fa; border-radius: 8px; padding: 10px 12px;
+    font-size: 12px; font-family: 'Courier New', monospace; display: none;
+}
+.log-ok  { color: #16a34a; margin: 2px 0; }
+.log-err { color: #dc2626; margin: 2px 0; }
+
+/* ── PAKET SELECTOR di modal token ── */
+.paket-selector-label {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.paket-selector-grid {
+    display: flex; flex-wrap: wrap; gap: 7px;
+    margin-bottom: 16px;
+    max-height: 160px; overflow-y: auto;
+    padding: 2px;
+}
+.paket-btn {
+    display: flex; flex-direction: column; align-items: flex-start;
+    padding: 7px 12px;
+    border: 2px solid var(--border); border-radius: 10px;
+    background: #f8fafc; cursor: pointer;
+    transition: all 0.15s; font-family: inherit;
+    min-width: 110px; flex: 1 1 110px; max-width: 180px;
+}
+.paket-btn:hover { border-color: var(--primary); background: #eff6ff; }
+.paket-btn.selected {
+    border-color: var(--primary); background: var(--primary);
+    color: white;
+}
+.paket-btn .pb-id {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    opacity: 0.65; margin-bottom: 2px;
+    font-family: 'Courier New', monospace;
+}
+.paket-btn.selected .pb-id { opacity: 0.8; color: rgba(255,255,255,0.85); }
+.paket-btn .pb-nama {
+    font-size: 12px; font-weight: 600; line-height: 1.3;
+}
+.paket-none-btn {
+    padding: 7px 14px; border: 2px dashed var(--border); border-radius: 10px;
+    background: white; cursor: pointer; font-size: 12px; color: var(--muted);
+    font-family: inherit; transition: all 0.15s; font-weight: 500;
+}
+.paket-none-btn:hover { border-color: var(--muted); color: var(--text); }
+.paket-none-btn.selected { border-color: var(--muted); background: #f1f5f9; color: var(--text); font-weight: 600; }
+.paket-preview {
+    font-size: 11px; color: var(--muted); margin-bottom: 14px;
+    background: #f8fafc; border-radius: 7px; padding: 7px 12px;
+    font-family: 'Courier New', monospace; border: 1px solid var(--border);
+}
+.paket-preview span { color: var(--primary); font-weight: 700; }
+
+/* ── QR MODAL ── */
+.qr-modal-box {
+    background: white; border-radius: 20px; padding: 32px 28px;
+    width: 90%; max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    text-align: center; position: relative;
+}
+.qr-modal-box h3 { font-size: 16px; color: var(--text); margin-bottom: 4px; }
+.qr-modal-box .qr-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.qr-img-wrap {
+    display: inline-block; padding: 12px;
+    border: 3px solid var(--primary); border-radius: 16px;
+    background: white; margin-bottom: 16px;
+    cursor: pointer;
+}
+.qr-img-wrap img { display: block; width: 200px; height: 200px; border-radius: 8px; }
+.qr-url-box {
+    background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 12px; color: var(--muted);
+    word-break: break-all; margin-bottom: 16px;
+}
+.qr-token-badge {
+    display: inline-block; background: #dcfce7; color: #15803d;
+    font-size: 14px; font-weight: 700; padding: 6px 16px;
+    border-radius: 8px; letter-spacing: 1px; margin-bottom: 16px;
+}
+.qr-hint { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+/* ── FULLSCREEN QR OVERLAY (Token Kosong) ── */
+#qrFullscreen {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.96);
+    z-index: 99999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+#qrFullscreen.open { display: flex; }
+
+.qrfs-counter {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600;
+    white-space: nowrap;
+}
+.qrfs-close {
+    position: absolute; top: 14px; right: 18px;
+    background: rgba(255,255,255,0.12); border: none;
+    color: white; font-size: 22px; width: 42px; height: 42px;
+    border-radius: 50%; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.qrfs-close:hover { background: rgba(255,255,255,0.25); }
+
+.qrfs-card {
+    background: white; border-radius: 20px; padding: 28px 24px;
+    text-align: center; width: 90%; max-width: 340px;
+    box-shadow: 0 0 60px rgba(255,255,255,0.08);
+}
+.qrfs-id {
+    font-size: 12px; color: var(--muted); font-weight: 600;
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.qrfs-qr-wrap {
+    display: inline-block; padding: 10px;
+    border: 3px solid #007BFF; border-radius: 14px;
+    background: white; margin-bottom: 14px; cursor: pointer;
+}
+.qrfs-qr-wrap img { display: block; width: 220px; height: 220px; border-radius: 8px; }
+.qrfs-url { font-size: 11px; color: #888; margin-bottom: 10px; word-break: break-all; }
+.qrfs-token {
+    display: inline-block; background: #e9f7ef; color: #16a34a;
+    font-size: 16px; font-weight: 800; padding: 7px 18px;
+    border-radius: 8px; letter-spacing: 1.5px;
+}
+.qrfs-hint {
+    margin-top: 10px; font-size: 11px; color: #aaa;
+}
+
+/* Navigasi panah */
+.qrfs-nav {
+    display: flex; align-items: center; gap: 24px; margin-top: 28px;
+}
+.qrfs-arrow {
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.25);
+    color: white; font-size: 28px; width: 60px; height: 60px;
+    border-radius: 50%; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; user-select: none;
+}
+.qrfs-arrow:hover:not(:disabled) { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.6); transform: scale(1.08); }
+.qrfs-arrow:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+.qrfs-dots {
+    display: flex; gap: 6px; align-items: center;
+}
+.qrfs-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); transition: all 0.2s;
+}
+.qrfs-dot.active { background: white; transform: scale(1.3); }
+
+/* ── TODAY PAGE ── */
+.today-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 6px; flex-wrap: wrap;
+}
+.today-date-badge {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white; font-weight: 700; font-size: 13px;
+    padding: 6px 16px; border-radius: 99px;
+}
+.date-picker-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.date-picker-row input[type=date] {
+    padding: 8px 12px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+}
+.date-picker-row input[type=date]:focus { border-color: var(--primary); }
+
+/* ── FORM INPUT ── */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-group input, .form-group select {
+    width: 100%; padding: 11px 14px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 14px; outline: none;
+    transition: border-color 0.2s; background: white;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+
+/* ── TOOLTIP ── */
+.tooltip-custom {
+    position: fixed; background: #1e293b; color: white;
+    padding: 8px 12px; border-radius: 8px; font-size: 12px;
+    max-width: 300px; word-wrap: break-word;
+    z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    pointer-events: none; display: none;
+}
+
+/* ── EMPTY MSG ── */
+.empty-msg {
+    text-align: center; padding: 50px 20px;
+    color: var(--muted); font-size: 14px;
+}
+.empty-msg .em-icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+    .main { padding: 12px 8px; }
+    .card { padding: 14px 12px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .stat-num { font-size: 22px; }
+}
+
+/* ══════════════════════════════════
+   VOUCHER / PRINT QR
+══════════════════════════════════ */
+.voucher-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 4px;
+}
+@media (max-width: 900px) { .voucher-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .voucher-grid { grid-template-columns: 1fr; } }
+
+.voucher-card {
+    background: white;
+    border: 3px solid #007BFF;
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.12);
+    transition: transform 0.15s, box-shadow 0.15s;
+    break-inside: avoid;
+}
+.voucher-card:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,123,255,0.2); }
+.voucher-card-title {
+    font-size: 13px; font-weight: 700; color: #343a40; margin-bottom: 8px;
+}
+.voucher-qr-wrap {
+    display: inline-block; padding: 6px;
+    border: 2px solid #007BFF; border-radius: 10px;
+    background: white; margin-bottom: 8px; cursor: pointer;
+}
+.voucher-qr-wrap img { display: block; width: 140px; height: 140px; border-radius: 6px; }
+.voucher-url { font-size: 11px; color: #555; margin: 4px 0; word-break: break-all; }
+.voucher-code {
+    display: inline-block; font-weight: 700; font-size: 15px; color: #28a745;
+    background: #e9f7ef; padding: 5px 12px; border-radius: 6px;
+    margin-top: 4px; letter-spacing: 1px;
+}
+
+/* ── Tombol aksi di tab Hari Ini ── */
+.btn-bayar {
+    border: 1.5px solid #86efac; border-radius: 7px;
+    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    background: #dcfce7; color: #166534;
+}
+.btn-bayar:hover { background: #16a34a; color: white; border-color: #16a34a; }
+.btn-bayar.sudah-bayar {
+    background: #16a34a; color: white; border-color: #15803d;
+}
+.btn-bayar.sudah-bayar:hover { background: #dc2626; border-color: #dc2626; }
+/* ── TOTAL ROW ── */
+#todayTotalRow td {
+    background: linear-gradient(135deg, #ede9fe, #dbeafe) !important;
+    font-weight: 700 !important;
+    border-top: 2px solid var(--primary) !important;
+    padding: 10px 8px !important;
+}
+.today-total-val { color: #1d4ed8; font-weight: 800; font-size: 13px; }
+    background: #fee2e2; color: #dc2626;
+    border: 1.5px solid #fca5a5; border-radius: 7px;
+    padding: 4px 8px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-del-peserta:hover { background: #dc2626; color: white; border-color: #dc2626; }
+.btn-goto-test {
+    background: #dbeafe; color: #1d4ed8;
+    border: 1.5px solid #93c5fd; border-radius: 7px;
+    padding: 4px 8px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    text-decoration: none; display: inline-block;
+}
+.btn-goto-test:hover { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+.btn-copy-url {
+    background: #f0fdf4; color: #16a34a;
+    border: 1.5px solid #86efac; border-radius: 7px;
+    padding: 4px 8px; font-size: 11px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-copy-url:hover { background: #16a34a; color: white; border-color: #16a34a; }
+.btn-copy-url.copied { background: #16a34a; color: white; border-color: #16a34a; }
+
+/* Checkbox pilih baris */
+.row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+#selectAllToday { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+/* Bulk action bar */
+#bulkActionBar {
+    display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: #fff7ed; border: 1.5px solid #fed7aa;
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+}
+#bulkActionBar.visible { display: flex; }
+#bulkSelectedCount { font-weight: 700; color: #ea580c; font-size: 13px; }
+
+/* Modal reset angka acak */
+.reset-confirm-box {
+    background: white; border-radius: 16px; padding: 28px 24px;
+    width: 90%; max-width: 440px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    position: relative;
+}
+.reset-code-display {
+    background: #1e293b; color: #fbbf24;
+    border-radius: 12px; padding: 14px;
+    font-size: 28px; font-weight: 900; text-align: center;
+    letter-spacing: 6px; font-family: 'Courier New', monospace;
+    margin: 12px 0 16px; user-select: none;
+}
+.reset-list-preview {
+    background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px;
+    font-size: 12px; color: var(--muted);
+    max-height: 80px; overflow-y: auto;
+    margin-bottom: 12px;
+}
+.reset-err { color: #dc2626; font-size: 13px; min-height: 18px; margin-top: 6px; }
+/* ── Tombol Aktifkan peserta ── */
+.btn-aktifkan {
+    border: none; padding: 4px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s; color: white;
+}
+.btn-aktifkan:hover { opacity: .85; }
+
+/* ── Styles ── */
+@media print {
+    body { background: white !important; padding: 0 !important; }
+    .topnav, .card-header, .controls-bar, .btn-print-bar, #pagePrint > .card > .card-header { display: none !important; }
+    #pagePrint > .card { box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; }
+    .voucher-grid { gap: 10px; }
+    .voucher-card { box-shadow: none !important; page-break-inside: avoid; break-inside: avoid; }
+    .voucher-card:hover { transform: none !important; }
+    .page:not(#pagePrint) { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+    <div class="topnav-brand">🧠 Psikotest</div>
+    <div id="nav-tabs-container" style="display:flex;flex-direction:row;flex:1;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;"></div>
+    <div style="padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-left:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);">
+        <span style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;white-space:nowrap;">Soal Gr</span>
+        <span style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;white-space:nowrap;">Tes Global:</span>
+        <button id="btnKontrolGlobal" onclick="openJadwalModal()" style="padding:5px 14px;border:none;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;">⏳ Memuat...</button>
+    </div>
+</nav>
+
+<div class="main">
+
+<!-- ══════════════════════════════════
+     PAGE 1 — SEMUA DATA
+══════════════════════════════════ -->
+<div id="pageAll" class="page">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📊 Semua Data Peserta</div>
+            <div class="info-bar" style="margin-bottom:0">
+                <div class="info-pill pill-blue">
+                    <span class="pulse-dot"></span>
+                    Auto-refresh 5 detik
+                </div>
+                <span class="info-pill pill-purple" id="allLastUpdate">Memuat...</span>
+                <span class="info-pill pill-green" id="allRecordCount">0 data</span>
+            </div>
+        </div>
+        <div class="controls-bar">
+            <label style="font-size:13px;font-weight:700;color:var(--muted)">Tabel:</label>
+            <input type="text" class="ctrl-input" id="allTableInput" value="nilai1_json" style="width:140px">
+            <button class="btn btn-primary" onclick="allLoadTable()">🔄 Muat</button>
+            <button class="btn btn-success" onclick="openTokenModal()">＋ Tambah Token</button>
+        </div>
+        <div id="allContainer">
+            <div class="loading-block"><div class="spinner"></div><p>Memuat data...</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 2 — TOKEN KOSONG (belum diisi peserta)
+══════════════════════════════════ -->
+<div id="pageEmpty" class="page">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📋 Token Kosong — Belum Digunakan Peserta</div>
+            <div class="info-bar" style="margin-bottom:0">
+                <span class="info-pill pill-green" id="emptyCount">0 token</span>
+                <button class="btn btn-outline btn-sm" onclick="emptyRefresh()">🔄 Refresh</button>
+            </div>
+        </div>
+        <div class="controls-bar">
+            <label style="font-size:13px;font-weight:700;color:var(--muted)">Tabel:</label>
+            <input type="text" class="ctrl-input" id="emptyTableInput" value="nilai1_json" style="width:140px">
+            <button class="btn btn-primary" onclick="emptyLoadTable()">🔄 Muat</button>
+        </div>
+        <!-- Paket Filter Bar -->
+        <div class="paket-filter-bar" id="emptyPaketBar">
+            <span class="paket-filter-label">Paket:</span>
+            <span id="emptyPaketLoading" style="font-size:12px;color:#888;font-style:italic">Memuat paket...</span>
+            <div id="emptyPaketBtnGroup" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+        <div id="emptyContainer">
+            <div class="loading-block"><div class="spinner"></div><p>Memuat data...</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 3 — PESERTA HARI INI
+══════════════════════════════════ -->
+<div id="pageToday" class="page active">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                📅 Peserta Aktif
+                <span class="today-date-badge" id="todayBadgeLabel">Hari Ini</span>
+            </div>
+            <div class="info-bar" style="margin-bottom:0">
+                <div class="info-pill pill-blue">
+                    <span class="pulse-dot"></span>
+                    Auto-refresh 5 detik
+                </div>
+                <span class="info-pill pill-yellow" id="todayCount">0 peserta</span>
+                <span class="info-pill pill-purple" id="todayLastUpdate">-</span>
+                <button class="btn btn-outline btn-sm" onclick="todayRefresh()">🔄 Refresh</button>
+            </div>
+        </div>
+        <div class="controls-bar">
+            <label style="font-size:13px;font-weight:700;color:var(--muted)">Tabel:</label>
+            <input type="text" class="ctrl-input" id="todayTableInput" value="nilai1_json" style="width:140px">
+            <label style="font-size:13px;font-weight:700;color:var(--muted);margin-left:6px">Tanggal:</label>
+            <input type="date" id="todayDateInput" style="padding:8px 12px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none">
+            <button class="btn btn-warning" onclick="todayLoadTable()">🔍 Cari</button>
+            <a href="https://psikotest.lidan.co.id/" target="_blank" class="btn btn-primary" style="text-decoration:none">🔗 Buka Tes</a>
+            <button class="btn btn-outline btn-sm" onclick="copyTestUrl(this)" title="Copy URL halaman tes">📋 Copy URL</button>
+        </div>
+        <!-- Bulk action bar -->
+        <div id="bulkActionBar">
+            <span id="bulkSelectedCount">0 dipilih</span>
+            <button class="btn btn-sm" onclick="bulkResetSelected()"
+                style="background:#dc2626;color:white;border:none;border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer">
+                🗑 Reset yang Dipilih
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="clearAllChecks()">✕ Batal Pilih</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+            💡 Peserta terdeteksi dari tanggal yang otomatis disimpan saat mengisi biodata.
+        </p>
+        <div id="todayContainer">
+            <div class="loading-block"><div class="spinner"></div><p>Memuat data...</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 4 — PRINT QR VOUCHER
+══════════════════════════════════ -->
+<div id="pagePrint" class="page">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🖨 Print QR Voucher — Token Kosong</div>
+            <div class="info-bar" style="margin-bottom:0">
+                <span class="info-pill pill-green" id="printCount">0 voucher</span>
+                <span class="info-pill pill-purple" id="printStatus">-</span>
+            </div>
+        </div>
+        <div class="controls-bar">
+            <label style="font-size:13px;font-weight:700;color:var(--muted)">Tabel:</label>
+            <input type="text" class="ctrl-input" id="printTableInput" value="nilai1_json" style="width:140px">
+            <label style="font-size:13px;font-weight:700;color:var(--muted)">Per halaman:</label>
+            <input type="number" class="ctrl-input" id="printLimitInput" value="15" min="1" max="100" style="width:70px">
+            <button class="btn btn-primary" onclick="printLoadPage(0)">🔄 Muat</button>
+            <button class="btn btn-outline" id="btnPrintPrev" onclick="printPrevPage()" disabled>‹ Prev</button>
+            <button class="btn btn-outline" id="btnPrintNext" onclick="printNextPage()">Next ›</button>
+        </div>
+
+        <!-- Paket Filter Bar -->
+        <div class="paket-filter-bar" id="printPaketBar">
+            <span class="paket-filter-label">Paket:</span>
+            <span id="printPaketLoading" style="font-size:12px;color:#888;font-style:italic">Memuat paket...</span>
+            <div id="printPaketBtnGroup" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+
+        <!-- Tombol print bar -->
+        <div class="btn-print-bar" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <button class="btn btn-success" onclick="downloadVouchers()" style="flex:1;max-width:220px">
+                ⬇ Download JPG
+            </button>
+            <button class="btn btn-warning" onclick="window.print()" style="flex:1;max-width:220px">
+                🖨 Print Langsung
+            </button>
+        </div>
+
+        <div id="printLoadingMsg" style="display:none;text-align:center;padding:40px;color:var(--primary)">
+            <div class="spinner" style="margin:0 auto 12px"></div>Memuat data...
+        </div>
+        <div id="printEmptyMsg" style="display:none" class="empty-msg">
+            <div class="em-icon">✅</div>
+            <p>Tidak ada token kosong tersisa.</p>
+        </div>
+        <div class="voucher-grid" id="voucherGrid"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 5 — DATA PER PAKET
+══════════════════════════════════ -->
+<div id="pagePerPaket" class="page">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🗂 Data Per Paket</div>
+            <div class="info-bar" style="margin-bottom:0">
+                <span class="info-pill pill-blue">Filter berdasarkan paket token</span>
+                <span class="info-pill pill-green" id="perPaketCount">0 data</span>
+            </div>
+        </div>
+        <!-- Paket Filter Bar -->
+        <div class="paket-filter-bar" id="perPaketFilterBar">
+            <span class="paket-filter-label">Paket:</span>
+            <span id="perPaketLoading" style="font-size:12px;color:#888;font-style:italic">Memuat paket...</span>
+            <div id="perPaketBtnGroup" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+        <div id="perPaketContainer">
+            <div class="empty-msg" style="display:block">
+                <div class="em-icon">🗂</div>
+                <p>Pilih paket di atas untuk menampilkan data.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ── TOOLTIP ── -->
+<div class="tooltip-custom" id="tooltipEl"></div>
+
+<!-- ══════════════════════════════════
+     MODAL: JADWAL TES PER PAKET
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modalJadwal" style="z-index:10100;">
+  <div class="modal-box" style="max-width:680px;width:96%;">
+    <button class="modal-close" onclick="closeModal('modalJadwal')">×</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px;">
+      <h2 style="margin:0;">🗓 Jadwal & Kontrol Tes</h2>
+      <input type="text" id="jadwalSearch" placeholder="🔍 Cari paket..." oninput="filterJadwalCards(this.value)"
+        style="padding:7px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88em;outline:none;width:200px;font-family:inherit;transition:border .2s;"
+        onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <p class="sub" style="margin-top:4px;">Atur status aktif, waktu mulai, dan link per paket.</p>
+    <div id="jadwalLoading" style="text-align:center;padding:30px;color:var(--muted);">
+      <div class="spinner" style="margin:0 auto 10px;"></div>Memuat paket...
+    </div>
+    <div id="jadwalList" style="display:none;display:flex;flex-direction:column;gap:12px;max-height:65vh;overflow-y:auto;padding-right:4px;"></div>
+    <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('modalJadwal')">Tutup</button>
+      <button class="btn btn-primary" onclick="saveAllJadwal()" id="btnSaveJadwal">💾 Simpan Semua</button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── JADWAL PAKET CARD ── */
+.jp-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    background: #fafbff;
+    transition: border-color .2s;
+}
+.jp-card.aktif { border-color: #16a34a; background: #f0fdf4; }
+.jp-card.nonaktif { border-color: #dc2626; background: #fff5f5; }
+.jp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.jp-nama { font-size: 14px; font-weight: 700; color: var(--text); }
+.jp-toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.jp-toggle {
+    position: relative; width: 46px; height: 24px;
+    flex-shrink: 0;
+}
+.jp-toggle input { opacity: 0; width: 0; height: 0; }
+.jp-slider {
+    position: absolute; inset: 0; background: #dc2626;
+    border-radius: 99px; cursor: pointer; transition: background .2s;
+}
+.jp-slider::before {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; left: 3px; top: 3px;
+    background: white; border-radius: 50%; transition: transform .2s;
+}
+.jp-toggle input:checked + .jp-slider { background: #16a34a; }
+.jp-toggle input:checked + .jp-slider::before { transform: translateX(22px); }
+.jp-toggle-label { font-size: 12px; font-weight: 700; }
+.jp-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media(max-width:520px) { .jp-fields { grid-template-columns: 1fr; } }
+.jp-field label {
+    display: block; font-size: 11px; font-weight: 700;
+    color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em;
+}
+.jp-field input {
+    width: 100%; padding: 8px 12px; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 13px; outline: none; transition: border-color .2s;
+    background: white; font-family: inherit;
+}
+.jp-field input:focus { border-color: var(--primary); }
+</style>
+
+<!-- ══════════════════════════════════
+     MODAL: TAMBAH TOKEN
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modalToken">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal('modalToken')">×</button>
+        <h2>🔑 Tambah Token</h2>
+        <p class="sub">Generate token acak (huruf+angka) unik ke tabel <strong id="modalTokenTableLabel">nilai1</strong></p>
+
+        <!-- Pilih Paket -->
+        <div class="paket-selector-label">Pilih Paket Tes</div>
+        <div class="paket-selector-grid" id="paketSelectorGrid">
+            <div style="font-size:12px;color:var(--muted)">⏳ Memuat paket...</div>
+        </div>
+        <div class="paket-preview" id="paketPreview">
+            Format token: <span id="paketPreviewText">tokenacak</span>
+        </div>
+
+        <div class="form-group">
+            <label>Jumlah Token</label>
+            <input type="number" id="modalTokenJumlah" min="1" max="500" value="1" placeholder="Contoh: 10">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('modalToken')">Batal</button>
+            <button class="btn btn-primary" id="btnTokenSubmit" onclick="doGenerateToken()">⚡ Generate & Simpan</button>
+        </div>
+        <div class="token-log" id="tokenLog"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL: RESET PESERTA (konfirmasi kode angka acak)
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modalResetPeserta">
+    <div class="reset-confirm-box">
+        <button class="modal-close" onclick="closeModal('modalResetPeserta')">×</button>
+        <h2 style="font-size:18px;margin-bottom:6px" id="resetModalTitle">⚠️ Reset Data Peserta</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">
+            Biodata &amp; semua skor akan dikosongkan. Token tetap bisa dipakai kembali.
+        </p>
+        <div class="reset-list-preview" id="resetListPreview"></div>
+        <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;text-align:center">
+            Ketik kode ini untuk konfirmasi:
+        </p>
+        <div class="reset-code-display" id="resetCodeDisplay">0000</div>
+        <input type="text" id="resetCodeInput"
+            placeholder="Ketik 4 angka di atas..."
+            maxlength="4"
+            style="width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:18px;font-weight:700;text-align:center;outline:none;letter-spacing:4px"
+            onkeydown="if(event.key==='Enter') doResetPeserta()"
+            oninput="document.getElementById('resetErrMsg').textContent=''">
+        <div class="reset-err" id="resetErrMsg"></div>
+        <div class="modal-actions" style="margin-top:14px">
+            <button class="btn btn-outline" onclick="closeModal('modalResetPeserta')">Batal</button>
+            <button class="btn" id="btnResetSubmit" onclick="doResetPeserta()"
+                style="background:#dc2626;color:white;border:none;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer">
+                🗑 Reset Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     FULLSCREEN QR (Token Kosong — untuk peserta scan satu per satu)
+══════════════════════════════════ -->
+<div id="qrFullscreen">
+    <!-- Close -->
+    <button class="qrfs-close" onclick="closeQRFullscreen()" title="Tutup (Esc)">✕</button>
+    <!-- Counter -->
+    <div class="qrfs-counter" id="qrfsCounter">1 / 1</div>
+
+    <!-- Card QR -->
+    <div class="qrfs-card">
+        <div class="qrfs-id" id="qrfsId">ID: —</div>
+        <a id="qrfsLink" href="#" target="_blank" rel="noopener noreferrer">
+            <div class="qrfs-qr-wrap">
+                <img id="qrfsImg" src="" alt="QR Code" width="220" height="220">
+            </div>
+        </a>
+        <div class="qrfs-url" id="qrfsUrl"></div>
+        <div class="qrfs-token" id="qrfsToken"></div>
+        <div class="qrfs-hint">👆 Tap QR untuk membuka tes</div>
+    </div>
+
+    <!-- Navigasi -->
+    <div class="qrfs-nav">
+        <button class="qrfs-arrow" id="qrfsPrev" onclick="qrfsNav(-1)" title="Sebelumnya (←)">&#8592;</button>
+        <div class="qrfs-dots" id="qrfsDots"></div>
+        <button class="qrfs-arrow" id="qrfsNext" onclick="qrfsNav(+1)" title="Berikutnya (→)">&#8594;</button>
+    </div>
+</div>
+
+<script>
+// =========================================================
+// KONSTANTA & HELPER BERSAMA
+// =========================================================
+const REPORT_URL = 'https://psikogram.lidan.co.id/index_json_new';
+
+// Config language DataTable — dipakai semua tabel
+const DT_LANG = {
+    search:'🔍', searchPlaceholder:'Cari...',
+    lengthMenu:'Tampilkan _MENU_',
+    info:'_START_–_END_ dari _TOTAL_',
+    infoEmpty:'0 data', infoFiltered:'(dari _MAX_)',
+    paginate:{first:'«',last:'»',next:'›',previous:'‹'},
+    zeroRecords:'Tidak ada data', emptyTable:'Tidak ada data'
+};
+const DT_LENGTH = [[10,25,50,100,-1],[10,25,50,100,'Semua']];
+
+// Buat link ID ke halaman laporan
+function makeIdLink(idX, token) {
+    if (!idX) return idX;
+    let url = `${REPORT_URL}?id_x=${encodeURIComponent(idX)}`;
+    if (token) url += `&x_01=${encodeURIComponent(token)}`;
+    return `<a href="${url}" target="_blank" style="color:#2563eb;font-weight:700;text-decoration:none">${idX}</a>`;
+}
+
+// Buat row data standar dari raw row (dipakai allUpdate, todayUpdateFromCache, renderPerPaketTable)
+function makeRowData(row) {
+    const idX   = String(row.id_x || '');
+    const token = row.x_01 || '';
+    const dateStr = getDateFromX02(row.x_02);
+    const isToday = dateStr === todayString();
+    return {
+        id_x: makeIdLink(idX, token),
+        x_01: makeTruncate(token),
+        x_02: renderJsonBio(row.x_02),
+        x_05: renderSkorField(row.x_05),
+        x_04: renderTimer(row.id_x, row.x_04 || ''),
+        x_06: renderJsonField(row.x_06),
+        x_07: renderJsonField(row.x_07),
+        x_09: renderViolation(row.x_09 || ''),
+        tgl:  isToday
+            ? `<span class="badge badge-active">📅 Hari Ini</span>`
+            : (dateStr ? `<span style="font-size:12px;color:var(--muted)">${dateStr}</span>` : '')
+    };
+}
+
+// Buat DataTable standar (kolom utama sama di semua tab data)
+const DT_STD_COLS = [
+    { data:'id_x', orderable:true },
+    { data:'x_01' },
+    { data:'x_02' },
+    { data:'x_05' },
+    { data:'x_04', orderable:false },
+    { data:'x_06' },
+    { data:'x_07' },
+    { data:'x_09', title:'🔄 Tab', orderable:false, defaultContent:'—' },
+    { data:'tgl',  orderable:false }
+];
+const DT_STD_HEADS = '<th>ID</th><th>Token</th><th>Biodata</th><th>Skor</th><th>⏱ Timer</th><th>Skor 1</th><th>Skor 2</th><th>🔄 Tab</th><th>Tgl Tes</th>';
+
+function makeDT(containerId, tableId, heads, cols, rows, opts = {}) {
+    document.getElementById(containerId).innerHTML = `
+        <table id="${tableId}" class="display nowrap" style="width:100%">
+            <thead><tr>${heads}</tr></thead><tbody></tbody>
+        </table>`;
+    return $(`#${tableId}`).DataTable({
+        data: rows,
+        columns: cols,
+        pageLength: opts.pageLength || 25,
+        lengthMenu: DT_LENGTH,
+        order: opts.order || [[0,'desc']],
+        language: { ...DT_LANG, searchPlaceholder: opts.searchPlaceholder || 'Cari...' },
+        autoWidth: false,
+        ...(opts.extra || {})
+    });
+}
+
+// Render tombol paket filter (dipakai empty & print)
+async function renderPaketButtons(groupId, loadingId, selectedIdX, onAllClick, onPaketClick, countMap) {
+    await loadFilterPaketData();
+    const loading = document.getElementById(loadingId);
+    if (loading) loading.style.display = 'none';
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.innerHTML = '';
+    const allBtn = document.createElement('button');
+    allBtn.className = 'pf-btn pf-btn-all' + (selectedIdX === null ? ' active' : '');
+    allBtn.textContent = 'Semua';
+    allBtn.onclick = () => onAllClick(allBtn);
+    group.appendChild(allBtn);
+    filterPaketData.forEach(p => {
+        const idX  = String(p.id_x || '').trim();
+        const nama = (p.x_01 || '').trim();
+        const cnt  = countMap ? (countMap[idX] || 0) : '';
+        const btn  = document.createElement('button');
+        btn.className = 'pf-btn' + (selectedIdX === idX ? ' active' : '');
+        btn.innerHTML = `${escHtml(nama || idX)}-${escHtml(idX)}` + (countMap ? ` <span style="font-size:11px;font-weight:700">(${cnt})</span>` : '');
+        btn.onclick = () => onPaketClick(idX, nama, btn);
+        group.appendChild(btn);
+    });
+}
+/* v20260309_0804 */
+/* ══════════════════════════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════════════════════ */
+const API_BASE   = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis7';
+const API_INSERT = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis6';
+const AUTH_KEY   = 'admin';
+const PSIKOTEST_URL = 'https://psikotest.lidan.co.id/';
+const CHARS      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const TOKEN_LEN  = 12;
+
+// x_02 sekarang format JSON: {"nama":"...","usia":"...","pendidikan":"...","jenis_kelamin":"...","tgl_tes":"YYYY-MM-DD"}
+
+// =========================================================
+// KONFIGURASI NAV TABS
+// Tambah/kurangi tab cukup edit array ini saja
+// page   : switchPage internal
+// url    : buka link (lokal atau https://)
+// action : panggil fungsi JS tertentu
+// target : '_blank' atau '_self' (default '_self')
+// style  : 'yellow' untuk warna kuning
+// =========================================================
+const NAV_TABS = [
+    { label: '📅 Hari Ini',       page: 'pageToday'   },
+    { label: '📋 Token Kosong',   page: 'pageEmpty'    },
+    { label: '🖨 Print QR',       page: 'pagePrint'    },
+    { label: '📊 Semua Data',     page: 'pageAll'      },
+    { label: '🗂 Data Per Paket', page: 'pagePerPaket' },
+    { label: '📋 Dashboard Tester',       url: 'https://pkl.lidan.co.id/check_tester' , target: '_blank' },
+    { label: '🔄 Transfer',       url: 'https://psikogram.lidan.co.id/index_transfer_json', style: 'yellow' , target: '_blank' },
+    { label: '📅 Soal Paket',       url: 'https://lidan.co.id/psikotest/?p=app', target: '_blank' },
+    { label: '🎯 Soal via Zoom',      action: 'openSoalZoomModal' },
+    { label: '📅 Tambah Paket',       url: 'https://admin.lidan.co.id/admin-paket', target: '_blank' },
+    { label: '📋 Dashboard Tester',       url: 'https://pkl.lidan.co.id/check_tester' , target: '_blank' },
+    { label: '📋 Hasil Akhir',       url: 'https://psikogram.lidan.co.id/psikogram_db/index_rekap' , target: '_blank' }
+    // Contoh tambah tab baru:
+    // { label: '📝 Laporan', url: 'https://laporan.lidan.co.id/', target: '_blank' },
+];
+
+function bukaTransfer() {
+    const tbl = document.getElementById('allTableInput')?.value?.trim() || 'nilai1_json';
+    window.open('index_transfer_json.html?src=' + encodeURIComponent(tbl) + '&dst=rekap_nilai1', '_blank');
+}
+
+function renderNav() {
+    const container = document.getElementById('nav-tabs-container');
+    container.innerHTML = '';
+    NAV_TABS.forEach(function(tab, i) {
+        const el = document.createElement('div');
+        el.className = 'nav-tab' + (i === 0 ? ' active' : '');
+        el.textContent = tab.label;
+        el.style.whiteSpace = 'nowrap';
+        if (tab.style === 'yellow') {
+            el.style.background = 'rgba(255,217,61,0.2)';
+            el.style.color = '#ffd93d';
+        }
+        if (tab.page) {
+            el.onclick = function() { switchPage(tab.page); };
+        } else if (tab.url) {
+            el.onclick = function() { window.open(tab.url, tab.target || '_self'); };
+        } else if (tab.action) {
+            el.onclick = function() { window[tab.action](); };
+        }
+        container.appendChild(el);
+    });
+}
+renderNav();
+
+function openSoalZoomModal() {
+    document.getElementById('modalSoalZoom').classList.add('open');
+}
+
+function copyLink(url, btn) {
+    navigator.clipboard.writeText(url).then(() => {
+        const ori = btn.innerHTML;
+        btn.innerHTML = '✅ Disalin!';
+        btn.style.color = '#16a34a';
+        btn.style.borderColor = '#86efac';
+        setTimeout(() => {
+            btn.innerHTML = ori;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+        }, 1800);
+    }).catch(() => {
+        prompt('Salin link berikut:', url);
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════════ */
+let allTable    = null;
+let allInterval = null;
+let allLastHash = null;
+let allRawCache = {};
+
+let emptyTable    = null;
+let emptyRawCache = {};
+
+let todayTable  = null;
+
+/* ══════════════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════════════ */
+function switchPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const tabs = document.querySelectorAll('.nav-tab');
+    NAV_TABS.forEach(function(tab, i) {
+        if (tab.page === id && tabs[i]) tabs[i].classList.add('active');
+    });
+
+    if (id === 'pageEmpty') {
+        // Jika tabel belum ada, inisialisasi. Jika sudah ada, cukup update dari cache.
+        if (emptyTable === null) {
+            emptyLoadTable();
+        } else {
+            emptyUpdateFromCache();
+        }
+    }
+    if (id === 'pageToday') {
+        if (!document.getElementById('todayDateInput').value) {
+            document.getElementById('todayDateInput').value = todayString();
+        }
+        // Jika tabel belum ada, inisialisasi. Jika sudah ada, cukup update dari cache — TANPA loading.
+        if (todayTable === null && rawDataAll.length > 0) {
+            todayUpdateFromCache();
+        } else if (todayTable !== null) {
+            todayUpdateFromCache();
+        } else {
+            // Cache belum ada, tampilkan loading sementara (akan diisi saat allUpdate selesai)
+            document.getElementById('todayContainer').innerHTML =
+                '<div class="loading-block"><div class="spinner"></div><p>Menunggu data...</p></div>';
+        }
+    }
+    if (id === 'pagePrint') {
+        const tblAll = document.getElementById('allTableInput').value.trim();
+        if (tblAll) document.getElementById('printTableInput').value = tblAll;
+        printLoadPage(0);
+    }
+    if (id === 'pagePerPaket') {
+        if (rawDataAll.length === 0) allUpdate();
+        renderPerPaketButtons();
+    }
+    // Perbaiki header alignment setelah tab switch
+    setTimeout(() => {
+        if (id === 'pageAll'       && allTable)     { allTable.columns.adjust().draw(false); }
+        if (id === 'pageToday'     && todayTable)   { todayTable.columns.adjust().draw(false); }
+        if (id === 'pageEmpty'     && emptyTable)   { emptyTable.columns.adjust().draw(false); }
+        if (id === 'pagePerPaket'  && ppTable)      { ppTable.columns.adjust().draw(false); }
+    }, 50);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════════════ */
+function todayString() {
+    const d = new Date();
+    return d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0') + '-' +
+        String(d.getDate()).padStart(2,'0');
+}
+
+function nowTimeString() {
+    return new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+function makeTruncate(text, maxLen=30) {
+    if (!text) return '';
+    const s = String(text);
+    if (s.length <= maxLen) return `<span>${escHtml(s)}</span>`;
+    return `<span class="truncate" data-full="${escHtml(s)}">${escHtml(s.substring(0,maxLen))}…</span>`;
+}
+
+function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderJsonField(raw) {
+    if (!raw || raw.trim() === '') return '<span style="color:#ccc;font-size:12px">—</span>';
+    try {
+        const obj = JSON.parse(raw);
+        const entries = Object.entries(obj);
+        if (entries.length === 0) return '<span style="color:#ccc;font-size:12px">—</span>';
+        const items = entries.map(([k, v]) => {
+            // Khusus kreplin: tampilkan progress kolom (misal kreplin: 5/45)
+            if (k === 'kreplin' && v && typeof v === 'object') {
+                const cols = (v.dikerjakan || '').split('|').filter(s => s.trim() !== '');
+                const done = cols.length;
+                const total = 45;
+                const pct = Math.round((done / total) * 100);
+                const color = done >= total ? '#16a34a' : done > 0 ? '#d97706' : '#64748b';
+                const bg    = done >= total ? '#dcfce7' : done > 0 ? '#fef3c7' : '#f1f5f9';
+                const border= done >= total ? '#86efac' : done > 0 ? '#fcd34d' : '#e2e8f0';
+                return `<span title="Kraepelin: ${done} dari ${total} kolom selesai (${pct}%)" style="font-size:11px;background:${bg};border:1px solid ${border};border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;cursor:default"><span style="color:${color};font-weight:700">kreplin</span><span style="color:#64748b">:</span><span style="color:${color};font-weight:800;margin-left:3px">${done}/${total}</span></span>`;
+            }
+            return `<span style="font-size:11px;background:#f1f5f9;border-radius:4px;padding:2px 6px;white-space:nowrap;flex:0 0 calc(25% - 3px);box-sizing:border-box;text-align:center">${escHtml(k)}</span>`;
+        }).join('');
+        const keyOnly = entries.map(([k]) => k).join(', ');
+        return `<div title="${escHtml(keyOnly)}" style="display:flex;flex-wrap:wrap;gap:2px;width:240px;cursor:default">${items}</div>`;
+    } catch(e) {
+        const parts = raw.split(':');
+        const key   = parts[0].trim();
+        return `<span title="${escHtml(raw)}" style="font-size:11px;background:#f1f5f9;border-radius:4px;padding:1px 6px;cursor:default">${escHtml(key)}</span>`;
+    }
+}
+
+// Khusus kolom Skor (x_05): tampilkan key:value, misal cfit1:8 cfit2:6
+function renderSkorField(raw) {
+    if (!raw || raw.trim() === '') return '<span style="color:#ccc;font-size:12px">—</span>';
+    try {
+        const obj = JSON.parse(raw);
+        const entries = Object.entries(obj);
+        if (entries.length === 0) return '<span style="color:#ccc;font-size:12px">—</span>';
+        const items = entries.map(([k,v]) => {
+            const val = (v !== null && v !== undefined && v !== '') ? v : '—';
+            return `<span style="font-size:11px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;padding:2px 6px;white-space:nowrap;flex:0 0 calc(25% - 3px);box-sizing:border-box;text-align:center"><span style="color:#1e40af;font-weight:700">${escHtml(k)}</span><span style="color:#64748b">:</span><span style="color:#0f766e;font-weight:800;margin-left:2px">${escHtml(String(val))}</span></span>`;
+        }).join('');
+        const tooltip = entries.map(([k,v]) => `${k}: ${v}`).join(' | ');
+        return `<div title="${escHtml(tooltip)}" style="display:flex;flex-wrap:wrap;gap:2px;width:240px;cursor:default">${items}</div>`;
+    } catch(e) {
+        return `<span title="${escHtml(raw)}" style="font-size:11px;background:#eff6ff;border-radius:4px;padding:1px 6px;cursor:default">${escHtml(raw)}</span>`;
+    }
+}
+
+function renderJsonBio(raw) {
+    if (!raw || raw.trim() === '') return '<span style="color:#ccc;font-size:12px">—</span>';
+    try {
+        const obj = JSON.parse(raw);
+        const nama = obj.nama || '';
+        const usia = obj.usia ? obj.usia + 'th' : '';
+        const pend = obj.pendidikan || '';
+        const jk   = obj.jenis_kelamin || '';
+        const disp = [nama, usia, pend, jk].filter(Boolean).join(' · ');
+        const full = Object.entries(obj).map(([k,v])=>`${k}: ${v}`).join(' | ');
+        return `<span title="${escHtml(full)}" style="cursor:default">${escHtml(disp)}</span>`;
+    } catch(e) {
+        return escHtml(raw);
+    }
+}
+
+function renderTimer(idX, x04Raw) {
+    if (!x04Raw || !x04Raw.includes('|')) return '<span style="color:#ccc;font-size:12px">—</span>';
+    const pipeIdx  = x04Raw.indexOf('|');
+    const namaTest = x04Raw.substring(0, pipeIdx);
+    const modeStr  = x04Raw.substring(pipeIdx + 1);
+    const colonIdx = modeStr.indexOf(':');
+    const mode     = modeStr.substring(0, colonIdx);
+    const val      = parseInt(modeStr.substring(colonIdx + 1));
+    if (isNaN(val)) return '<span style="color:#ccc;font-size:12px">—</span>';
+    // Hanya tampilkan COUNTDOWN — tes tanpa timer (STOPWATCH) tidak ditampilkan
+    if (mode === 'COUNTDOWN') {
+        const stopBtn = `<button class="btn-stop-timer" onclick="stopPeserta('${idX}')">⏹</button>`;
+        if (val <= 0) return `<span class="timer-live done" title="${escHtml(namaTest)}">Habis</span>`;
+        const m = String(Math.floor(val/60)).padStart(2,'0');
+        const s = String(val%60).padStart(2,'0');
+        const cls = val <= 60 ? ' danger' : '';
+        return `<span class="timer-live${cls}" title="${escHtml(namaTest)}">${m}:${s}</span>${stopBtn}`;
+    }
+    // STOPWATCH (RMIB, EPPS) — tampilkan tanda dash saja
+    return '<span style="color:#ccc;font-size:12px">—</span>';
+}
+
+
+function renderViolation(x09Raw) {
+    if (!x09Raw || x09Raw.trim() === '') return '<span style="color:#ccc;font-size:12px">—</span>';
+    let entries = [];
+    try {
+        const obj = JSON.parse(x09Raw);
+        entries = Object.entries(obj).filter(([k,v]) => v > 0);
+    } catch(e) { return '<span style="color:#ccc;font-size:12px">—</span>'; }
+    if (entries.length === 0) return '<span style="color:#ccc;font-size:12px">—</span>';
+
+    const total = entries.reduce((sum, [,v]) => sum + (parseInt(v)||0), 0);
+    const tooltip = entries.map(([k,v]) => `${k}: ${v}x`).join(' | ');
+    const summary = entries.map(([k,v]) => {
+        const c = parseInt(v) >= 5 ? '#dc2626' : parseInt(v) >= 2 ? '#d97706' : '#16a34a';
+        return `<span style="color:${c};font-weight:600">${k} ${v}x</span>`;
+    }).join('<span style="color:#ccc"> · </span>');
+
+    return `<div title="Total: ${total}x &#10;${tooltip}" style="cursor:default;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${summary}</div>`;
+}
+
+// Ambil tanggal dari x_02 JSON
+function getDateFromX02(x02) {
+    if (!x02) return '';
+    try {
+        const obj = JSON.parse(x02);
+        return (obj.tgl_tes || '').trim();
+    } catch(e) { return ''; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODAL HELPERS
+══════════════════════════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+/* ── Fullscreen QR (untuk tab Token Kosong) ── */
+let qrfsList  = [];   // array { idX, token }
+let qrfsIndex = 0;
+
+function openQRFullscreen(list, startIndex) {
+    qrfsList  = list;
+    qrfsIndex = startIndex;
+    qrfsRender();
+    document.getElementById('qrFullscreen').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQRFullscreen() {
+    document.getElementById('qrFullscreen').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function qrfsNav(dir) {
+    const next = qrfsIndex + dir;
+    if (next < 0 || next >= qrfsList.length) return;
+    qrfsIndex = next;
+    qrfsRender();
+}
+
+async function qrfsRender() {
+    const item   = qrfsList[qrfsIndex];
+    const target = PSIKOTEST_URL + '?token=' + encodeURIComponent(item.token);
+
+    // ✅ Generate QR lokal agar tidak bergantung server eksternal
+    const qrSrc = await generateQRDataUrl(target);
+
+    document.getElementById('qrfsId').textContent    = 'ID: ' + item.idX + '  |  ' + (emptyTableName || 'nilai1');
+    document.getElementById('qrfsImg').src            = qrSrc;
+    document.getElementById('qrfsLink').href          = target;
+    document.getElementById('qrfsUrl').textContent    = PSIKOTEST_URL;
+    document.getElementById('qrfsToken').textContent  = 'Token: ' + item.token;
+    document.getElementById('qrfsCounter').textContent = (qrfsIndex + 1) + ' / ' + qrfsList.length;
+
+    // Panah
+    document.getElementById('qrfsPrev').disabled = (qrfsIndex === 0);
+    document.getElementById('qrfsNext').disabled = (qrfsIndex === qrfsList.length - 1);
+
+    // Dots (maks 9 titik, lebih dari itu tidak ditampilkan)
+    const dotsEl = document.getElementById('qrfsDots');
+    dotsEl.innerHTML = '';
+    if (qrfsList.length <= 9) {
+        qrfsList.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'qrfs-dot' + (i === qrfsIndex ? ' active' : '');
+            dotsEl.appendChild(d);
+        });
+    }
+}
+
+// Keyboard navigasi ← →  Esc tutup
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('qrFullscreen').classList.contains('open')) return;
+    if (e.key === 'ArrowRight') qrfsNav(+1);
+    if (e.key === 'ArrowLeft')  qrfsNav(-1);
+    if (e.key === 'Escape')     closeQRFullscreen();
+});
+
+// Fungsi lama showQR (masih dipakai tab lain jika perlu)
+function showQR(idX, token) {
+    // Buka fullscreen dengan list satu item
+    openQRFullscreen([{ idX, token }], 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STOP PESERTA
+══════════════════════════════════════════════════════════════════ */
+async function stopPeserta(idX) {
+    if (!confirm(`Paksa selesai timer peserta ID ${idX}?`)) return;
+    const table = document.getElementById('allTableInput').value.trim() || 'nilai1_json';
+    try {
+        await fetch(`${API_INSERT}?table=${table}&id_x=${idX}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+            body: JSON.stringify({ x_12: 'FORCE_END' })
+        });
+    } catch(e) { alert('Gagal: ' + e.message); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TOOLTIP
+══════════════════════════════════════════════════════════════════ */
+const tooltipEl = document.getElementById('tooltipEl');
+document.addEventListener('mouseover', e => {
+    if (window.innerWidth < 640) return;
+    const el = e.target.closest('.truncate');
+    if (el) {
+        tooltipEl.textContent = el.dataset.full || '';
+        tooltipEl.style.display = 'block';
+        const r = el.getBoundingClientRect();
+        tooltipEl.style.left = r.left + 'px';
+        tooltipEl.style.top  = (r.bottom + 8) + 'px';
+    }
+});
+document.addEventListener('mouseout', e => {
+    if (e.target.closest && e.target.closest('.truncate')) tooltipEl.style.display = 'none';
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE 1 — SEMUA DATA
+══════════════════════════════════════════════════════════════════ */
+let allTableName = 'nilai1_json';
+let rawDataAll   = [];   // ← shared cache semua data mentah dari server
+
+async function allFetch() {
+    const res = await fetch(`${API_BASE}?table=${allTableName}`, {
+        headers: { 'X-Custom-Auth': AUTH_KEY }
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Gagal');
+    return json.data || [];
+}
+
+function allLoadTable() {
+    allTableName = document.getElementById('allTableInput').value.trim() || 'nilai1';
+    // sync tabel nama ke tab lain
+    document.getElementById('emptyTableInput').value = allTableName;
+    document.getElementById('todayTableInput').value  = allTableName;
+    document.getElementById('printTableInput').value  = allTableName;
+
+    allLastHash = null;
+    rawDataAll  = [];
+    if (allTable) { allTable.destroy(); allTable = null; }
+    document.getElementById('allContainer').innerHTML =
+        '<div class="loading-block"><div class="spinner"></div><p>Memuat...</p></div>';
+    if (allInterval) clearInterval(allInterval);
+    allUpdate();
+    allInterval = setInterval(allUpdate, 5000);
+}
+
+async function allUpdate() {
+    try {
+        const data = await allFetch();
+        const hash = JSON.stringify(data);
+        document.getElementById('allLastUpdate').textContent = '🕐 ' + nowTimeString();
+        document.getElementById('allRecordCount').textContent = data.length + ' data';
+
+        const dataChanged = (hash !== allLastHash);
+        allLastHash = hash;
+
+        // Selalu update shared cache
+        rawDataAll = data;
+        data.forEach(r => { if (r.id_x) allRawCache[String(r.id_x)] = r; });
+
+        // Update tab Hari Ini dari cache (tanpa fetch) jika sedang aktif atau ada tabelnya
+        todayUpdateFromCache();
+
+        // Update tab Token Kosong dari cache (tanpa fetch) jika data berubah
+        if (dataChanged) emptyUpdateFromCache();
+
+        if (!dataChanged && allTable) return;
+
+        const rows = data.map(row => {
+            const dateStr = getDateFromX02(row.x_02);
+            const d = makeRowData(row);
+            d.tgl = dateStr === todayString()
+                ? `<span class="badge badge-active">📅 Hari Ini</span>`
+                : (dateStr ? `<span style="font-size:12px;color:var(--muted)">${dateStr}</span>` : '');
+            return d;
+        });
+
+        if (allTable) {
+            allTable.clear(); allTable.rows.add(rows); allTable.draw(false);
+        } else {
+            allInitTable(rows);
+        }
+    } catch(e) {
+        document.getElementById('allLastUpdate').textContent = '⚠ Error';
+    }
+}
+
+function allInitTable(rows) {
+    allTable = makeDT('allContainer', 'allDataTable', DT_STD_HEADS, DT_STD_COLS, rows);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE 2 — TOKEN KOSONG
+   Tidak fetch sendiri — pakai shared cache rawDataAll dari allUpdate
+══════════════════════════════════════════════════════════════════ */
+let emptyTableName       = 'nilai1_json';
+let emptySelectedPaketIdX  = null;   // filter paket token kosong
+
+function emptyLoadTable() {
+    emptyTableName = document.getElementById('emptyTableInput').value.trim() || 'nilai1';
+    emptySelectedPaketIdX = null;
+    filterPaketLoaded = false;
+    document.getElementById('emptyPaketLoading').style.display = 'inline';
+    document.getElementById('emptyPaketBtnGroup').innerHTML = '';
+    if (emptyTable) { emptyTable.destroy(); emptyTable = null; }
+    document.getElementById('emptyContainer').innerHTML =
+        '<div class="loading-block"><div class="spinner"></div><p>Memuat...</p></div>';
+    // Jika cache sudah ada, langsung render. Jika belum tunggu allUpdate.
+    if (rawDataAll.length > 0) {
+        emptyUpdateFromCache();
+    }
+}
+
+function emptyUpdateFromCache() {
+    // Filter dari cache: x_02 kosong
+    let data = rawDataAll.filter(row => {
+        if (!row.x_02 || row.x_02.trim() === '') return true;
+        try { const obj = JSON.parse(row.x_02); return !obj.nama || obj.nama.trim() === ''; }
+        catch(e) { return true; }
+    });
+
+    // Render tombol paket (dengan jumlah per paket)
+    renderEmptyPaketButtons(data);
+
+    // Filter tambahan berdasarkan paket terpilih
+    if (emptySelectedPaketIdX !== null) {
+        data = data.filter(row => {
+            const prefix = (row.x_01 || '').trim().split('-')[0];
+            return prefix === String(emptySelectedPaketIdX);
+        });
+    }
+    document.getElementById('emptyCount').textContent = data.length + ' token';
+
+    if (data.length === 0) {
+        document.getElementById('emptyContainer').innerHTML = `
+            <div class="empty-msg">
+                <div class="em-icon">✅</div>
+                <p>Semua token sudah digunakan peserta!</p>
+            </div>`;
+        if (emptyTable) { emptyTable.destroy(); emptyTable = null; }
+        emptyRawCache = {};
+        return;
+    }
+
+    // Simpan list untuk navigasi fullscreen
+    emptyRawCache._list = data.map(row => ({
+        idX:   String(row.id_x || ''),
+        token: row.x_01 || ''
+    })).filter(r => r.token);
+
+    const rows = data.map((row, idx) => {
+        const idX   = String(row.id_x || '');
+        const token = row.x_01 || '';
+        return {
+            id_x:  idX,
+            x_01:  token || '<span style="color:#ccc">—</span>',
+            qr_btn: token
+                ? `<button class="btn btn-qr btn-sm" onclick="openEmptyQR(${idx})">🔲 QR Code</button>`
+                : '<span style="color:#ccc;font-size:12px">—</span>'
+        };
+    });
+
+    if (emptyTable) {
+        emptyTable.clear(); emptyTable.rows.add(rows); emptyTable.draw(false);
+    } else {
+        emptyInitTable(rows);
+    }
+}
+
+// Tombol Refresh manual tetap tersedia
+async function emptyRefresh() {
+    // Trigger fetch ulang via allUpdate agar cache segar
+    await allUpdate();
+}
+
+// Buka fullscreen mulai dari index yg diklik, list = semua token kosong
+function openEmptyQR(idx) {
+    const list = emptyRawCache._list || [];
+    if (!list.length) return;
+    openQRFullscreen(list, idx);
+}
+
+async function renderEmptyPaketButtons(allEmptyTokens) {
+    const countMap = countTokenPerPaket(allEmptyTokens);
+    await renderPaketButtons(
+        'emptyPaketBtnGroup', 'emptyPaketLoading', emptySelectedPaketIdX,
+        (btn) => selectEmptyPaket(null, btn),
+        (idX, nama, btn) => selectEmptyPaket(idX, btn),
+        countMap
+    );
+}
+
+function selectEmptyPaket(idX, clickedBtn) {
+    emptySelectedPaketIdX = idX;
+    document.querySelectorAll('#emptyPaketBtnGroup .pf-btn, #emptyPaketBar .pf-btn-all').forEach(b => b.classList.remove('active'));
+    clickedBtn.classList.add('active');
+    emptyUpdateFromCache();
+}
+
+function emptyInitTable(rows) {
+    emptyTable = makeDT('emptyContainer', 'emptyDataTable',
+        '<th>ID</th><th>Token</th><th>QR Code</th>',
+        [{ data:'id_x', width:'60px' }, { data:'x_01', width:'180px' }, { data:'qr_btn', orderable:false, width:'120px' }],
+        rows, { order:[[0,'asc']], searchPlaceholder:'Cari token...' }
+    );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE 3 — PESERTA HARI INI
+   Tidak fetch sendiri — filter dari shared cache rawDataAll
+══════════════════════════════════════════════════════════════════ */
+let todayTableName = 'nilai1_json';
+
+function todayLoadTable() {
+    todayTableName = document.getElementById('todayTableInput').value.trim() || 'nilai1';
+    const dateVal  = document.getElementById('todayDateInput').value || todayString();
+    document.getElementById('todayDateInput').value = dateVal;
+    document.getElementById('todayBadgeLabel').textContent =
+        dateVal === todayString() ? 'Hari Ini' : dateVal;
+
+    // Destroy tabel jika filter tanggal berubah
+    if (todayTable) { todayTable.destroy(); todayTable = null; }
+    document.getElementById('todayContainer').innerHTML =
+        '<div class="loading-block"><div class="spinner"></div><p>Memuat...</p></div>';
+
+    // Langsung render dari cache jika ada, tidak perlu fetch
+    if (rawDataAll.length > 0) {
+        todayUpdateFromCache();
+    }
+    // allUpdate interval sudah jalan setiap 5 detik — otomatis update tab ini juga
+}
+
+function todayUpdateFromCache() {
+    const dateVal = document.getElementById('todayDateInput').value || todayString();
+    const data    = rawDataAll.filter(row => getDateFromX02(row.x_02) === dateVal);
+
+    document.getElementById('todayCount').textContent      = data.length + ' peserta';
+    document.getElementById('todayLastUpdate').textContent = '🕐 ' + nowTimeString();
+
+    if (data.length === 0) {
+        if (!todayTable) {
+            document.getElementById('todayContainer').innerHTML = `
+                <div class="empty-msg">
+                    <div class="em-icon">📭</div>
+                    <p>Tidak ada peserta pada <strong>${dateVal}</strong></p>
+                    <p style="font-size:12px;margin-top:8px;color:#aaa">
+                        Pastikan file soal sudah diupdate agar menyimpan tanggal ke x_02.
+                    </p>
+                </div>`;
+        }
+        return;
+    }
+
+    const rows = data.map(row => {
+        const idX   = String(row.id_x || '');
+        const token = row.x_01 || '';
+        let nama = '';
+        try { nama = JSON.parse(row.x_02 || '{}').nama || ''; } catch(e) {}
+        let status = 'nonaktif';
+        try { status = JSON.parse(row.x_02 || '{}').status || 'nonaktif'; } catch(e) {}
+        const isAktif = status === 'aktif';
+        const d = makeRowData(row);
+        d.tgl  = `<span style="font-size:12px;color:var(--muted)">${getDateFromX02(row.x_02)}</span>`;
+        d.chk  = `<input type="checkbox" class="row-checkbox" data-idx="${idX}" data-nama="${escHtml(nama)}" onchange="onRowCheck()">`;
+        d.aktif = isAktif
+            ? `<button class="btn-aktifkan" style="background:#dc2626;" onclick="aktivasiPeserta('${idX}','nonaktif')">⛔ Nonaktifkan</button>`
+            : `<button class="btn-aktifkan" style="background:#16a34a;" onclick="aktivasiPeserta('${idX}','aktif')">▶ Aktifkan</button>`;
+        d.paket       = renderTodayPaket(row.x_02);
+        d.harga       = renderTodayHarga(row.x_02);
+        d.bayar       = renderBayar(idX, row.x_02);
+        d._hargaNum   = parseTodayHargaNum(row.x_02);
+        d._idXRaw     = idX;
+        // _sudahBayar: baca dari x_02 dulu, fallback localStorage
+        const _m = getBayarMap();
+        try {
+            const _obj = JSON.parse(row.x_02 || '{}');
+            if (_obj.payment !== undefined) {
+                d._sudahBayar = (_obj.payment === 'done');
+            } else {
+                d._sudahBayar = !!_m[idX]; // fallback localStorage
+            }
+        } catch(e) { d._sudahBayar = !!_m[idX]; }
+        return d;
+    });
+
+    if (todayTable) {
+        todayTable.clear(); todayTable.rows.add(rows); todayTable.draw(false);
+        updateTodayTotalRow(rows);
+    } else {
+        todayInitTable(rows);
+    }
+}
+
+// Tombol refresh manual
+async function todayRefresh() {
+    await allUpdate();
+}
+
+// ── Paket & Harga (dari x_02) ──
+function renderTodayPaket(x02Raw) {
+    if (!x02Raw) return '<span style="color:#ccc;font-size:12px">—</span>';
+    try {
+        const p = JSON.parse(x02Raw).paket_laporan || '';
+        if (!p) return '<span style="color:#ccc;font-size:12px">—</span>';
+        const cm = { 'Dasar':'#dbeafe;color:#1d4ed8', 'Lengkap':'#fef3c7;color:#d97706', 'Komprehensif':'#ede9fe;color:#6d28d9' };
+        const st = cm[p] || '#f1f5f9;color:#334155';
+        return `<span style="background:${st};padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;">${escHtml(p)}</span>`;
+    } catch(e) { return '<span style="color:#ccc;font-size:12px">—</span>'; }
+}
+function parseTodayHargaNum(x02Raw) {
+    if (!x02Raw) return 0;
+    try { return parseInt((JSON.parse(x02Raw).harga_laporan || '').replace(/[^0-9]/g,'')) || 0; } catch(e) { return 0; }
+}
+function renderTodayHarga(x02Raw) {
+    const n = parseTodayHargaNum(x02Raw);
+    if (!n) return '<span style="color:#ccc;font-size:12px">—</span>';
+    return `<span style="font-weight:700;color:#0f5132">Rp ${n.toLocaleString('id-ID')}</span>`;
+}
+
+// ── Pembayaran — simpan ke x_02 via API + backup localStorage ──
+const BAYAR_KEY = 'today_bayar';
+function getBayarMap() { try { return JSON.parse(localStorage.getItem(BAYAR_KEY) || '{}'); } catch(e) { return {}; } }
+function setBayarMap(m) { localStorage.setItem(BAYAR_KEY, JSON.stringify(m)); }
+
+// Baca status bayar: prioritas dari x_02 JSON (field "payment"), fallback localStorage
+function isSudahBayarFromX02(x02Raw) {
+    try {
+        const obj = JSON.parse(x02Raw || '{}');
+        if (obj.payment === 'done')    return true;
+        if (obj.payment === 'pending') return false;
+    } catch(e) {}
+    // fallback localStorage jika field belum ada di JSON
+    return false;
+}
+
+function renderBayar(idX, x02Raw) {
+    // Cek dari x_02 dulu, fallback ke localStorage
+    let sudah = isSudahBayarFromX02(x02Raw);
+    const m = getBayarMap();
+    // Jika x_02 belum punya field payment, pakai localStorage sebagai fallback
+    try {
+        const obj = JSON.parse(x02Raw || '{}');
+        if (obj.payment === undefined) sudah = !!m[idX];
+    } catch(e) { sudah = !!m[idX]; }
+
+    const n = parseTodayHargaNum(x02Raw);
+    if (!n) return '<span style="color:#ccc;font-size:12px">—</span>';
+    const bayarVal = sudah
+        ? `<span style="font-weight:700;color:#16a34a">Rp ${n.toLocaleString('id-ID')}</span>`
+        : `<span style="color:#ccc;font-size:12px">Rp 0</span>`;
+    const btnLabel = sudah ? '✅ Sudah Bayar' : '💳 Belum Bayar';
+    const btnClass = sudah ? 'btn-bayar sudah-bayar' : 'btn-bayar';
+    const btnTitle = sudah ? 'Klik untuk batalkan' : 'Klik jika sudah bayar';
+    return `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+        ${bayarVal}
+        <button class="${btnClass}" title="${btnTitle}" onclick="toggleBayar('${idX}',this)">${btnLabel}</button>
+    </div>`;
+}
+
+// Status in-progress per idX supaya tombol tidak double-klik
+const _bayarPending = {};
+
+async function toggleBayar(idX, btn) {
+    if (_bayarPending[idX]) return; // cegah double klik
+    _bayarPending[idX] = true;
+    const origText = btn.textContent;
+    btn.textContent = '⏳...';
+    btn.disabled = true;
+
+    // Tentukan status baru dari rawDataAll (cache server)
+    const row = rawDataAll.find(r => String(r.id_x) === String(idX));
+    let x02Obj = {};
+    try { x02Obj = JSON.parse((row && row.x_02) || '{}'); } catch(e) {}
+
+    const currentPayment = x02Obj.payment;
+    // Toggle: done ↔ pending
+    const newPayment = (currentPayment === 'done') ? 'pending' : 'done';
+    x02Obj.payment = newPayment;
+
+    const table = document.getElementById('todayTableInput').value.trim() || 'nilai1_json';
+
+    // 1. Update localStorage backup dulu (instan)
+    const m = getBayarMap();
+    if (newPayment === 'done') { m[idX] = true; } else { delete m[idX]; }
+    setBayarMap(m);
+
+    // 2. Update rawDataAll cache lokal supaya UI langsung berubah
+    if (row) row.x_02 = JSON.stringify(x02Obj);
+
+    // Render ulang UI dari cache
+    todayUpdateFromCache();
+
+    // 3. Kirim ke API (PUT hanya field payment dalam x_02)
+    try {
+        const res = await fetch(`${API_INSERT}?table=${table}&id_x=${idX}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+            body: JSON.stringify({ x_02: JSON.stringify(x02Obj) })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        // Paksa refresh cache dari server
+        allLastHash = null;
+        await allUpdate();
+    } catch(e) {
+        // Rollback jika API gagal
+        x02Obj.payment = currentPayment;
+        if (row) row.x_02 = JSON.stringify(x02Obj);
+        if (currentPayment === 'done') { m[idX] = true; } else { delete m[idX]; }
+        setBayarMap(m);
+        todayUpdateFromCache();
+        alert('⚠ Gagal update ke server: ' + e.message + '\n(Status lokal dikembalikan)');
+    } finally {
+        delete _bayarPending[idX];
+    }
+}
+
+// ── Total Row Hari Ini ──
+function updateTodayTotalRow(rows) {
+    const tr = document.getElementById('todayTotalRow');
+    if (!tr) return;
+    const totalHarga = rows.reduce((s, r) => s + (r._hargaNum || 0), 0);
+    const totalBayar = rows.reduce((s, r) => s + (r._sudahBayar ? (r._hargaNum || 0) : 0), 0);
+    const colCount = tr.closest('tfoot').closest('table').querySelectorAll('thead th').length;
+    // kolom: chk, std cols (9), aktif, paket, harga, pembayaran = total varies
+    // kita pakai colspan dinamis
+    const fixedCols = colCount - 2; // 2 kolom terakhir: harga & pembayaran
+    tr.innerHTML = `
+        <td colspan="${fixedCols}" style="text-align:right;font-size:12px;font-weight:700;color:var(--muted);">
+            TOTAL (${rows.length} peserta)
+        </td>
+        <td><span class="today-total-val">Rp ${totalHarga.toLocaleString('id-ID')}</span></td>
+        <td><span class="today-total-val" style="color:#16a34a">Rp ${totalBayar.toLocaleString('id-ID')}</span></td>`;
+}
+
+function todayInitTable(rows) {
+    const heads = `<th><input type="checkbox" id="selectAllToday" onclick="toggleSelectAll(this)" title="Pilih semua"></th>${DT_STD_HEADS}<th>Aktifkan</th><th>Paket</th><th>Harga</th><th>Pembayaran</th>`;
+    const cols  = [
+        { data:'chk',   orderable:false, width:'30px' },
+        ...DT_STD_COLS,
+        { data:'aktif', orderable:false },
+        { data:'paket', orderable:false },
+        { data:'harga', orderable:false },
+        { data:'bayar', orderable:false }
+    ];
+    document.getElementById('todayContainer').innerHTML = `
+        <table id="todayDataTable" class="display nowrap" style="width:100%">
+            <thead><tr>${heads}</tr></thead><tbody></tbody>
+            <tfoot><tr id="todayTotalRow"></tr></tfoot>
+        </table>`;
+    todayTable = $(`#todayDataTable`).DataTable({
+        data: rows,
+        columns: cols,
+        pageLength: 25,
+        lengthMenu: DT_LENGTH,
+        order: [[1,'desc']],
+        language: { ...DT_LANG, searchPlaceholder: 'Cari...' },
+        autoWidth: false,
+        drawCallback: function() { updateTodayTotalRow(rows); }
+    });
+    updateTodayTotalRow(rows);
+}
+
+/* ── Copy URL halaman tes ── */
+function copyTestUrl(btn) {
+    navigator.clipboard.writeText('https://psikotest.lidan.co.id/').then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => btn.textContent = orig, 1500);
+    });
+}
+function copyRowUrl(btn, url) {
+    navigator.clipboard.writeText(url).then(() => {
+        btn.classList.add('copied');
+        btn.textContent = '✅';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '📋'; }, 1500);
+    });
+}
+
+/* ── Checkbox & bulk action ── */
+function onRowCheck() {
+    const checked = document.querySelectorAll('#todayDataTable .row-checkbox:checked');
+    const bar = document.getElementById('bulkActionBar');
+    const allCb = document.getElementById('selectAllToday');
+    const total = document.querySelectorAll('#todayDataTable .row-checkbox').length;
+    document.getElementById('bulkSelectedCount').textContent = checked.length + ' dipilih';
+    bar.classList.toggle('visible', checked.length > 0);
+    if (allCb) allCb.indeterminate = checked.length > 0 && checked.length < total;
+    if (allCb) allCb.checked = checked.length === total && total > 0;
+}
+
+function toggleSelectAll(masterCb) {
+    document.querySelectorAll('#todayDataTable .row-checkbox').forEach(cb => {
+        cb.checked = masterCb.checked;
+    });
+    onRowCheck();
+}
+
+function clearAllChecks() {
+    document.querySelectorAll('#todayDataTable .row-checkbox').forEach(cb => cb.checked = false);
+    const allCb = document.getElementById('selectAllToday');
+    if (allCb) { allCb.checked = false; allCb.indeterminate = false; }
+    onRowCheck();
+}
+
+function bulkResetSelected() {
+    const checked = document.querySelectorAll('#todayDataTable .row-checkbox:checked');
+    if (!checked.length) return;
+    const items = Array.from(checked).map(cb => ({ idX: cb.dataset.idx, nama: cb.dataset.nama }));
+    // Buka modal bulk
+    _resetBulkItems = items;
+    _resetIdX  = null;
+    _resetNama = null;
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    _resetConfirmCode = code;
+    document.getElementById('resetCodeDisplay').textContent = code;
+    document.getElementById('resetCodeInput').value = '';
+    document.getElementById('resetErrMsg').textContent = '';
+    document.getElementById('btnResetSubmit').disabled = false;
+    document.getElementById('btnResetSubmit').textContent = '🗑 Reset Data';
+    // Tampilkan preview nama
+    const preview = items.map(i => '• ' + (i.nama || '(tanpa nama)')).join('\n');
+    document.getElementById('resetListPreview').textContent = preview;
+    document.getElementById('resetListPreview').style.display = '';
+    document.getElementById('resetModalTitle').textContent = `⚠️ Reset ${items.length} Peserta`;
+    openModal('modalResetPeserta');
+}
+
+/* ── Reset satu peserta ── */
+let _resetIdX  = null;
+let _resetNama = null;
+let _resetBulkItems = null;
+let _resetConfirmCode = '';
+
+function confirmResetPeserta(idX, nama) {
+    _resetIdX   = idX;
+    _resetNama  = nama;
+    _resetBulkItems = null;
+    const code  = Math.floor(1000 + Math.random() * 9000).toString();
+    _resetConfirmCode = code;
+    document.getElementById('resetCodeDisplay').textContent = code;
+    document.getElementById('resetCodeInput').value = '';
+    document.getElementById('resetErrMsg').textContent = '';
+    document.getElementById('btnResetSubmit').disabled = false;
+    document.getElementById('btnResetSubmit').textContent = '🗑 Reset Data';
+    document.getElementById('resetListPreview').textContent = '• ' + (nama || '(tanpa nama)');
+    document.getElementById('resetListPreview').style.display = '';
+    document.getElementById('resetModalTitle').textContent = '⚠️ Reset Data Peserta';
+    openModal('modalResetPeserta');
+}
+
+async function doResetPeserta() {
+    const typed = document.getElementById('resetCodeInput').value.trim();
+    const errEl = document.getElementById('resetErrMsg');
+    if (typed !== _resetConfirmCode) {
+        errEl.textContent = '❌ Kode salah, coba lagi.';
+        document.getElementById('resetCodeInput').focus();
+        return;
+    }
+    errEl.textContent = '';
+    const btn = document.getElementById('btnResetSubmit');
+    btn.disabled = true;
+    btn.textContent = '⏳ Mereset...';
+
+    const tbl   = document.getElementById('todayTableInput').value.trim() || 'nilai1';
+    const items = _resetBulkItems || [{ idX: _resetIdX }];
+    const emptyData = { x_02:'', x_04:'', x_05:'', x_06:'', x_07:'', x_08:'' };
+
+    try {
+        await Promise.all(items.map(item =>
+            fetch(`${API_INSERT}?table=${tbl}&id_x=${item.idX}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+                body: JSON.stringify(emptyData)
+            })
+        ));
+        closeModal('modalResetPeserta');
+        clearAllChecks();
+        allLastHash = null;
+        await allUpdate();
+    } catch(e) {
+        errEl.textContent = '⚠ Gagal: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = '🗑 Reset Data';
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TOKEN GENERATOR
+══════════════════════════════════════════════════════════════════ */
+
+/* ── State paket ── */
+let paketData       = [];      // semua row dari tabel alat_tes
+let selectedPaketId = null;    // x_01 paket yang dipilih (null = tanpa paket)
+const TBL_PAKET_TOKEN = 'alat_tes';
+
+async function loadPaketList() {
+    try {
+        const res  = await fetch(`${API_BASE}?table=${TBL_PAKET_TOKEN}`, { headers: { 'X-Custom-Auth': AUTH_KEY } });
+        const data = await res.json();
+        paketData  = (data.success && data.data) ? data.data : [];
+    } catch(e) {
+        paketData = [];
+    }
+    renderPaketSelector();
+}
+
+function renderPaketSelector() {
+    const grid = document.getElementById('paketSelectorGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Tombol "Tanpa Paket"
+    const noneBtn = document.createElement('button');
+    noneBtn.className = 'paket-none-btn' + (selectedPaketId === null ? ' selected' : '');
+    noneBtn.textContent = '— Tanpa Paket';
+    noneBtn.onclick = () => selectPaket(null);
+    grid.appendChild(noneBtn);
+
+    // Tombol per paket
+    for (const p of paketData) {
+        const idX  = String(p.id_x || '').trim();   // id_x = prefix token
+        const nama = (p.x_01 || '').trim();          // x_01 = nama paket (tampil)
+        const ket  = (p.x_03 || '').trim();          // x_03 = keterangan
+        if (!idX) continue;
+        const btn = document.createElement('button');
+        btn.className = 'paket-btn' + (selectedPaketId === idX ? ' selected' : '');
+        btn.innerHTML = `<span class="pb-id">id: ${escHtml(idX)}</span><span class="pb-nama">${escHtml(nama || ket || idX)}</span>`;
+        btn.onclick   = () => selectPaket(idX);
+        grid.appendChild(btn);
+    }
+
+    if (paketData.length === 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'font-size:12px;color:var(--muted);padding:4px 0';
+        msg.textContent = 'Tidak ada paket tersedia.';
+        grid.appendChild(msg);
+    }
+    updatePaketPreview();
+}
+
+function selectPaket(id) {
+    selectedPaketId = id;
+    renderPaketSelector();
+}
+
+function updatePaketPreview() {
+    const el = document.getElementById('paketPreviewText');
+    if (!el) return;
+    if (selectedPaketId) {
+        el.textContent = selectedPaketId + '-tokenacak';
+    } else {
+        el.textContent = 'tokenacak';
+    }
+}
+
+function openTokenModal() {
+    const tbl = document.getElementById('allTableInput').value.trim() || 'nilai1';
+    document.getElementById('modalTokenTableLabel').textContent = tbl;
+    document.getElementById('modalTokenJumlah').value = 1;
+    document.getElementById('tokenLog').style.display = 'none';
+    document.getElementById('tokenLog').innerHTML = '';
+    document.getElementById('btnTokenSubmit').disabled = false;
+    document.getElementById('btnTokenSubmit').textContent = '⚡ Generate & Simpan';
+    // Reset pilihan paket & load fresh
+    selectedPaketId = null;
+    document.getElementById('paketSelectorGrid').innerHTML = '<div style="font-size:12px;color:var(--muted)">⏳ Memuat paket...</div>';
+    updatePaketPreview();
+    loadPaketList();
+    openModal('modalToken');
+}
+
+function addLog(type, msg) {
+    const log = document.getElementById('tokenLog');
+    log.style.display = 'block';
+    const d = document.createElement('div');
+    d.className = 'log-' + type;
+    d.textContent = msg;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+}
+
+function randStr(len) {
+    let r = '';
+    for (let i=0; i<len; i++) r += CHARS.charAt(Math.floor(Math.random()*CHARS.length));
+    return r;
+}
+
+async function tokenExists(token, tbl) {
+    try {
+        const res  = await fetch(`${API_INSERT}?table=${tbl}&x_01_eq=${encodeURIComponent(token)}`, { headers:{'X-Custom-Auth':AUTH_KEY} });
+        const data = await res.json();
+        return data.success && data.count > 0;
+    } catch { return false; }
+}
+
+async function genUniqueToken(tbl) {
+    const suffix = randStr(TOKEN_LEN);
+    const token  = selectedPaketId ? (selectedPaketId + '-' + suffix) : suffix;
+    // Cek keunikan, retry jika sudah ada
+    for (let i=0; i<10 && await tokenExists(token, tbl); i++) {
+        const s2 = randStr(TOKEN_LEN + 2);
+        return selectedPaketId ? (selectedPaketId + '-' + s2) : s2;
+    }
+    return token;
+}
+
+async function doGenerateToken() {
+    const tbl    = document.getElementById('allTableInput').value.trim() || 'nilai1';
+    const jumlah = parseInt(document.getElementById('modalTokenJumlah').value);
+    if (!jumlah || jumlah < 1 || jumlah > 500) { alert('Jumlah antara 1–500.'); return; }
+    const btn = document.getElementById('btnTokenSubmit');
+    btn.disabled = true; btn.textContent = '⏳ Memproses...';
+    document.getElementById('tokenLog').innerHTML = '';
+    const prefix = selectedPaketId ? `[Paket: ${selectedPaketId}] ` : '[Tanpa Paket] ';
+    addLog('ok', `${prefix}Mulai generate ${jumlah} token ke tabel "${tbl}"...`);
+    let ok=0, fail=0;
+    for (let i=1; i<=jumlah; i++) {
+        try {
+            const token = await genUniqueToken(tbl);
+            const res   = await fetch(`${API_INSERT}?table=${tbl}`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-Custom-Auth':AUTH_KEY},
+                body: JSON.stringify({ x_01: token })
+            });
+            const data = await res.json();
+            if (data.success) { ok++; addLog('ok', `[${i}/${jumlah}] ✓ ${token} → id_x:${data.id_x}`); }
+            else { fail++; addLog('err', `[${i}/${jumlah}] ✗ ${data.message||'error'}`); }
+        } catch(e) { fail++; addLog('err', `[${i}/${jumlah}] ✗ ${e.message}`); }
+    }
+    addLog('ok', `─── Selesai: ${ok} berhasil, ${fail} gagal ───`);
+    btn.disabled = false; btn.textContent = '⚡ Generate & Simpan';
+    if (ok > 0) { allLastHash = null; allUpdate(); if (emptyTable) emptyRefresh(); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════════ */
+document.getElementById('todayDateInput').value = todayString();
+document.getElementById('pageToday').classList.add('active');
+allLoadTable();
+
+/* ══════════════════════════════════════════════════════════════════
+   AKTIVASI PESERTA — toggle aktif/nonaktif
+══════════════════════════════════════════════════════════════════ */
+async function aktivasiPeserta(idX, newStatus = 'aktif') {
+    const row = rawDataAll.find(r => String(r.id_x) === String(idX));
+    if (!row) { alert('Data peserta tidak ditemukan.'); return; }
+    const label = newStatus === 'aktif' ? 'Aktifkan' : 'Nonaktifkan';
+    if (!confirm(`${newStatus === 'aktif' ? '✅' : '⛔'} ${label} peserta ini?`)) return;
+    let bioObj = {};
+    try { bioObj = JSON.parse(row.x_02 || '{}'); } catch(e) {}
+    bioObj.status = newStatus;
+    const tbl = document.getElementById('todayTableInput').value.trim() || 'nilai1_json';
+    try {
+        const res = await fetch(`${API_INSERT}?table=${tbl}&id_x=${idX}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+            body: JSON.stringify({ x_02: JSON.stringify(bioObj) })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Gagal');
+        allLastHash = null;
+        await allUpdate();
+    } catch(e) {
+        alert(`Gagal ${label.toLowerCase()}: ` + e.message);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   KONTROL JADWAL TES PER PAKET
+   Struktur data di admin_kontrol id_x=1, field x_01 (JSON):
+   {
+     "paket": [
+       { "nama": "tes-iq-gratis", "status": "nonaktif", "waktu_mulai": "2025-06-01T08:00", "link": "https://zoom.us/..." },
+       ...
+     ]
+   }
+══════════════════════════════════════════════════════════════════ */
+let jadwalData = [];        // array paket dari admin_kontrol
+let jadwalLoaded = false;
+
+// ── Hitung berapa paket yg aktif → update tombol navbar
+function renderBtnKontrol() {
+    const btn = document.getElementById('btnKontrolGlobal');
+    if (!btn) return;
+    const aktifCount = jadwalData.filter(p => p.status === 'aktif').length;
+    const total = jadwalData.length;
+    if (!jadwalLoaded) {
+        btn.textContent = '⏳ Memuat...';
+        btn.style.background = '#94a3b8';
+        btn.style.color = 'white';
+    } else if (aktifCount === 0) {
+        btn.textContent = '⛔ Tes Nonaktif';
+        btn.style.background = '#dc2626';
+        btn.style.color = 'white';
+    } else if (aktifCount === total) {
+        btn.textContent = `✅ Semua Aktif (${total})`;
+        btn.style.background = '#16a34a';
+        btn.style.color = 'white';
+    } else {
+        btn.textContent = `🟡 ${aktifCount}/${total} Aktif`;
+        btn.style.background = '#f59e0b';
+        btn.style.color = 'white';
+    }
+}
+
+// ── Load data jadwal dari API
+async function loadKontrolGlobal() {
+    try {
+        const res = await fetch(`${API_BASE}?table=admin_kontrol&id_x=1`, {
+            headers: { 'X-Custom-Auth': AUTH_KEY }
+        });
+        const data = await res.json();
+        let raw = {};
+        if (data.success && data.data && data.data.x_01) {
+            try { raw = JSON.parse(data.data.x_01); } catch(e) {}
+        }
+        jadwalData = Array.isArray(raw.paket) ? raw.paket : [];
+    } catch(e) {
+        jadwalData = [];
+    }
+    jadwalLoaded = true;
+    renderBtnKontrol();
+}
+
+// ── Simpan data jadwal ke API
+async function saveJadwalToAPI(dataArr) {
+    const payload = { x_01: JSON.stringify({ paket: dataArr }) };
+    // Coba PUT dulu, jika gagal POST
+    try {
+        const resPut = await fetch(`${API_INSERT}?table=admin_kontrol&id_x=1`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+            body: JSON.stringify(payload)
+        });
+        const d = await resPut.json();
+        if (!d.success) throw new Error('PUT failed');
+    } catch(e) {
+        await fetch(`${API_INSERT}?table=admin_kontrol`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Custom-Auth': AUTH_KEY },
+            body: JSON.stringify({ ...payload, id_x: 1 })
+        });
+    }
+}
+
+// ── Buka modal jadwal
+async function openJadwalModal() {
+    document.getElementById('modalJadwal').classList.add('open');
+    document.getElementById('jadwalLoading').style.display = 'block';
+    document.getElementById('jadwalList').style.display = 'none';
+    // Reset search
+    const srch = document.getElementById('jadwalSearch');
+    if (srch) srch.value = '';
+
+    // Muat paket dari alat_tes
+    let paketList = [];
+    try {
+        const res = await fetch(`${API_BASE}?table=alat_tes`, { headers: { 'X-Custom-Auth': AUTH_KEY } });
+        const d = await res.json();
+        paketList = (d.success && d.data) ? d.data : [];
+    } catch(e) {}
+
+    // Reload jadwalData terbaru
+    await loadKontrolGlobal();
+
+    // Merge: paket dari alat_tes + data jadwal yg sudah tersimpan
+    const merged = paketList.map(p => {
+        const nama = (p.x_01 || '').trim();
+        const existing = jadwalData.find(j => j.nama === nama) || {};
+        return {
+            nama,
+            label: p.x_02 || nama,
+            status: existing.status || 'nonaktif',
+            waktu_mulai: existing.waktu_mulai || '',
+            link: existing.link || '',
+            logout_aktif: existing.logout_aktif || false
+        };
+    });
+
+    // Render kartu per paket
+    const list = document.getElementById('jadwalList');
+    list.innerHTML = '';
+    if (merged.length === 0) {
+        list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">Tidak ada paket ditemukan di tabel alat_tes.</p>';
+    } else {
+        merged.forEach((p, i) => {
+            const isAktif = p.status === 'aktif';
+            const card = document.createElement('div');
+            card.className = `jp-card ${isAktif ? 'aktif' : 'nonaktif'}`;
+            card.dataset.idx = i;
+            card.dataset.search = (p.nama + ' ' + p.label).toLowerCase();
+            card.innerHTML = `
+                <div class="jp-header">
+                    <div>
+                        <div class="jp-nama">📦 ${escHtml(p.label)}</div>
+                        <div style="font-size:11px;color:var(--muted);font-family:'Courier New',monospace;margin-top:2px;">${escHtml(p.nama)}</div>
+                    </div>
+                    <div class="jp-toggle-wrap">
+                        <label class="jp-toggle">
+                            <input type="checkbox" ${isAktif ? 'checked' : ''} onchange="toggleJpCard(this,${i})">
+                            <span class="jp-slider"></span>
+                        </label>
+                        <span class="jp-toggle-label" id="jpLabel_${i}" style="color:${isAktif ? '#16a34a' : '#dc2626'}">
+                            ${isAktif ? '✅ Aktif' : '⛔ Nonaktif'}
+                        </span>
+                    </div>
+                </div>
+                <div class="jp-fields">
+                    <div class="jp-field">
+                        <label>⏰ Waktu Mulai</label>
+                        <input type="datetime-local" id="jpWaktu_${i}" value="${escHtml(p.waktu_mulai)}" placeholder="Kosongkan jika tidak ada jadwal">
+                    </div>
+                    <div class="jp-field">
+                        <label>🔗 Link (Zoom / Meet)</label>
+                        <input type="url" id="jpLink_${i}" value="${escHtml(p.link)}" placeholder="https://zoom.us/j/...">
+                    </div>
+                    <div class="jp-field" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border);margin-top:4px;">
+                        <label style="margin:0;font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap;">🔓 Izinkan Logout</label>
+                        <label class="jp-toggle" style="margin:0;">
+                            <input type="checkbox" id="jpLogout_${i}" ${p.logout_aktif ? 'checked' : ''} onchange="toggleJpLogout(this,${i})">
+                            <span class="jp-slider"></span>
+                        </label>
+                        <span id="jpLogoutLabel_${i}" style="font-size:12px;font-weight:700;color:${p.logout_aktif ? '#16a34a' : '#94a3b8'};">
+                            ${p.logout_aktif ? '✅ Aktif' : '—'}
+                        </span>
+                    </div>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    // Simpan merged ke state sementara modal
+    list.dataset.merged = JSON.stringify(merged);
+    document.getElementById('jadwalLoading').style.display = 'none';
+    list.style.display = 'flex';
+    list.style.flexDirection = 'column';
+    list.style.gap = '12px';
+}
+
+// ── Toggle aktif/nonaktif card
+function toggleJpCard(checkbox, idx) {
+    const card = document.querySelector(`.jp-card[data-idx="${idx}"]`);
+    const label = document.getElementById(`jpLabel_${idx}`);
+    if (checkbox.checked) {
+        card.className = 'jp-card aktif';
+        label.textContent = '✅ Aktif';
+        label.style.color = '#16a34a';
+    } else {
+        card.className = 'jp-card nonaktif';
+        label.textContent = '⛔ Nonaktif';
+        label.style.color = '#dc2626';
+    }
+}
+
+// ── Toggle logout per paket
+function toggleJpLogout(checkbox, idx) {
+    const label = document.getElementById(`jpLogoutLabel_${idx}`);
+    if (checkbox.checked) {
+        label.textContent = '✅ Aktif';
+        label.style.color = '#16a34a';
+    } else {
+        label.textContent = '—';
+        label.style.color = '#94a3b8';
+    }
+}
+
+// ── Filter kartu paket berdasarkan kata kunci
+function filterJadwalCards(keyword) {
+    const q = (keyword || '').toLowerCase().trim();
+    const cards = document.querySelectorAll('#jadwalList .jp-card');
+    let visible = 0;
+    cards.forEach(card => {
+        const haystack = card.dataset.search || '';
+        const show = !q || haystack.includes(q);
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    // Tampilkan pesan jika tidak ada hasil
+    let emptyMsg = document.getElementById('jadwalSearchEmpty');
+    if (!emptyMsg) {
+        emptyMsg = document.createElement('p');
+        emptyMsg.id = 'jadwalSearchEmpty';
+        emptyMsg.style.cssText = 'color:var(--muted);text-align:center;padding:20px;display:none;';
+        emptyMsg.textContent = 'Tidak ada paket yang cocok.';
+        document.getElementById('jadwalList').appendChild(emptyMsg);
+    }
+    emptyMsg.style.display = (q && visible === 0) ? 'block' : 'none';
+}
+
+// ── Simpan semua paket
+async function saveAllJadwal() {
+    const list = document.getElementById('jadwalList');
+    let merged = [];
+    try { merged = JSON.parse(list.dataset.merged || '[]'); } catch(e) {}
+    if (!merged.length) { alert('Tidak ada data untuk disimpan.'); return; }
+
+    const btn = document.getElementById('btnSaveJadwal');
+    btn.disabled = true; btn.textContent = '⏳ Menyimpan...';
+
+    const newData = merged.map((p, i) => {
+        const cb = list.querySelector(`input[type=checkbox][onchange*="${i}"]`);
+        const waktu  = document.getElementById(`jpWaktu_${i}`);
+        const link   = document.getElementById(`jpLink_${i}`);
+        const logout = document.getElementById(`jpLogout_${i}`);
+        return {
+            nama: p.nama,
+            status: (cb && cb.checked) ? 'aktif' : 'nonaktif',
+            waktu_mulai: waktu ? waktu.value : '',
+            link: link ? link.value.trim() : '',
+            logout_aktif: logout ? logout.checked : false
+        };
+    });
+
+    try {
+        await saveJadwalToAPI(newData);
+        jadwalData = newData;
+        renderBtnKontrol();
+        btn.textContent = '✅ Tersimpan!';
+        setTimeout(() => { btn.disabled = false; btn.textContent = '💾 Simpan Semua'; }, 1800);
+    } catch(e) {
+        alert('Gagal menyimpan: ' + e.message);
+        btn.disabled = false; btn.textContent = '💾 Simpan Semua';
+    }
+}
+
+// Panggil saat halaman dimuat
+loadKontrolGlobal();
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE 4 — PRINT QR VOUCHER
+══════════════════════════════════════════════════════════════════ */
+let printCurrentOffset = 0;
+let printCurrentLimit  = 15;
+let printTableName     = 'nilai1';
+let printTotal         = 0;
+
+async function printFetch(offset, limit, tableName) {
+    const url = new URL(API_BASE);
+    url.searchParams.set('table',        tableName);
+    url.searchParams.set('x_02_isempty', '1');
+    url.searchParams.set('limit',        limit);
+    url.searchParams.set('offset',       offset);
+    const res  = await fetch(url.toString(), { headers: { 'X-Custom-Auth': AUTH_KEY } });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Gagal');
+    return { data: json.data || [], total: json.total ?? (json.data||[]).length };
+}
+
+async function printLoadPage(offset) {
+    printTableName     = document.getElementById('printTableInput').value.trim() || 'nilai1';
+    printCurrentLimit  = parseInt(document.getElementById('printLimitInput').value) || 15;
+    printCurrentOffset = offset;
+
+    // Reset paket filter saat tabel berganti
+    if (offset === 0) {
+        printSelectedPaketIdX  = null;
+        printSelectedPaketNama = null;
+        filterPaketLoaded      = false;
+        document.getElementById('printPaketLoading').style.display = 'inline';
+        document.getElementById('printPaketBtnGroup').innerHTML    = '';
+    }
+
+    // UI reset
+    document.getElementById('printLoadingMsg').style.display = 'block';
+    document.getElementById('printEmptyMsg').style.display   = 'none';
+    document.getElementById('voucherGrid').innerHTML          = '';
+    document.getElementById('printStatus').textContent        = 'Memuat...';
+    document.getElementById('btnPrintPrev').disabled = true;
+    document.getElementById('btnPrintNext').disabled = true;
+
+    try {
+        // Ambil SEMUA token kosong (untuk filter client-side & hitung per paket)
+        const { data: allTokens } = await printFetch(0, 9999, printTableName);
+        printAllData = allTokens;
+        printTotal   = allTokens.length;
+
+        document.getElementById('printLoadingMsg').style.display = 'none';
+
+        // Render tombol paket dengan jumlah token
+        await renderPrintPaketButtons(allTokens);
+
+        // Render voucher (semua / sesuai paket terpilih)
+        await printRenderFiltered(allTokens);
+
+    } catch(e) {
+        document.getElementById('printLoadingMsg').style.display = 'none';
+        document.getElementById('printStatus').textContent = '⚠ Error: ' + e.message;
+    }
+}
+
+function printPrevPage() {
+    printLoadPage(Math.max(0, printCurrentOffset - printCurrentLimit));
+}
+function printNextPage() {
+    printLoadPage(printCurrentOffset + printCurrentLimit);
+}
+
+// ✅ Konversi URL gambar eksternal ke base64 agar html2canvas bisa membacanya (menghindari CORS)
+// ✅ Generate QR Code lokal pakai QRCode.js — tidak ada CORS, aman untuk html2canvas
+// ✅ Generate QR langsung sebagai canvas element (bukan dataURL) — lebih reliable untuk html2canvas
+function generateQRCanvas(text) {
+    return new Promise((resolve) => {
+        const tmpDiv = document.createElement('div');
+        tmpDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+        document.body.appendChild(tmpDiv);
+
+        new QRCode(tmpDiv, {
+            text: text,
+            width: 150,
+            height: 150,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        setTimeout(() => {
+            const qrCanvas = tmpDiv.querySelector('canvas');
+            document.body.removeChild(tmpDiv);
+            resolve(qrCanvas); // kembalikan canvas element langsung
+        }, 150);
+    });
+}
+
+// Satu fungsi render voucher — baseUrl opsional (untuk paket dengan URL berbeda)
+async function printRenderVouchers(data, baseUrl = null) {
+    const grid = document.getElementById('voucherGrid');
+    grid.innerHTML = '';
+    document.getElementById('printStatus').textContent = '⏳ Membuat QR Code...';
+
+    for (const row of data) {
+        const token  = row.x_01 || '';
+        const idX    = row.id_x || '';
+        const url    = (baseUrl || PSIKOTEST_URL) + '?token=' + encodeURIComponent(token);
+        const qrCanvas = await generateQRCanvas(url);
+
+        const div = document.createElement('div');
+        div.className = 'voucher-card';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'voucher-card-title';
+        titleDiv.innerHTML = `ID: ${escHtml(String(idX))} &nbsp;|&nbsp; ${escHtml(printTableName)}`;
+
+        const qrLabel = document.createElement('div');
+        qrLabel.textContent = 'QR Code:';
+
+        const qrWrap = document.createElement('div');
+        qrWrap.className = 'voucher-qr-wrap';
+        if (qrCanvas) {
+            qrCanvas.style.cssText = 'display:block;margin:0 auto;border:2px solid #007BFF;border-radius:8px;padding:3px;';
+            qrWrap.appendChild(qrCanvas);
+        }
+
+        const urlDiv = document.createElement('div');
+        urlDiv.className = 'voucher-url';
+        urlDiv.textContent = 'URL: ' + (baseUrl || PSIKOTEST_URL);
+
+        const codeDiv = document.createElement('div');
+        codeDiv.className = 'voucher-code';
+        codeDiv.textContent = 'Token : ' + (token || '-');
+
+        div.appendChild(titleDiv);
+        div.appendChild(qrLabel);
+        div.appendChild(qrWrap);
+        div.appendChild(urlDiv);
+        div.appendChild(codeDiv);
+        grid.appendChild(div);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PAKET FILTER — shared state untuk Print QR & Data Per Paket
+══════════════════════════════════════════════════════════════════ */
+let filterPaketData     = [];
+let filterPaketLoaded   = false;
+let printSelectedPaketIdX  = null;
+let printSelectedPaketNama = null;
+let printAllData           = [];
+let ppSelectedPaketIdX  = null;
+let ppSelectedPaketNama = null;
+let ppTable             = null;
+
+async function loadFilterPaketData() {
+    if (filterPaketLoaded) return;
+    try {
+        const res  = await fetch(`${API_BASE}?table=alat_tes`, { headers: { 'X-Custom-Auth': AUTH_KEY } });
+        const json = await res.json();
+        filterPaketData = (json.success && json.data) ? json.data : [];
+    } catch(e) { filterPaketData = []; }
+    filterPaketLoaded = true;
+}
+
+function countTokenPerPaket(allTokens) {
+    const map = {};
+    allTokens.forEach(row => {
+        const prefix = (row.x_01 || '').trim().split('-')[0];
+        if (prefix) map[prefix] = (map[prefix] || 0) + 1;
+    });
+    return map;
+}
+
+async function renderPrintPaketButtons(allTokens) {
+    const countMap = countTokenPerPaket(allTokens);
+    await renderPaketButtons(
+        'printPaketBtnGroup', 'printPaketLoading', printSelectedPaketIdX,
+        (btn) => selectPrintPaket(null, null, btn, allTokens),
+        (idX, nama, btn) => selectPrintPaket(idX, nama, btn, allTokens),
+        countMap
+    );
+}
+
+function selectPrintPaket(idX, nama, clickedBtn, allTokens) {
+    printSelectedPaketIdX  = idX;
+    printSelectedPaketNama = nama;
+    document.querySelectorAll('#printPaketBtnGroup .pf-btn, #printPaketBar .pf-btn-all').forEach(b => b.classList.remove('active'));
+    clickedBtn.classList.add('active');
+    printRenderFiltered(allTokens);
+}
+
+async function printRenderFiltered(allTokens) {
+    let filtered = allTokens;
+    if (printSelectedPaketIdX !== null) {
+        filtered = allTokens.filter(row => {
+            const prefix = (row.x_01 || '').trim().split('-')[0];
+            return prefix === String(printSelectedPaketIdX);
+        });
+    }
+    const limit = parseInt(document.getElementById('printLimitInput').value) || 15;
+    printCurrentOffset = 0;
+    printTotal = filtered.length;
+    printAllData = filtered;
+
+    document.getElementById('voucherGrid').innerHTML = '';
+    document.getElementById('printEmptyMsg').style.display = 'none';
+
+    if (filtered.length === 0) {
+        document.getElementById('printEmptyMsg').style.display = 'block';
+        document.getElementById('printCount').textContent  = '0 voucher';
+        document.getElementById('printStatus').textContent = 'Kosong';
+        document.getElementById('btnPrintPrev').disabled = true;
+        document.getElementById('btnPrintNext').disabled = true;
+        return;
+    }
+
+    const page = filtered.slice(0, limit);
+    const baseUrl = printSelectedPaketNama
+        ? 'https://lidan.co.id/psikotest/' + encodeURIComponent(printSelectedPaketNama)
+        : null;
+    await printRenderVouchers(page, baseUrl);
+    document.getElementById('printCount').textContent  = page.length + ' voucher';
+    document.getElementById('printStatus').textContent = `1–${page.length} dari ${filtered.length}`;
+    document.getElementById('btnPrintPrev').disabled = true;
+    document.getElementById('btnPrintNext').disabled = (page.length >= filtered.length);
+}
+
+/* ── Data Per Paket ── */
+async function renderPerPaketButtons() {
+    await renderPaketButtons(
+        'perPaketBtnGroup', 'perPaketLoading', ppSelectedPaketIdX,
+        null,
+        (idX, nama, btn) => selectPerPaket(idX, nama, btn),
+        null
+    );
+}
+
+function selectPerPaket(idX, nama, clickedBtn) {
+    ppSelectedPaketIdX  = idX;
+    ppSelectedPaketNama = nama;
+    document.querySelectorAll('#perPaketBtnGroup .pf-btn').forEach(b => b.classList.remove('active'));
+    clickedBtn.classList.add('active');
+    renderPerPaketTable();
+}
+
+function renderPerPaketTable() {
+    const filtered = rawDataAll.filter(row => {
+        const prefix = (row.x_01 || '').trim().split('-')[0];
+        return prefix === String(ppSelectedPaketIdX);
+    });
+
+    document.getElementById('perPaketCount').textContent = filtered.length + ' data';
+
+    const rows = filtered.map(row => makeRowData(row));
+
+    const container = document.getElementById('perPaketContainer');
+    if (ppTable) { ppTable.destroy(); ppTable = null; }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-msg" style="display:block">
+            <div class="em-icon">🔍</div>
+            <p>Tidak ada data untuk paket <strong>${escHtml(ppSelectedPaketNama || ppSelectedPaketIdX)}</strong>.</p>
+        </div>`;
+        return;
+    }
+
+    ppTable = makeDT('perPaketContainer', 'perPaketTable', DT_STD_HEADS, DT_STD_COLS, rows);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   END PAKET FILTER
+══════════════════════════════════════════════════════════════════ */
+
+async function downloadVouchers() {
+    const grid = document.getElementById('voucherGrid');
+    if (!grid.children.length) { alert('Tidak ada voucher untuk didownload.'); return; }
+
+    document.getElementById('printStatus').textContent = '⏳ Menyiapkan download...';
+
+    // ✅ Ikuti pola index.html yang berhasil: tunggu semua canvas siap lalu capture
+    try {
+        // Pastikan semua canvas QR sudah ter-render
+        await new Promise(r => setTimeout(r, 200));
+
+        const canvas = await html2canvas(grid, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#f0f2ff'
+        });
+        const link = document.createElement('a');
+        link.href     = canvas.toDataURL('image/jpeg', 0.95);
+        link.download = `voucher_${printTableName}_${todayString()}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        document.getElementById('printStatus').textContent = '✅ Downloaded!';
+        setTimeout(() => {
+            const to = printCurrentOffset + parseInt(document.getElementById('printLimitInput').value||15);
+            document.getElementById('printStatus').textContent =
+                `${printCurrentOffset+1}–${Math.min(to, printTotal)} dari ${printTotal}`;
+        }, 2000);
+    } catch(e) {
+        document.getElementById('printStatus').textContent = '⚠ Gagal download: ' + e.message;
+    }
+}
+</script>
+<script src="https://login.lidan.co.id/login_admin.js"></script>
+<!-- ══ MODAL SOAL VIA ZOOM ══ -->
+<div class="modal-overlay" id="modalSoalZoom" style="z-index:10200;">
+  <div class="modal-box" style="max-width:480px;width:96%;">
+    <button class="modal-close" onclick="closeModal('modalSoalZoom')">×</button>
+    <h2>🎯 Soal via Zoom</h2>
+    <p class="sub">Buka halaman tes atau salin link untuk dibagikan ke peserta.</p>
+
+    <!-- SEKSI FREE -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#16a34a;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <span style="background:#dcfce7;border:1px solid #86efac;border-radius:99px;padding:2px 10px;">🆓 FREE</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+
+        <!-- IQ Free -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;">
+          <span style="font-size:.9em;font-weight:600;color:var(--text);">🧠 IQ</span>
+          <div style="display:flex;gap:6px;">
+            <a href="https://lidan.co.id/test/tes-iq-free" target="_blank"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:var(--primary);color:#fff;border-radius:7px;font-size:.8em;font-weight:700;text-decoration:none;white-space:nowrap;">
+              🔗 Buka
+            </a>
+            <button onclick="copyLink('https://lidan.co.id/test/tes-iq-free', this)"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;font-size:.8em;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">
+              📋 Salin
+            </button>
+          </div>
+        </div>
+
+        <!-- IQ Komprehensif Free -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;">
+          <span style="font-size:.9em;font-weight:600;color:var(--text);">🧠 IQ Komprehensif</span>
+          <div style="display:flex;gap:6px;">
+            <a href="https://lidan.co.id/test/tes-iq-komprehensif-free" target="_blank"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:var(--primary);color:#fff;border-radius:7px;font-size:.8em;font-weight:700;text-decoration:none;white-space:nowrap;">
+              🔗 Buka
+            </a>
+            <button onclick="copyLink('https://lidan.co.id/test/tes-iq-komprehensif-free', this)"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;font-size:.8em;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">
+              📋 Salin
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
+
+    <!-- SEKSI PREMIUM -->
+    <div style="margin-bottom:8px;">
+      <div style="font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7c3aed;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <span style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:99px;padding:2px 10px;">⭐ PREMIUM</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+
+        <!-- IQ Premium -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;">
+          <span style="font-size:.9em;font-weight:600;color:var(--text);">🧠 IQ</span>
+          <div style="display:flex;gap:6px;">
+            <a href="https://lidan.co.id/test/tes-iq-premium" target="_blank"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#7c3aed;color:#fff;border-radius:7px;font-size:.8em;font-weight:700;text-decoration:none;white-space:nowrap;">
+              🔗 Buka
+            </a>
+            <button onclick="copyLink('https://lidan.co.id/test/tes-iq-premium', this)"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;font-size:.8em;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">
+              📋 Salin
+            </button>
+          </div>
+        </div>
+
+        <!-- IQ Komprehensif Premium -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;">
+          <span style="font-size:.9em;font-weight:600;color:var(--text);">🧠 IQ Komprehensif</span>
+          <div style="display:flex;gap:6px;">
+            <a href="https://lidan.co.id/test/tes-iq-komprehensif-premium" target="_blank"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#7c3aed;color:#fff;border-radius:7px;font-size:.8em;font-weight:700;text-decoration:none;white-space:nowrap;">
+              🔗 Buka
+            </a>
+            <button onclick="copyLink('https://lidan.co.id/test/tes-iq-komprehensif-premium', this)"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;font-size:.8em;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">
+              📋 Salin
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('modalSoalZoom')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

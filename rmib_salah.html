@@ -212,15 +212,16 @@ const AUTH  = 'admin';
 
 // ─── DEFINISI BARIS ───────────────────────────────────────────
 // xCol: kolom mana (0=A..7=H) yang bertanda X untuk baris ini
+// -1 = tidak ada X
 const rowDefs = [
-  { no: 1,  label: 'Outd', xCol: 0 }, // X di A  ← angka pertama k1
-  { no: 2,  label: 'Mech', xCol: 1 }, // X di B  ← angka pertama k2
-  { no: 3,  label: 'Comp', xCol: 2 }, // X di C  ← angka pertama k3
-  { no: 4,  label: 'Scie', xCol: 3 }, // X di D  ← angka pertama k4
-  { no: 5,  label: 'Pers', xCol: 4 }, // X di E  ← angka pertama k5
-  { no: 6,  label: 'Aest', xCol: 5 }, // X di F  ← angka pertama k6
-  { no: 7,  label: 'Musi', xCol: 6 }, // X di G  ← angka pertama k7
-  { no: 8,  label: 'Lite', xCol: 7 }, // X di H  ← angka pertama k8
+  { no: 1,  label: 'Outd', xCol: 0 }, // X di A
+  { no: 2,  label: 'Mech', xCol: 1 }, // X di B
+  { no: 3,  label: 'Comp', xCol: 2 }, // X di C
+  { no: 4,  label: 'Scie', xCol: 3 }, // X di D
+  { no: 5,  label: 'Pers', xCol: 4 }, // X di E
+  { no: 6,  label: 'Aest', xCol: 5 }, // X di F
+  { no: 7,  label: 'Musi', xCol: 6 }, // X di G
+  { no: 8,  label: 'Lite', xCol: 7 }, // X di H
   { no: 9,  label: 'Soci', xCol: -1 },
   { no: 10, label: 'Cler', xCol: -1 },
   { no: 11, label: 'Prac', xCol: -1 },
@@ -228,43 +229,13 @@ const rowDefs = [
 ];
 
 // ─── PARSER ──────────────────────────────────────────────────
-// "1;2;3;..." → array of numbers (tanpa batasi 12)
+// "1;2;3;..." → [1,2,3,...] (12 nilai, index 0=baris1)
 function parseKol(str) {
-  if (!str) return [];
+  if (!str) return new Array(12).fill(null);
   return str.split(';').map(s => {
     const v = s.trim();
     return v === '' ? null : Number(v);
-  }).filter(v => v !== null);
-}
-
-// ─── DISTRIBUSI DATA KE GRID ──────────────────────────────────
-// Untuk kolom col (0–7):
-//   - xRow = col  (kolom A→baris 0, kolom B→baris 1, dst.)
-//   - vals[0]  → sel X (baris xRow)
-//   - vals[1+] → baris lain berurutan mulai xRow+1, wrap dari baris 0, lewati xRow
-function buildKolData(rawKols) {
-  const kolData = Array.from({ length: 8 }, () => new Array(12).fill(null));
-
-  for (let col = 0; col < 8; col++) {
-    const vals = rawKols[col] || [];
-    if (vals.length === 0) continue;
-
-    const xRow = col; // baris X untuk kolom ini
-
-    // Angka pertama → sel X
-    kolData[col][xRow] = vals[0];
-
-    // Sisa angka → isi baris lain, mulai dari xRow+1, wrap, lewati xRow
-    let cursor = (xRow + 1) % 12;
-    for (let i = 1; i < vals.length; i++) {
-      // Pastikan tidak melewati sel X
-      if (cursor === xRow) cursor = (cursor + 1) % 12;
-      kolData[col][cursor] = vals[i];
-      cursor = (cursor + 1) % 12;
-    }
-  }
-
-  return kolData;
+  }).slice(0, 12);
 }
 
 // ─── RENDER ──────────────────────────────────────────────────
@@ -274,17 +245,18 @@ function renderTable(kolData) {
 
   const anyData = kolData.some(k => k.some(v => v !== null && !isNaN(v)));
 
-  // Total per baris: jumlah SEMUA nilai termasuk sel X
+  // Total per baris: jumlah A–H kecuali sel X
   const rowTotals = rowDefs.map((row, rowIdx) => {
     let sum = 0;
     for (let col = 0; col < 8; col++) {
+      if (col === row.xCol) continue;
       const val = kolData[col][rowIdx];
       if (val !== null && !isNaN(val)) sum += val;
     }
     return sum;
   });
 
-  // Rank: total terkecil = rank 1
+  // Rank per baris: rank 1 = total terbesar (dari 12 baris)
   const rowRanks = anyData ? rankOf(rowTotals, 12) : null;
 
   rowDefs.forEach((row, rowIdx) => {
@@ -301,7 +273,6 @@ function renderTable(kolData) {
       const td = document.createElement('td');
       const val = kolData[col][rowIdx];
       if (col === row.xCol) {
-        // Sel X
         td.className = 'x-cell';
         const xMark = document.createElement('span');
         xMark.className = 'x-mark';
@@ -320,13 +291,13 @@ function renderTable(kolData) {
       tr.appendChild(td);
     }
 
-    // Total
+    // Total kolom
     const totalTd = document.createElement('td');
     totalTd.className = 'total-cell';
     totalTd.textContent = anyData ? rowTotals[rowIdx] : '';
     tr.appendChild(totalTd);
 
-    // Rank
+    // Rank kolom
     const rankTd = document.createElement('td');
     rankTd.className = 'rank-cell';
     rankTd.textContent = rowRanks ? rowRanks[rowIdx] : '';
@@ -336,7 +307,7 @@ function renderTable(kolData) {
   });
 }
 
-// Rank: nilai terkecil = rank 1
+// Rank: nilai terbesar = rank 1
 function rankOf(values, n) {
   const indexed = values.map((v, i) => ({ v, i }));
   const sorted  = [...indexed].sort((a, b) => a.v - b.v);
@@ -399,17 +370,15 @@ async function cariData() {
       showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
     }
 
+    // Ambil x_06 (atau sesuaikan key jika berbeda)
     let x07 = {};
     try { x07 = JSON.parse(row.x_06 || '{}'); } catch {}
 
-    // Parse raw tiap kolom (tanpa batasi 12)
-    const rawKols = [];
+    // Bangun kolData[0..7] dari rmib_k1..rmib_k8
+    const kolData = [];
     for (let k = 1; k <= 8; k++) {
-      rawKols.push(parseKol(x07[`rmib_k${k}`] || ''));
+      kolData.push(parseKol(x07[`rmib_k${k}`] || ''));
     }
-
-    // Distribusikan ke grid 8x12
-    const kolData = buildKolData(rawKols);
 
     renderTable(kolData);
 
