@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hasil Tes Kreplin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --border: #2a2a2a;
+    --accent: #00ff88;
+    --accent2: #ff6b6b;
+    --accent3: #ffd93d;
+    --text: #f0f0f0;
+    --muted: #666;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar a {
+    color: var(--muted); text-decoration: none; font-size: 13px;
+    transition: color 0.2s;
+  }
+  .topbar a:hover { color: var(--accent); }
+  .topbar .sep { color: var(--border); }
+  .hero {
+    padding: 40px 32px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-tag {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .hero-meta { font-size: 14px; color: var(--muted); }
+  .hero-meta span { color: var(--text); }
+  .content { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+  /* ── TOOLBAR (server + search) ── */
+  .toolbar-wrap { padding: 24px 32px 0; max-width: 1100px; margin: 0 auto; }
+
+  .srv-switcher {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .srv-switcher-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .srv-chip {
+    background: var(--surface); border: 1.5px solid var(--border); color: var(--muted);
+    border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;
+  }
+  .srv-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .srv-chip.active { background: var(--accent); border-color: var(--accent); color: #0d0d0d; }
+
+  .search-panel {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .search-panel label { font-weight: 600; font-size: 13px; white-space: nowrap; color: var(--text); }
+  .search-panel input {
+    flex: 1; min-width: 160px; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: var(--text);
+    outline: none; background: var(--surface2); transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: var(--accent); }
+  .search-panel input::placeholder { color: var(--muted); }
+  .btn {
+    padding: 10px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #0d0d0d; }
+  .btn-primary:hover:not(:disabled) { background: #00d976; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-reset:hover { background: #2a2a2a; }
+  .btn-spinner {
+    display: inline-block; width: 13px; height: 13px;
+    border: 2px solid rgba(13,13,13,0.3); border-top-color: #0d0d0d;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err-box {
+    background: rgba(255,107,107,0.08); border: 1.5px solid rgba(255,107,107,0.4);
+    border-radius: 8px; padding: 12px 16px;
+    color: var(--accent2); font-size: 13px; font-weight: 600;
+    display: none; margin-bottom: 12px;
+  }
+  .err-box.show { display: block; }
+
+  /* ── BIODATA ── */
+  .biodata-bar {
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .biodata-bar.show { display: block; }
+  .biodata-title {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;
+  }
+  .biodata-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 20px;
+  }
+  .biodata-item { display: flex; flex-direction: column; gap: 3px; }
+  .biodata-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+  .biodata-value { font-size: 13px; color: var(--text); font-weight: 500; }
+  .status-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+  }
+  .status-aktif { background: rgba(0,255,136,0.12); color: var(--accent); }
+  .status-nonaktif { background: rgba(255,107,107,0.12); color: var(--accent2); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 80px 32px;
+    color: var(--muted); font-family: 'Syne Mono', monospace; font-size: 13px;
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 14px; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.green::before { background: var(--accent); }
+  .stat-card.red::before { background: var(--accent2); }
+  .stat-card.yellow::before { background: var(--accent3); }
+  .stat-card.blue::before { background: #58a6ff; }
+  .stat-card .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-card.green .val { color: var(--accent); }
+  .stat-card.red .val { color: var(--accent2); }
+  .stat-card.yellow .val { color: var(--accent3); }
+  .stat-card.blue .val { color: #58a6ff; }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+
+  /* SECTION */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .section-header .tag {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .section-body { padding: 22px; }
+  .chart-wrap { position: relative; height: 260px; }
+
+  /* PERIOD GRID */
+  .period-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .period-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .period-card .p-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .period-card .p-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .period-card .p-range { font-family: 'Syne Mono', monospace; font-size: 10px; color: var(--border); margin-top: 2px; letter-spacing: 0.08em; }
+
+  /* INTERPRETASI */
+  .interp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .interp-item {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .interp-icon { font-size: 20px; flex-shrink: 0; }
+  .interp-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .interp-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  @media (max-width: 720px) {
+    .biodata-grid { grid-template-columns: repeat(2, 1fr); }
+    .interp-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index_admin.html">← Admin</a>
+  <span class="sep">/</span>
+  <span style="font-size:13px;color:var(--muted);">Hasil Kreplin</span>
+</div>
+
+<!-- TOOLBAR: SERVER SWITCHER + SEARCH -->
+<div class="toolbar-wrap">
+  <div class="srv-switcher" id="srvSwitcher">
+    <span class="srv-switcher-label">Server:</span>
+    <!-- diisi oleh JS -->
+  </div>
+
+  <div class="biodata-bar" id="biodataBar">
+    <div class="biodata-title">📋 Data Peserta</div>
+    <div class="biodata-grid">
+      <div class="biodata-item">
+        <span class="biodata-label">Nama</span>
+        <span class="biodata-value" id="bd-nama">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Jenis Kelamin</span>
+        <span class="biodata-value" id="bd-jk">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Usia</span>
+        <span class="biodata-value" id="bd-usia">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Pendidikan</span>
+        <span class="biodata-value" id="bd-pendidikan">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Telepon</span>
+        <span class="biodata-value" id="bd-telepon">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Tanggal Tes</span>
+        <span class="biodata-value" id="bd-tgl">—</span>
+      </div>
+      <div class="biodata-item">
+        <span class="biodata-label">Status</span>
+        <span class="biodata-value" id="bd-status">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-panel">
+    <label>🔎 ID Peserta:</label>
+    <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+      autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+    <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+    <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  </div>
+  <div class="err-box" id="errBox"></div>
+</div>
+
+<div id="emptyState" class="empty-state">
+  <div class="icon">🧮</div>
+  <div>Silakan pilih server dan masukkan ID Peserta untuk melihat hasil tes Kreplin.</div>
+</div>
+
+<div id="mainContent" style="display:none;">
+  <div class="hero">
+    <div class="hero-tag">● Hasil Tes Kraepelin / Kreplin</div>
+    <h1 id="namaHero">—</h1>
+    <div class="hero-meta">Token: <span id="tokenHero">—</span> &nbsp;|&nbsp; ID: <span id="idHero">—</span></div>
+  </div>
+
+  <div class="content">
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card green">
+        <div class="val" id="statTotalDikerjakan">—</div>
+        <div class="lbl">Total Dikerjakan</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="val" id="statRataRata">—</div>
+        <div class="lbl">Rata-rata / Kolom</div>
+      </div>
+      <div class="stat-card red">
+        <div class="val" id="statTotalSalah">—</div>
+        <div class="lbl">Total Salah</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="val" id="statAkurasi">—</div>
+        <div class="lbl">Akurasi</div>
+      </div>
+    </div>
+
+    <!-- GRAFIK DIKERJAKAN -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Kurva Kerja — Jumlah Soal Dikerjakan</h2>
+        <span class="tag">45 KOLOM</span>
+      </div>
+      <div class="section-body">
+        <div class="chart-wrap">
+          <canvas id="chartDikerjakan"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAFIK SALAH -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Distribusi Kesalahan per Kolom</h2>
+        <span class="tag">x_07</span>
+      </div>
+      <div class="section-body">
+        <div class="chart-wrap">
+          <canvas id="chartSalah"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAFIK GABUNGAN -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Dikerjakan vs Benar</h2>
+        <span class="tag">PERBANDINGAN</span>
+      </div>
+      <div class="section-body">
+        <div class="chart-wrap">
+          <canvas id="chartGabungan"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- KESALAHAN 3 PERIODE -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Kesalahan per Periode</h2>
+        <span class="tag">ANALISIS</span>
+      </div>
+      <div class="section-body">
+        <div class="period-grid">
+          <div class="period-card">
+            <div class="p-val" id="salah1">—</div>
+            <div class="p-lbl">Periode I</div>
+            <div class="p-range">KOLOM 6 — 10</div>
+          </div>
+          <div class="period-card">
+            <div class="p-val" id="salah2">—</div>
+            <div class="p-lbl">Periode II</div>
+            <div class="p-range">KOLOM 21 — 25</div>
+          </div>
+          <div class="period-card">
+            <div class="p-val" id="salah3">—</div>
+            <div class="p-lbl">Periode III</div>
+            <div class="p-range">KOLOM 36 — 40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERPRETASI -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Interpretasi Kurva Kerja</h2>
+        <span class="tag">OTOMATIS</span>
+      </div>
+      <div class="section-body">
+        <div class="interp-grid" id="interpGrid"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── localStorage helpers ──
+const sg = k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+const ss = (k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+
+// ─── SERVER LIST — sama seperti viewer lain ──
+const SERVERS = [
+  { label: 'Lidan',     domain: 'lidan-co-id.pages.dev' },
+  { label: 'Tabi',      domain: 'tabi.my.id'             },
+  { label: 'Mobeli',    domain: 'mobeli.my.id'           },
+  { label: 'TalentMap', domain: 'talentmap.my.id'        },
+];
+const API_PATH = '/api/contacts_filter_dinamis7';
+
+let activeServerIdx = parseInt(sg('krepServerIdx')||'0');
+if(!(activeServerIdx >= 0 && activeServerIdx < SERVERS.length)) activeServerIdx = 0;
+
+function apiUrl(){
+  return `https://${SERVERS[activeServerIdx].domain}${API_PATH}`;
+}
+
+function renderServerSwitcher(){
+  const el = document.getElementById('srvSwitcher');
+  const label = el.querySelector('.srv-switcher-label');
+  el.innerHTML = '';
+  el.appendChild(label);
+  SERVERS.forEach((s,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'srv-chip' + (i===activeServerIdx?' active':'');
+    btn.textContent = String(i+1);
+    btn.title = `${s.label} — https://${s.domain}`;
+    btn.onclick = () => switchServer(i);
+    el.appendChild(btn);
+  });
+}
+function switchServer(idx){
+  if(idx === activeServerIdx) return;
+  activeServerIdx = idx;
+  ss('krepServerIdx', idx);
+  renderServerSwitcher();
+  resetAll();
+}
+renderServerSwitcher();
+
+// ─── API CONFIG ────────────────────────────────────────────────
+const TABLE = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── CHART INSTANCES (perlu di-destroy sebelum render ulang) ──
+let chartDikerjakan = null, chartSalah = null, chartGabungan = null;
+
+// ─── UI HELPERS ────────────────────────────────────────────────
+function showErr(msg) { const el=document.getElementById('errBox'); el.textContent=msg; el.classList.add('show'); }
+function clearErr()   { document.getElementById('errBox').classList.remove('show'); }
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="btn-spinner"></span> Mencari...' : 'Cari';
+}
+
+function tampilkanBiodata(x02) {
+  let bio = {};
+  try { bio = JSON.parse(x02 || '{}'); } catch {}
+  const jkMap = { 'L':'Laki-laki', 'P':'Perempuan', 'l':'Laki-laki', 'p':'Perempuan' };
+  const pendMap = { 'sd':'SD','smp':'SMP','sma':'SMA/SMK','d3':'D3','s1':'S1','s2':'S2','s3':'S3' };
+  document.getElementById('bd-nama').textContent      = bio.nama || '—';
+  document.getElementById('bd-jk').textContent        = jkMap[bio.jenis_kelamin] || bio.jenis_kelamin || '—';
+  document.getElementById('bd-usia').textContent      = bio.usia ? bio.usia + ' tahun' : '—';
+  document.getElementById('bd-pendidikan').textContent= pendMap[(bio.pendidikan||'').toLowerCase()] || bio.pendidikan || '—';
+  document.getElementById('bd-telepon').textContent   = bio.telepon || '—';
+  const tgl = bio.tgl_tes ? new Date(bio.tgl_tes).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}) : '—';
+  document.getElementById('bd-tgl').textContent = tgl;
+  const statusEl = document.getElementById('bd-status');
+  const st = (bio.status || '').toLowerCase();
+  statusEl.innerHTML = `<span class="status-badge ${st==='aktif'?'status-aktif':'status-nonaktif'}">${bio.status||'—'}</span>`;
+  document.getElementById('biodataBar').classList.add('show');
+}
+function sembunyikanBiodata() {
+  document.getElementById('biodataBar').classList.remove('show');
+}
+
+function resetAll() {
+  clearErr();
+  document.getElementById('inputId').value = '';
+  sembunyikanBiodata();
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+  if (chartDikerjakan) { chartDikerjakan.destroy(); chartDikerjakan = null; }
+  if (chartSalah)      { chartSalah.destroy(); chartSalah = null; }
+  if (chartGabungan)   { chartGabungan.destroy(); chartGabungan = null; }
+}
+
+// ─── FETCH ─────────────────────────────────────────────────────
+async function cariData() {
+  const id_x = document.getElementById('inputId').value.trim();
+  if (!id_x) { showErr('⚠ Masukkan ID peserta terlebih dahulu.'); return; }
+  clearErr(); setBtn(true);
+  try {
+    const res = await fetch(`${apiUrl()}?table=${TABLE}&id_x=${encodeURIComponent(id_x)}`, {
+      headers: { 'X-Custom-Auth': AUTH }
+    });
+    const json = await res.json();
+    if (!json.success || !json.data) { showErr('⚠ Tidak ada data untuk ID: ' + id_x); return; }
+    const row = Array.isArray(json.data) ? json.data[0] : json.data;
+    if (!row) { showErr('⚠ Tidak ada data untuk ID: ' + id_x); return; }
+    render(row);
+  } catch(e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+  } finally {
+    setBtn(false);
+  }
+}
+
+function render(r) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+
+  // Biodata dari x_02
+  tampilkanBiodata(r.x_02 || '{}');
+
+  // Header — nama dari x_02 yang berupa JSON
+  let nama = '(Tanpa Nama)';
+  try { nama = JSON.parse(r.x_02||'{}').nama || nama; } catch {}
+  document.getElementById('namaHero').textContent = nama;
+  document.getElementById('tokenHero').textContent = r.x_01 || '-';
+  document.getElementById('idHero').textContent = r.id_x;
+
+  // Parse data kreplin dari x_06 JSON
+  let krep = {};
+  try { krep = JSON.parse(r.x_06||'{}').kreplin || {}; } catch {}
+  const dikerjakan = (krep.dikerjakan||'').split('|').map(v => parseInt(v.trim())||0);
+  const salah      = (krep.salah     ||'').split('|').map(v => parseInt(v.trim())||0);
+  const benar      = (krep.benar     ||'').split('|').map(v => parseInt(v.trim())||0);
+
+  // Pastikan 45 elemen
+  while (dikerjakan.length < 45) dikerjakan.push(0);
+  while (salah.length < 45) salah.push(0);
+  while (benar.length < 45) benar.push(0);
+
+  const totalDikerjakan = dikerjakan.reduce((a,b)=>a+b,0);
+  const totalSalah = salah.reduce((a,b)=>a+b,0);
+  const totalBenar = benar.reduce((a,b)=>a+b,0);
+  const rataRata = (totalDikerjakan / 45).toFixed(1);
+  const akurasi = totalDikerjakan > 0 ? ((totalBenar/totalDikerjakan)*100).toFixed(1)+'%' : '—';
+
+  document.getElementById('statTotalDikerjakan').textContent = totalDikerjakan;
+  document.getElementById('statRataRata').textContent = rataRata;
+  document.getElementById('statTotalSalah').textContent = totalSalah;
+  document.getElementById('statAkurasi').textContent = akurasi;
+
+  // Periode salah
+  const s1 = salah.slice(5,10).reduce((a,b)=>a+b,0);
+  const s2 = salah.slice(20,25).reduce((a,b)=>a+b,0);
+  const s3 = salah.slice(35,40).reduce((a,b)=>a+b,0);
+  document.getElementById('salah1').textContent = s1;
+  document.getElementById('salah2').textContent = s2;
+  document.getElementById('salah3').textContent = s3;
+
+  const labels = Array.from({length:45},(_,i)=>i+1);
+
+  // Destroy chart lama sebelum render ulang (penting saat ganti peserta)
+  if (chartDikerjakan) chartDikerjakan.destroy();
+  if (chartSalah) chartSalah.destroy();
+  if (chartGabungan) chartGabungan.destroy();
+
+  // Chart 1: Dikerjakan
+  chartDikerjakan = new Chart(document.getElementById('chartDikerjakan'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Dikerjakan',
+        data: dikerjakan,
+        borderColor: '#00ff88',
+        backgroundColor: 'rgba(0,255,136,0.06)',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#00ff88',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#f0f0f0', font: { family: 'Inter' } } } },
+      scales: {
+        x: { grid: { color: '#1f1f1f' }, ticks: { color: '#666', font: { size: 10 } } },
+        y: { beginAtZero: true, grid: { color: '#1f1f1f' }, ticks: { color: '#666' } }
+      }
+    }
+  });
+
+  // Chart 2: Salah
+  chartSalah = new Chart(document.getElementById('chartSalah'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Salah',
+        data: salah,
+        backgroundColor: 'rgba(255,107,107,0.7)',
+        borderColor: '#ff6b6b',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#f0f0f0' } } },
+      scales: {
+        x: { grid: { color: '#1f1f1f' }, ticks: { color: '#666', font: { size: 10 } } },
+        y: { beginAtZero: true, grid: { color: '#1f1f1f' }, ticks: { color: '#666', stepSize: 1 } }
+      }
+    }
+  });
+
+  // Chart 3: Gabungan
+  chartGabungan = new Chart(document.getElementById('chartGabungan'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Dikerjakan',
+          data: dikerjakan,
+          borderColor: '#00ff88',
+          borderWidth: 2,
+          pointRadius: 2,
+          fill: false,
+          tension: 0.3
+        },
+        {
+          label: 'Benar',
+          data: benar,
+          borderColor: '#58a6ff',
+          borderWidth: 2,
+          pointRadius: 2,
+          fill: false,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#f0f0f0' } } },
+      scales: {
+        x: { grid: { color: '#1f1f1f' }, ticks: { color: '#666', font: { size: 10 } } },
+        y: { beginAtZero: true, grid: { color: '#1f1f1f' }, ticks: { color: '#666' } }
+      }
+    }
+  });
+
+  // Interpretasi otomatis
+  const first10 = dikerjakan.slice(0,10).reduce((a,b)=>a+b,0)/10;
+  const last10  = dikerjakan.slice(35,45).reduce((a,b)=>a+b,0)/10;
+  const mid10   = dikerjakan.slice(17,27).reduce((a,b)=>a+b,0)/10;
+  const trend = last10 > first10*0.95 ? 'stabil' : last10 > first10*0.8 ? 'sedikit menurun' : 'menurun';
+  const konsistensi = Math.abs(s1-s2) <= 2 && Math.abs(s2-s3) <= 2 ? 'konsisten' : 'bervariasi';
+
+  const interpItems = [
+    {
+      icon: trend === 'stabil' ? '📈' : trend === 'sedikit menurun' ? '📉' : '⚠️',
+      title: 'Kurva Kerja: ' + trend.charAt(0).toUpperCase()+trend.slice(1),
+      desc: trend === 'stabil'
+        ? 'Produktivitas terjaga dari awal hingga akhir. Menunjukkan daya tahan yang baik.'
+        : trend === 'sedikit menurun'
+        ? 'Ada penurunan kecil di akhir. Normal terjadi karena kelelahan ringan.'
+        : 'Terjadi penurunan signifikan. Indikasi kelelahan atau kurang konsentrasi.'
+    },
+    {
+      icon: konsistensi === 'konsisten' ? '✅' : '🔄',
+      title: 'Kesalahan: ' + konsistensi.charAt(0).toUpperCase()+konsistensi.slice(1),
+      desc: konsistensi === 'konsisten'
+        ? 'Jumlah kesalahan stabil di tiap periode. Menunjukkan kontrol diri yang baik.'
+        : 'Fluktuasi kesalahan antar periode. Perlu perhatian pada faktor konsentrasi.'
+    },
+    {
+      icon: parseFloat(akurasi) >= 90 ? '🎯' : parseFloat(akurasi) >= 75 ? '👍' : '💡',
+      title: 'Akurasi: ' + akurasi,
+      desc: parseFloat(akurasi) >= 90
+        ? 'Tingkat akurasi sangat baik. Ketelitian tinggi dalam pengerjaan.'
+        : parseFloat(akurasi) >= 75
+        ? 'Akurasi cukup baik. Masih ada ruang peningkatan ketelitian.'
+        : 'Akurasi perlu ditingkatkan. Perlu latihan konsentrasi lebih.'
+    },
+    {
+      icon: parseFloat(rataRata) >= 12 ? '⚡' : parseFloat(rataRata) >= 8 ? '⏱️' : '🐢',
+      title: `Kecepatan: ${rataRata} soal/kolom`,
+      desc: parseFloat(rataRata) >= 12
+        ? 'Kecepatan pengerjaan tinggi. Menunjukkan kemampuan pemrosesan yang cepat.'
+        : parseFloat(rataRata) >= 8
+        ? 'Kecepatan rata-rata. Sesuai dengan standar umumnya.'
+        : 'Kecepatan di bawah rata-rata. Perlu latihan kecepatan kalkulasi.'
+    }
+  ];
+
+  document.getElementById('interpGrid').innerHTML = interpItems.map(it => `
+    <div class="interp-item">
+      <div class="interp-icon">${it.icon}</div>
+      <div>
+        <div class="interp-title">${it.title}</div>
+        <div class="interp-desc">${it.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
