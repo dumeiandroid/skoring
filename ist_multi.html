@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lembar Jawaban I.S.T.</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: #e8e8e4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  /* ── SEARCH PANEL ── */
+  .search-panel {
+    width: 750px;
+    background: #fff;
+    border: 2px solid #1a6ab5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: 0 2px 12px rgba(26,106,181,0.10);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .search-panel label { font-weight: 700; font-size: 13px; white-space: nowrap; color: #0d2a4a; }
+  .search-panel input {
+    flex: 1; min-width: 160px;
+    padding: 9px 13px;
+    border: 2px solid #b0c8e8; border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: #0d2a4a;
+    outline: none; background: #f5f8fc; transition: border 0.2s;
+  }
+  .search-panel input:focus { border-color: #1a6ab5; background: #fff; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: #1a6ab5; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1354a0; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-reset { background: #e2e8f0; color: #475569; }
+  .btn-reset:hover { background: #cbd5e1; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err-box {
+    width: 750px;
+    background: #fef2f2; border: 1.5px solid #fca5a5;
+    border-radius: 8px; padding: 10px 16px;
+    color: #dc2626; font-size: 13px; font-weight: 600;
+    font-family: 'Segoe UI', sans-serif; display: none;
+  }
+  .err-box.show { display: block; }
+
+  /* ── PAGE ── */
+  .page {
+    background: #fff;
+    width: 750px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.15);
+    border: 1px solid #bbb;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  /* ── HEADER FIELDS ── */
+  .header-area { display: flex; gap: 16px; margin-bottom: 14px; }
+  .fields { flex: 1; font-size: 10.5px; }
+  .field-row { display: flex; align-items: flex-end; margin-bottom: 4px; gap: 4px; }
+  .field-row label { width: 130px; flex-shrink: 0; font-size: 10.5px; }
+  .field-row .dots {
+    flex: 1; border-bottom: 1px dotted #555; height: 14px;
+    font-size: 10px; color: #555;
+  }
+  .field-row .suffix { white-space: nowrap; font-size: 10.5px; margin-left: 4px; }
+  .field-filled {
+    flex: 1; border-bottom: 1px dotted #555; height: 14px;
+    font-size: 10.5px; font-weight: bold; color: #111;
+    display: inline-flex; align-items: flex-end;
+  }
+
+  /* ── SCORE TABLE ── */
+  .score-table { flex-shrink: 0; border-collapse: collapse; font-size: 10px; height: fit-content; }
+  .score-table th, .score-table td {
+    border: 1px solid #333; text-align: center;
+    padding: 2px 6px; min-width: 28px; height: 18px;
+  }
+  .score-table th { font-weight: bold; background: #fff; }
+  .score-table td.row-label { text-align: left; padding-left: 4px; font-weight: bold; }
+
+  /* ── GRAPH ── */
+  .graph-section { margin-bottom: 10px; }
+  .graph-container { display: flex; gap: 4px; align-items: stretch; }
+  .y-axis-left {
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-size: 9px; text-align: right;
+    padding-right: 3px; padding-top: 18px; padding-bottom: 2px;
+  }
+  .y-axis-right {
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-size: 9px; text-align: left;
+    padding-left: 3px; padding-top: 18px; padding-bottom: 2px;
+  }
+  .graph-grid { flex: 1; border-collapse: collapse; font-size: 9.5px; }
+  .graph-grid th {
+    border: 1px solid #333; text-align: center;
+    padding: 2px 0; font-weight: bold; height: 18px;
+  }
+  .graph-grid td { border: 1px solid #ccc; height: 14px; min-width: 38px; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px dotted #888; margin: 14px 0; }
+
+  /* ── ANSWER SECTIONS ── */
+  .answer-area {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0 10px; margin-bottom: 12px;
+  }
+  .answer-col {}
+  .col-header {
+    font-size: 10px; font-weight: bold; margin-bottom: 4px;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .col-header .sect-num { font-weight: bold; }
+  .col-header .options { display: flex; gap: 8px; font-size: 9.5px; }
+
+  .answer-row {
+    display: flex; align-items: center;
+    margin-bottom: 2px; font-size: 9.5px; gap: 2px;
+  }
+  .answer-row .qnum {
+    width: 24px; text-align: right; flex-shrink: 0; font-size: 9px;
+  }
+  .answer-row .opts { display: flex; gap: 8px; font-size: 9.5px; }
+  .answer-row .opts span { width: 10px; text-align: center; }
+  .answer-row .dot-line {
+    flex: 1; border-bottom: 1px dotted #666; height: 12px; min-width: 80px;
+  }
+  .answer-row .num-opts { display: flex; gap: 5px; font-size: 9px; }
+  .answer-row .num-opts span { width: 10px; text-align: center; }
+
+  /* ── SCORE BOXES ── */
+  .score-boxes { display: flex; justify-content: space-around; margin-top: 14px; }
+  .score-box {
+    width: 80px; height: 40px; border: 2px solid #333;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Times New Roman', serif;
+  }
+  .score-box .box-label {
+    font-size: 7.5px; color: #555; font-weight: bold; letter-spacing: 0.3px;
+    text-transform: uppercase; line-height: 1;
+  }
+  .score-box .box-value {
+    font-size: 16px; font-weight: 900; color: #111; line-height: 1.2;
+  }
+
+  /* ── PAGE 2 ── */
+  .answer-grid-3col {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0 14px; margin-bottom: 10px;
+  }
+  .answer-grid-4col {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0 10px; margin-bottom: 10px;
+  }
+
+  /* ── JAWABAN TERISI ── */
+  /* Pilihan huruf/angka yang dipilih */
+  .opted-correct { color: #16a34a; font-weight: 900; }
+  .opted-wrong   { color: #dc2626; font-weight: 900; text-decoration: line-through; }
+
+  /* Dot-line terisi (ist4) */
+  .dot-filled {
+    flex: 1; height: 12px; min-width: 80px;
+    font-size: 9.5px; font-weight: 700;
+    display: inline-flex; align-items: flex-end;
+    border-bottom: 1px solid currentColor;
+  }
+  .dot-filled.correct { color: #16a34a; }
+  .dot-filled.wrong   { color: #dc2626; text-decoration: line-through; }
+
+  /* Tanda ✓/✗ di ujung baris */
+  .ans-mark { font-size: 9.5px; font-weight: 900; margin-left: 3px; flex-shrink: 0; }
+  .ans-mark.correct { color: #16a34a; }
+  .ans-mark.wrong   { color: #dc2626; }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .search-panel, .err-box { display: none !important; }
+    .page { box-shadow: none; border: none; }
+  }
+
+  /* ── SERVER SWITCHER ── */
+  .srv-switcher {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .srv-switcher-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; }
+  .srv-chip {
+    background: #f5f8fc; border: 1.5px solid #b0c8e8; color: #64748b;
+    border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: 'Segoe UI', sans-serif;
+  }
+  .srv-chip:hover { border-color: #1a6ab5; color: #1a6ab5; }
+  .srv-chip.active { background: #1a6ab5; border-color: #1a6ab5; color: #fff; }
+  @media print {
+    .srv-switcher { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SERVER SWITCHER -->
+<div class="srv-switcher" id="srvSwitcher">
+  <span class="srv-switcher-label">Server:</span>
+</div>
+
+<!-- SEARCH PANEL -->
+<div class="search-panel">
+  <label>🔎 ID Peserta:</label>
+  <input type="text" id="inputId" placeholder="Masukkan id_x peserta..."
+    autocomplete="off" onkeydown="if(event.key==='Enter') cariData()">
+  <button class="btn btn-primary" id="btnCari" onclick="cariData()">Cari</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+</div>
+<div class="err-box" id="errBox"></div>
+
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="page-title">LEMBAR JAWABAN I.S.T.</div>
+
+  <div class="header-area">
+    <div class="fields">
+      <div class="field-row">
+        <label>Nomor</label><span>:</span>
+        <span class="field-filled" id="hNomor"></span>
+        <span class="suffix">(L / P)</span>
+      </div>
+      <div class="field-row">
+        <label>Nama Lengkap</label><span>:</span>
+        <span class="field-filled" id="hNama"></span>
+        <span class="suffix">Umur :</span>
+        <span class="field-filled" id="hUsia" style="flex:0.4"></span>
+      </div>
+      <div class="field-row">
+        <label>Tempat / Tgl. Lahir</label><span>:</span>
+        <div class="dots"></div>
+      </div>
+      <div class="field-row">
+        <label>Tgl. Pemeriksaan</label><span>:</span>
+        <div class="dots"></div>
+      </div>
+      <div class="field-row">
+        <label>Pendidikan Umum</label><span>:</span>
+        <span class="field-filled" id="hPendidikan"></span>
+      </div>
+      <div class="field-row">
+        <label>Pendidikan Khusus</label><span>:</span>
+        <div class="dots"></div>
+      </div>
+      <div class="field-row">
+        <label>Tujuan Pemeriksaan</label><span>:</span>
+        <div class="dots"></div>
+      </div>
+    </div>
+
+    <table class="score-table">
+      <thead>
+        <tr><th></th><th>RW</th><th>SW</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="row-label">SE</td><td id="rw-SE"></td><td id="sw-SE"></td></tr>
+        <tr><td class="row-label">WA</td><td id="rw-WA"></td><td id="sw-WA"></td></tr>
+        <tr><td class="row-label">AN</td><td id="rw-AN"></td><td id="sw-AN"></td></tr>
+        <tr><td class="row-label">GE</td><td id="rw-GE"></td><td id="sw-GE"></td></tr>
+        <tr><td class="row-label">ME</td><td id="rw-ME"></td><td id="sw-ME"></td></tr>
+        <tr><td class="row-label">RA</td><td id="rw-RA"></td><td id="sw-RA"></td></tr>
+        <tr><td class="row-label">ZR</td><td id="rw-ZR"></td><td id="sw-ZR"></td></tr>
+        <tr><td class="row-label">FA</td><td id="rw-FA"></td><td id="sw-FA"></td></tr>
+        <tr><td class="row-label">WÜ</td><td id="rw-WU"></td><td id="sw-WU"></td></tr>
+        <tr><td class="row-label">JML</td><td id="rw-JML"></td><td id="sw-JML"></td></tr>
+        <tr><td class="row-label" style="font-weight:bold;color:#1a6ab5;">IQ</td><td colspan="2" id="iq-val" style="font-weight:900;font-size:13px;color:#1a6ab5;text-align:center;"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="graph-section">
+    <div class="graph-container">
+      <div class="y-axis-left">
+        <span>130</span><span>120</span><span>110</span><span>100</span>
+        <span>90</span><span>80</span><span>70</span>
+      </div>
+      <div style="flex:1;position:relative;">
+        <table class="graph-grid" id="graphTable">
+          <thead>
+            <tr>
+              <th>SE</th><th>WA</th><th>AN</th><th>GE</th>
+              <th>ME</th><th>RA</th><th>ZR</th><th>FA</th>
+              <th>WÜ</th><th>%W</th>
+            </tr>
+          </thead>
+          <tbody id="graphBody"></tbody>
+        </table>
+        <svg id="graphSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>
+      </div>
+      <div class="y-axis-right">
+        <span>99</span><span>90</span><span>75</span><span>50</span>
+        <span>25</span><span>10</span><span>1</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="answer-area">
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">01)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col01"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">02)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col02"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">03)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col03"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">04)</span>
+        <span style="font-size:9.5px">burung</span>
+      </div>
+      <div id="col04"></div>
+    </div>
+  </div>
+
+  <div class="score-boxes">
+    <div class="score-box" id="box01"></div>
+    <div class="score-box" id="box02"></div>
+    <div class="score-box" id="box03"></div>
+    <div class="score-box" id="box04"></div>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+
+  <div class="answer-grid-3col">
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">05)</span>
+        <div class="options" style="gap:4px;font-size:8.5px">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          <span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+        </div>
+      </div>
+      <div id="col05"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">06)</span>
+        <div class="options" style="gap:4px;font-size:8.5px">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          <span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+        </div>
+      </div>
+      <div id="col06"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">07)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col07"></div>
+    </div>
+  </div>
+
+  <div class="score-boxes" style="margin-bottom:20px;">
+    <div class="score-box" id="box05"></div>
+    <div class="score-box" id="box06"></div>
+    <div class="score-box" id="box07"></div>
+  </div>
+
+  <div class="answer-grid-4col">
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">08)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col08a"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header" style="visibility:hidden;">
+        <span class="sect-num">08)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col08b"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header">
+        <span class="sect-num">09)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col09a"></div>
+    </div>
+    <div class="answer-col">
+      <div class="col-header" style="visibility:hidden;">
+        <span class="sect-num">09)</span>
+        <div class="options"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span></div>
+      </div>
+      <div id="col09b"></div>
+    </div>
+  </div>
+
+  <div class="score-boxes">
+    <div class="score-box" id="box08a"></div>
+    <div class="score-box" id="box09a"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── API CONFIG ───────────────────────────────────────────────
+// ─── localStorage helpers ──
+const sg = k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+const ss = (k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+
+// ─── SERVER LIST — sama seperti viewer lain ──
+const SERVERS = [
+  { label: 'Lidan',     domain: 'lidan-co-id.pages.dev' },
+  { label: 'Tabi',      domain: 'tabi.my.id'             },
+  { label: 'Mobeli',    domain: 'mobeli.my.id'           },
+  { label: 'TalentMap', domain: 'talentmap.my.id'        },
+];
+const API_PATH = '/api/contacts_filter_dinamis7';
+
+let activeServerIdx = parseInt(sg('istServerIdx')||'0');
+if(!(activeServerIdx >= 0 && activeServerIdx < SERVERS.length)) activeServerIdx = 0;
+
+function apiUrl(){
+  return `https://${SERVERS[activeServerIdx].domain}${API_PATH}`;
+}
+
+function renderServerSwitcher(){
+  const el = document.getElementById('srvSwitcher');
+  const label = el.querySelector('.srv-switcher-label');
+  el.innerHTML = '';
+  el.appendChild(label);
+  SERVERS.forEach((s,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'srv-chip' + (i===activeServerIdx?' active':'');
+    btn.textContent = String(i+1);
+    btn.title = `${s.label} — https://${s.domain}`;
+    btn.onclick = () => switchServer(i);
+    el.appendChild(btn);
+  });
+}
+function switchServer(idx){
+  if(idx === activeServerIdx) return;
+  activeServerIdx = idx;
+  ss('istServerIdx', idx);
+  renderServerSwitcher();
+  resetAll();
+}
+renderServerSwitcher();
+
+const TBL   = 'nilai1_json';
+const AUTH  = 'admin';
+
+// ─── GRAPH ───────────────────────────────────────────────────
+const graphBody = document.getElementById('graphBody');
+for (let r = 0; r < 7; r++) {
+  const tr = document.createElement('tr');
+  for (let c = 0; c < 10; c++) tr.appendChild(document.createElement('td'));
+  graphBody.appendChild(tr);
+}
+
+// ─── PARSERS ─────────────────────────────────────────────────
+
+// ist1/2/3/7/8/9: "1.1Bx✗;2.2Cv✗;..."
+// → map[nomor] = { pilihan:'B', benar:false }
+function parseAbcde(str) {
+  const map = {};
+  if (!str) return map;
+  str.split(';').map(s => s.replace(/✗/g,'').trim()).filter(Boolean).forEach(token => {
+    // format: urutan.nomor[A-E][v/x]
+    const m = token.match(/^(\d+)\.(\d+)([A-Ea-e])(v|x)$/i);
+    if (!m) return;
+    const urutan = parseInt(m[1]);
+    const pilihan = m[3].toLowerCase();
+    const benar   = m[4].toLowerCase() === 'v';
+    map[urutan] = { pilihan, benar };
+  });
+  return map;
+}
+
+// ist4: "1.1|ma|x|s0✗;..."
+// → map[urutan] = { teks:'ma', benar:false }
+function parseText(str) {
+  const map = {};
+  if (!str) return map;
+  str.split(';').map(s => s.replace(/✗/g,'').trim()).filter(Boolean).forEach(token => {
+    // format: urutan.nomor|teks|v/x|skor  (skor opsional)
+    const m = token.match(/^(\d+)\.(\d+)\|([^|]*)\|(v|x)(?:\|(\d+))?$/i);
+    if (!m) return;
+    const urutan = parseInt(m[1]);
+    const teks   = m[3].trim();
+    const benar  = m[4].toLowerCase() === 'v';
+    const skor   = m[5] !== undefined ? parseInt(m[5]) : (benar ? 1 : 0);
+    map[urutan] = { teks, benar, skor };
+  });
+  return map;
+}
+
+// ist5/6: "1.1|345|x✗;..."
+// → map[urutan] = { angka:'345', benar:false }
+function parseAngka(str) {
+  const map = {};
+  if (!str) return map;
+  str.split(';').map(s => s.replace(/✗/g,'').trim()).filter(Boolean).forEach(token => {
+    // format: urutan.nomor|angka|v/x
+    const m = token.match(/^(\d+)\.(\d+)\|([^|]*)\|(v|x)$/i);
+    if (!m) return;
+    const urutan = parseInt(m[1]);
+    const angka  = m[3].trim();
+    const benar  = m[4].toLowerCase() === 'v';
+    map[urutan] = { angka, benar };
+  });
+  return map;
+}
+
+// ─── RENDER HELPERS ──────────────────────────────────────────
+
+// abcde rows (ist1,2,3,7,8,9)
+// opts: ['a','b','c','d','e']
+function makeAbcdeRows(containerId, start, end, dataMap, offset=0) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const opts = ['a','b','c','d','e'];
+  for (let n = start; n <= end; n++) {
+    const idx = n - start + 1 + offset; // offset untuk lanjutan subtes
+    const d   = dataMap ? dataMap[idx] : null;
+    const row = document.createElement('div');
+    row.className = 'answer-row';
+
+    const qnum = document.createElement('span');
+    qnum.className = 'qnum';
+    qnum.textContent = n + ')';
+    row.appendChild(qnum);
+
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'opts';
+    opts.forEach(opt => {
+      const sp = document.createElement('span');
+      sp.textContent = opt;
+      if (d && d.pilihan === opt) {
+        sp.className = d.benar ? 'opted-correct' : 'opted-wrong';
+      }
+      optsDiv.appendChild(sp);
+    });
+    row.appendChild(optsDiv);
+
+    if (d) {
+      const mark = document.createElement('span');
+      mark.className = 'ans-mark ' + (d.benar ? 'correct' : 'wrong');
+      mark.textContent = d.benar ? '✓' : '✗';
+      row.appendChild(mark);
+    }
+
+    container.appendChild(row);
+  }
+}
+
+// num rows (ist5, ist6) — digit 1-9,0
+function makeNumRows(containerId, start, end, dataMap) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const digits = ['1','2','3','4','5','6','7','8','9','0'];
+  for (let n = start; n <= end; n++) {
+    const idx = n - start + 1;
+    const d   = dataMap ? dataMap[idx] : null;
+    const row = document.createElement('div');
+    row.className = 'answer-row';
+
+    const qnum = document.createElement('span');
+    qnum.className = 'qnum';
+    qnum.textContent = n + ')';
+    row.appendChild(qnum);
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'num-opts';
+
+    // Tandai setiap digit yang ada dalam jawaban
+    digits.forEach(dig => {
+      const sp = document.createElement('span');
+      sp.textContent = dig;
+      if (d && d.angka && d.angka.includes(dig)) {
+        sp.className = d.benar ? 'opted-correct' : 'opted-wrong';
+      }
+      numDiv.appendChild(sp);
+    });
+    row.appendChild(numDiv);
+
+    if (d) {
+      const mark = document.createElement('span');
+      mark.className = 'ans-mark ' + (d.benar ? 'correct' : 'wrong');
+      mark.textContent = d.benar ? '✓' : '✗';
+      row.appendChild(mark);
+    }
+
+    container.appendChild(row);
+  }
+}
+
+// dot rows (ist4 — text answer)
+function makeDotRows(containerId, start, end, dataMap) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  for (let n = start; n <= end; n++) {
+    const idx = n - start + 1;
+    const d   = dataMap ? dataMap[idx] : null;
+    const row = document.createElement('div');
+    row.className = 'answer-row';
+
+    const qnum = document.createElement('span');
+    qnum.className = 'qnum';
+    qnum.textContent = n + ')';
+    row.appendChild(qnum);
+
+    if (d) {
+      const span = document.createElement('span');
+      span.className = 'dot-filled ' + (d.benar ? 'correct' : 'wrong');
+      span.textContent = d.teks;
+      row.appendChild(span);
+
+      const mark = document.createElement('span');
+      mark.className = 'ans-mark ' + (d.benar ? 'correct' : 'wrong');
+      if (d.benar) {
+        const skorVal = (d.skor !== undefined) ? d.skor : 1;
+        mark.textContent = '✓' + skorVal;
+      } else {
+        mark.textContent = '✗';
+      }
+      row.appendChild(mark);
+    } else {
+      const line = document.createElement('div');
+      line.className = 'dot-line';
+      row.appendChild(line);
+    }
+
+    container.appendChild(row);
+  }
+}
+
+// ─── COUNT BENAR ─────────────────────────────────────────────
+function countBenar(dataMap, from, to, useSkor) {
+  let total = 0;
+  for (let idx = from; idx <= to; idx++) {
+    if (!dataMap[idx]) continue;
+    if (useSkor) {
+      total += (dataMap[idx].skor || 0);
+    } else {
+      if (dataMap[idx].benar) total++;
+    }
+  }
+  return total;
+}
+
+function setScoreBox(id, label, value, isEmpty) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (isEmpty) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML =
+    `<span class="box-label">${label}</span>` +
+    `<span class="box-value">${value}</span>`;
+}
+
+// ─── RENDER ALL (kosong) ─────────────────────────────────────
+function getUsiaKey(usia) {
+  if (usia >= 51) return '51-60';
+  if (usia >= 46) return '46-50';
+  if (usia >= 41) return '41-45';
+  if (usia >= 36) return '36-40';
+  if (usia >= 31) return '31-35';
+  if (usia >= 26) return '26-30';
+  if (usia >= 21) return '21-25';
+  if (usia >= 19) return '19-20';
+  if (usia === 18) return '18';
+  if (usia === 17) return '17';
+  if (usia === 16) return '16';
+  if (usia === 15) return '15';
+  if (usia === 14) return '14';
+  if (usia === 13) return '13';
+  if (usia <= 12)  return '12';
+  return '19-20';
+}
+
+function renderAll(x08, usia) {
+  const ist1  = parseAbcde(x08.ist1  || '');
+  const ist2  = parseAbcde(x08.ist2  || '');
+  const ist3  = parseAbcde(x08.ist3  || '');
+  const ist4  = parseText (x08.ist4_a|| '');
+  const ist5  = parseAngka(x08.ist5_a|| '');
+  const ist6  = parseAngka(x08.ist6_a|| '');
+  const ist7  = parseAbcde(x08.ist7  || '');
+  const ist8  = parseAbcde(x08.ist8  || '');
+  const ist9  = parseAbcde(x08.ist9  || '');
+
+  // PAGE 1
+  makeAbcdeRows('col01',  1,  20, ist1);
+  makeAbcdeRows('col02', 21,  40, ist2);
+  makeAbcdeRows('col03', 41,  60, ist3);
+  makeDotRows  ('col04', 61,  76, ist4);
+
+  // PAGE 2
+  makeNumRows  ('col05', 77,  96, ist5);
+  makeNumRows  ('col06', 97, 116, ist6);
+  makeAbcdeRows('col07',117, 136, ist7);
+  makeAbcdeRows('col08a',137, 146, ist8);
+  makeAbcdeRows('col08b',147, 156, ist8, 10);  // ist8 lanjutan urutan 11-20
+  makeAbcdeRows('col09a',157, 166, ist9);
+  makeAbcdeRows('col09b',167, 176, ist9, 10);  // ist9 lanjutan urutan 11-20
+
+  // ── Hitung & tampilkan total benar per subtes ──
+  const isEmpty = !x08 || Object.keys(x08).length === 0;
+
+  const subtesInfo = [
+    { id: 'box01', label: 'SE', map: ist1, from: 1,  to: 20  },
+    { id: 'box02', label: 'WA', map: ist2, from: 1,  to: 20  },
+    { id: 'box03', label: 'AN', map: ist3, from: 1,  to: 20  },
+    { id: 'box04', label: 'GE', map: ist4, from: 1,  to: 16, useSkor: true  },
+    { id: 'box05', label: 'RA', map: ist5, from: 1,  to: 20  },
+    { id: 'box06', label: 'ZR', map: ist6, from: 1,  to: 20  },
+    { id: 'box07', label: 'FA', map: ist7, from: 1,  to: 20  },
+  ];
+
+  subtesInfo.forEach(s => {
+    if (isEmpty) {
+      setScoreBox(s.id, '', '', true);
+    } else {
+      const total = countBenar(s.map, s.from, s.to, s.useSkor||false);
+      setScoreBox(s.id, s.label, total, false);
+    }
+  });
+
+  // WÜ (08): satu kotak, total ist8
+  if (isEmpty) {
+    setScoreBox('box08a', '', '', true);
+  } else {
+    setScoreBox('box08a', 'WÜ', countBenar(ist8, 1, 20, false), false);
+  }
+
+  // ME (09): satu kotak, total ist9
+  if (isEmpty) {
+    setScoreBox('box09a', '', '', true);
+  } else {
+    setScoreBox('box09a', 'ME', countBenar(ist9, 1, 20, false), false);
+  }
+
+  // ── Konversi GE (jumlah benar → RW) ──
+  function convertGE(jumlahBenar) {
+    const GE_NORM = [
+      { min: 32, max: 999, rw: 20 },
+      { min: 30, max: 31,  rw: 19 },
+      { min: 29, max: 29,  rw: 18 },
+      { min: 28, max: 28,  rw: 17 },
+      { min: 27, max: 27,  rw: 16 },
+      { min: 25, max: 26,  rw: 15 },
+      { min: 23, max: 24,  rw: 14 },
+      { min: 21, max: 22,  rw: 13 },
+      { min: 19, max: 20,  rw: 12 },
+      { min: 17, max: 18,  rw: 11 },
+      { min: 15, max: 16,  rw: 10 },
+      { min: 13, max: 14,  rw: 9  },
+      { min: 11, max: 12,  rw: 8  },
+      { min: 9,  max: 10,  rw: 7  },
+      { min: 7,  max: 8,   rw: 6  },
+      { min: 5,  max: 6,   rw: 5  },
+      { min: 4,  max: 4,   rw: 4  },
+      { min: 3,  max: 3,   rw: 3  },
+      { min: 2,  max: 2,   rw: 2  },
+      { min: 0,  max: 1,   rw: 1  },
+    ];
+    const entry = GE_NORM.find(r => jumlahBenar >= r.min && jumlahBenar <= r.max);
+    return entry ? entry.rw : 1;
+  }
+
+  // ── Hitung skor per subtes untuk tabel RW ──
+  // SE=ist1, WA=ist2, AN=ist3, GE=ist4, ME=ist9, RA=ist5, ZR=ist6, FA=ist7, WU=ist8
+  const rwScores = {
+    SE: countBenar(ist1, 1, 20, false),
+    WA: countBenar(ist2, 1, 20, false),
+    AN: countBenar(ist3, 1, 20, false),
+    GE: convertGE(countBenar(ist4, 1, 16, true)),
+    _GE_raw: countBenar(ist4, 1, 16, true),
+    ME: countBenar(ist9, 1, 20, false),
+    RA: countBenar(ist5, 1, 20, false),
+    ZR: countBenar(ist6, 1, 20, false),
+    FA: countBenar(ist7, 1, 20, false),
+    WU: countBenar(ist8, 1, 20, false),
+  };
+  renderRW(rwScores, isEmpty, usia || 0);
+}
+
+// ─── BIO ─────────────────────────────────────────────────────
+function renderBio(x02Str) {
+  let bio = {};
+  try { bio = JSON.parse(x02Str || '{}'); } catch {}
+  setEl('hNama',      bio.nama       || '');
+  setEl('hNomor',     bio.id_x || bio.nomor || '');
+  setEl('hUsia',      bio.usia       || '');
+  setEl('hPendidikan',bio.pendidikan || '');
+}
+function setEl(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ─── RESET ───────────────────────────────────────────────────
+function resetAll() {
+  clearErr();
+  renderAll({}, 0);
+  ['hNama','hNomor','hUsia','hPendidikan'].forEach(id => setEl(id,''));
+  document.getElementById('inputId').value = '';
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg; el.classList.add('show');
+}
+function clearErr() {
+  document.getElementById('errBox').classList.remove('show');
+}
+function setBtn(loading) {
+  const btn = document.getElementById('btnCari');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Mencari...' : 'Cari';
+}
+
+// ─── MAIN FETCH ──────────────────────────────────────────────
+async function cariData() {
+  const idVal = document.getElementById('inputId').value.trim();
+  if (!idVal) { showErr('⚠ Masukkan id_x peserta terlebih dahulu.'); return; }
+
+  clearErr();
+  setBtn(true);
+
+  try {
+    const res = await fetch(
+      `${apiUrl()}?table=${TBL}&id_x=${encodeURIComponent(idVal)}`,
+      { headers: { 'X-Custom-Auth': AUTH } }
+    );
+    const d = await res.json();
+
+    if (!d.success || !d.data) {
+      showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return;
+    }
+    const row = Array.isArray(d.data) ? d.data[0] : d.data;
+    if (!row) { showErr('⚠ Tidak ada data ditemukan untuk ID: ' + idVal); return; }
+
+    renderBio(row.x_02 || '');
+
+    let x08 = {};
+    try { x08 = JSON.parse(row.x_08 || '{}'); } catch {}
+
+    let bio = {};
+    try { bio = JSON.parse(row.x_02 || '{}'); } catch {}
+    const usiaVal = parseInt(bio.usia) || 0;
+    renderAll(x08, usiaVal);
+
+  } catch (e) {
+    showErr('⚠ Gagal mengambil data: ' + e.message);
+    console.error(e);
+  } finally {
+    setBtn(false);
+  }
+}
+
+// ─── NORMA SW ────────────────────────────────────────────────
+const NORMA = {
+  '19-20': {
+    SE: [[20,126],[19,123],[18,120],[17,117],[16,114],[15,112],[14,109],[13,106],[12,103],[11,101],[10,98],[9,95],[8,92],[7,89],[6,87],[5,84],[4,81],[3,78],[2,76],[1,73],[0,70]],
+    WA: [[20,131],[19,128],[18,125],[17,121],[16,118],[15,115],[14,111],[13,108],[12,105],[11,101],[10,98],[9,95],[8,91],[7,88],[6,85],[5,81],[4,78],[3,75],[2,71],[1,68],[0,65]],
+    AN: [[20,126],[19,123],[18,121],[17,118],[16,115],[15,113],[14,110],[13,108],[12,105],[11,103],[10,100],[9,97],[8,95],[7,92],[6,90],[5,87],[4,85],[3,82],[2,79],[1,77],[0,74]],
+    GE: [[20,124],[19,122],[18,119],[17,116],[16,114],[15,111],[14,109],[13,106],[12,104],[11,101],[10,98],[9,96],[8,93],[7,91],[6,88],[5,86],[4,83],[3,81],[2,78],[1,75],[0,73]],
+    ME: [[20,119],[19,117],[18,114],[17,112],[16,110],[15,108],[14,106],[13,103],[12,101],[11,99],[10,97],[9,94],[8,92],[7,90],[6,88],[5,86],[4,83],[3,81],[2,79],[1,77],[0,74]],
+    RA: [[20,130],[19,127],[18,124],[17,121],[16,119],[15,116],[14,113],[13,110],[12,108],[11,105],[10,102],[9,99],[8,96],[7,94],[6,91],[5,88],[4,85],[3,83],[2,80],[1,77],[0,74]],
+    ZR: [[20,123],[19,120],[18,118],[17,116],[16,113],[15,111],[14,109],[13,106],[12,104],[11,102],[10,99],[9,97],[8,95],[7,92],[6,90],[5,88],[4,85],[3,83],[2,81],[1,78],[0,76]],
+    FA: [[20,126],[19,124],[18,121],[17,118],[16,115],[15,113],[14,110],[13,107],[12,105],[11,102],[10,99],[9,96],[8,94],[7,91],[6,88],[5,86],[4,83],[3,80],[2,78],[1,75],[0,72]],
+    WU: [[20,129],[19,126],[18,123],[17,121],[16,118],[15,115],[14,112],[13,109],[12,106],[11,103],[10,101],[9,98],[8,95],[7,92],[6,89],[5,86],[4,83],[3,81],[2,78],[1,75],[0,72]],
+    GESAMT: [[171,180,130],[161,170,127],[151,160,123],[141,150,119],[131,140,116],[121,130,112],[111,120,108],[101,110,104],[91,100,101],[81,90,97],[71,80,93],[61,70,90],[51,60,86],[41,50,82],[31,40,79],[21,30,75],[11,20,71],[1,10,67]]
+  },
+  '18': {
+    SE: [[20,126],[19,123],[18,120],[17,117],[16,114],[15,112],[14,109],[13,106],[12,103],[11,101],[10,98],[9,95],[8,92],[7,89],[6,87],[5,84],[4,81],[3,78],[2,76],[1,73],[0,70]],
+    WA: [[20,131],[19,128],[18,125],[17,121],[16,118],[15,115],[14,111],[13,108],[12,105],[11,101],[10,98],[9,95],[8,91],[7,88],[6,85],[5,81],[4,78],[3,75],[2,71],[1,68],[0,65]],
+    AN: [[20,126],[19,123],[18,121],[17,118],[16,115],[15,113],[14,110],[13,108],[12,105],[11,103],[10,100],[9,97],[8,95],[7,92],[6,90],[5,87],[4,85],[3,82],[2,79],[1,77],[0,74]],
+    GE: [[20,124],[19,122],[18,119],[17,116],[16,114],[15,111],[14,109],[13,106],[12,104],[11,101],[10,98],[9,96],[8,93],[7,91],[6,88],[5,86],[4,83],[3,81],[2,78],[1,75],[0,73]],
+    ME: [[20,119],[19,117],[18,114],[17,112],[16,110],[15,108],[14,106],[13,103],[12,101],[11,99],[10,97],[9,94],[8,92],[7,90],[6,88],[5,86],[4,83],[3,81],[2,79],[1,77],[0,74]],
+    RA: [[20,130],[19,127],[18,124],[17,121],[16,119],[15,116],[14,113],[13,110],[12,108],[11,105],[10,102],[9,99],[8,96],[7,94],[6,91],[5,88],[4,85],[3,83],[2,80],[1,77],[0,74]],
+    ZR: [[20,123],[19,120],[18,118],[17,116],[16,113],[15,111],[14,109],[13,106],[12,104],[11,102],[10,99],[9,97],[8,95],[7,92],[6,90],[5,88],[4,85],[3,83],[2,81],[1,78],[0,76]],
+    FA: [[20,126],[19,124],[18,121],[17,118],[16,115],[15,113],[14,110],[13,107],[12,105],[11,102],[10,99],[9,96],[8,94],[7,91],[6,88],[5,86],[4,83],[3,80],[2,78],[1,75],[0,72]],
+    WU: [[20,129],[19,126],[18,123],[17,121],[16,118],[15,115],[14,112],[13,109],[12,106],[11,103],[10,101],[9,98],[8,95],[7,92],[6,89],[5,86],[4,83],[3,81],[2,78],[1,75],[0,72]],
+    GESAMT: [[171,180,130],[161,170,127],[151,160,123],[141,150,119],[131,140,116],[121,130,112],[111,120,108],[101,110,104],[91,100,101],[81,90,97],[71,80,93],[61,70,90],[51,60,86],[41,50,82],[31,40,79],[21,30,75],[11,20,71],[1,10,67]]
+  },
+  '17': {
+    SE: [[20,130],[19,127],[18,124],[17,121],[16,118],[15,115],[14,112],[13,108],[12,105],[11,102],[10,99],[9,96],[8,93],[7,90],[6,87],[5,84],[4,81],[3,78],[2,75],[1,72],[0,69]],
+    WA: [[20,137],[19,133],[18,130],[17,126],[16,122],[15,119],[14,115],[13,111],[12,107],[11,104],[10,100],[9,96],[8,93],[7,89],[6,85],[5,81],[4,78],[3,74],[2,70],[1,67],[0,63]],
+    AN: [[20,127],[19,125],[18,122],[17,120],[16,117],[15,115],[14,112],[13,109],[12,107],[11,104],[10,102],[9,99],[8,97],[7,94],[6,92],[5,89],[4,86],[3,84],[2,81],[1,79],[0,76]],
+    GE: [[20,127],[19,124],[18,122],[17,119],[16,116],[15,114],[14,111],[13,108],[12,106],[11,103],[10,101],[9,98],[8,95],[7,93],[6,90],[5,87],[4,85],[3,82],[2,79],[1,77],[0,74]],
+    ME: [[20,123],[19,121],[18,118],[17,116],[16,113],[15,111],[14,108],[13,106],[12,103],[11,101],[10,98],[9,96],[8,93],[7,91],[6,88],[5,86],[4,83],[3,81],[2,78],[1,76],[0,73]],
+    RA: [[20,132],[19,129],[18,126],[17,124],[16,121],[15,118],[14,115],[13,112],[12,109],[11,106],[10,103],[9,100],[8,97],[7,94],[6,91],[5,88],[4,85],[3,82],[2,79],[1,76],[0,74]],
+    ZR: [[20,126],[19,124],[18,121],[17,119],[16,116],[15,114],[14,111],[13,109],[12,106],[11,104],[10,101],[9,99],[8,96],[7,94],[6,91],[5,89],[4,86],[3,84],[2,81],[1,79],[0,76]],
+    FA: [[20,129],[19,126],[18,123],[17,121],[16,118],[15,115],[14,112],[13,109],[12,107],[11,104],[10,101],[9,98],[8,96],[7,93],[6,90],[5,87],[4,84],[3,82],[2,79],[1,76],[0,73]],
+    WU: [[20,132],[19,129],[18,126],[17,123],[16,120],[15,117],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,96],[7,93],[6,90],[5,87],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    GESAMT: [[171,180,138],[161,170,133],[151,160,129],[141,150,125],[131,140,120],[121,130,116],[111,120,112],[101,110,107],[91,100,103],[81,90,99],[71,80,94],[61,70,90],[51,60,86],[41,50,81],[31,40,77],[21,30,73],[11,20,68],[1,10,63]]
+  },
+  '16': {
+    SE: [[19,132],[18,128],[17,125],[16,122],[15,118],[14,115],[13,112],[12,108],[11,105],[10,102],[9,98],[8,95],[7,92],[6,88],[5,85],[4,82],[3,78],[2,75],[1,72],[0,68]],
+    WA: [[19,132],[18,128],[17,125],[16,122],[15,118],[14,115],[13,112],[12,108],[11,105],[10,102],[9,98],[8,95],[7,89],[6,85],[5,81],[4,77],[3,73],[2,70],[1,66],[0,62]],
+    AN: [[20,132],[19,129],[18,127],[17,124],[16,121],[15,118],[14,115],[13,112],[12,109],[11,107],[10,104],[9,101],[8,98],[7,95],[6,92],[5,89],[4,87],[3,84],[2,81],[1,78],[0,75]],
+    GE: [[19,131],[18,128],[17,125],[16,122],[15,119],[14,116],[13,113],[12,109],[11,106],[10,103],[9,100],[8,97],[7,94],[6,91],[5,88],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    ME: [[20,127],[19,124],[18,121],[17,119],[16,116],[15,113],[14,111],[13,108],[12,105],[11,102],[10,100],[9,97],[8,94],[7,92],[6,89],[5,86],[4,84],[3,81],[2,78],[1,75],[0,73]],
+    RA: [[20,134],[19,131],[18,128],[17,125],[16,122],[15,119],[14,116],[13,113],[12,110],[11,107],[10,104],[9,101],[8,98],[7,95],[6,92],[5,88],[4,85],[3,82],[2,79],[1,76],[0,73]],
+    ZR: [[20,129],[19,126],[18,124],[17,121],[16,119],[15,116],[14,114],[13,111],[12,108],[11,106],[10,103],[9,101],[8,98],[7,96],[6,93],[5,91],[4,88],[3,85],[2,83],[1,80],[0,78]],
+    FA: [[20,130],[19,127],[18,124],[17,122],[16,119],[15,116],[14,113],[13,111],[12,108],[11,105],[10,102],[9,99],[8,97],[7,94],[6,91],[5,88],[4,86],[3,83],[2,80],[1,77],[0,74]],
+    WU: [[20,134],[19,131],[18,128],[17,125],[16,122],[15,118],[14,115],[13,112],[12,109],[11,106],[10,103],[9,100],[8,97],[7,93],[6,90],[5,87],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    GESAMT: [[151,160,134],[141,150,130],[131,140,125],[121,130,120],[111,120,115],[101,110,110],[91,100,106],[81,90,101],[71,80,96],[61,70,91],[51,60,87],[41,50,82],[31,40,77],[21,30,72],[11,20,68],[1,10,63]]
+  },
+  '15': {
+    SE: [[18,132],[17,129],[16,126],[15,123],[14,119],[13,115],[12,112],[11,108],[10,105],[9,101],[8,98],[7,94],[6,91],[5,88],[4,84],[3,81],[2,77],[1,74],[0,70]],
+    WA: [[18,131],[17,128],[16,124],[15,121],[14,117],[13,114],[12,110],[11,107],[10,103],[9,100],[8,97],[7,93],[6,90],[5,86],[4,83],[3,79],[2,76],[1,72],[0,69]],
+    AN: [[19,133],[18,130],[17,127],[16,124],[15,121],[14,119],[13,116],[12,113],[11,110],[10,107],[9,104],[8,101],[7,99],[6,96],[5,93],[4,90],[3,87],[2,84],[1,81],[0,79]],
+    GE: [[18,133],[17,130],[16,126],[15,123],[14,119],[13,116],[12,112],[11,109],[10,106],[9,102],[8,99],[7,95],[6,92],[5,88],[4,85],[3,81],[2,78],[1,74],[0,71]],
+    ME: [[20,129],[19,126],[18,124],[17,121],[16,118],[15,116],[14,113],[13,111],[12,108],[11,105],[10,103],[9,100],[8,97],[7,95],[6,92],[5,89],[4,87],[3,84],[2,82],[1,79],[0,76]],
+    RA: [[19,133],[18,130],[17,127],[16,124],[15,121],[14,118],[13,114],[12,111],[11,108],[10,105],[9,102],[8,99],[7,96],[6,93],[5,89],[4,86],[3,83],[2,80],[1,77],[0,74]],
+    ZR: [[20,132],[19,129],[18,126],[17,124],[16,121],[15,118],[14,116],[13,113],[12,110],[11,108],[10,105],[9,102],[8,99],[7,97],[6,94],[5,91],[4,89],[3,86],[2,83],[1,81],[0,78]],
+    FA: [[20,132],[19,129],[18,126],[17,123],[16,121],[15,118],[14,115],[13,112],[12,109],[11,106],[10,103],[9,101],[8,98],[7,95],[6,92],[5,89],[4,86],[3,83],[2,81],[1,78],[0,75]],
+    WU: [[18,132],[17,129],[16,125],[15,122],[14,118],[13,115],[12,111],[11,108],[10,104],[9,101],[8,98],[7,94],[6,91],[5,87],[4,84],[3,80],[2,77],[1,73],[0,70]],
+    GESAMT: [[141,150,134],[131,140,129],[121,130,124],[111,120,119],[101,110,114],[91,100,109],[81,90,104],[71,80,99],[61,70,94],[51,60,89],[41,50,84],[31,40,79],[21,30,74],[11,20,69],[1,10,64]]
+  },
+  '14': {
+    SE: [[17,134],[16,131],[15,127],[14,123],[13,120],[12,116],[11,112],[10,109],[9,105],[8,101],[7,97],[6,94],[5,90],[4,86],[3,83],[2,79],[1,75],[0,71]],
+    WA: [[17,131],[16,127],[15,124],[14,121],[13,117],[12,114],[11,110],[10,106],[9,103],[8,99],[7,96],[6,92],[5,89],[4,85],[3,81],[2,78],[1,74],[0,71]],
+    AN: [[16,132],[15,128],[14,125],[13,121],[12,118],[11,115],[10,111],[9,108],[8,104],[7,101],[6,97],[5,94],[4,90],[3,87],[2,83],[1,80],[0,77]],
+    GE: [[16,129],[15,126],[14,122],[13,119],[12,115],[11,112],[10,108],[9,105],[8,101],[7,97],[6,94],[5,91],[4,88],[3,84],[2,81],[1,77],[0,74]],
+    ME: [[18,129],[17,126],[16,124],[15,121],[14,118],[13,115],[12,112],[11,109],[10,106],[9,103],[8,100],[7,97],[6,94],[5,91],[4,88],[3,85],[2,82],[1,79],[0,76]],
+    RA: [[17,134],[16,130],[15,127],[14,123],[13,120],[12,116],[11,113],[10,109],[9,105],[8,102],[7,98],[6,95],[5,91],[4,88],[3,84],[2,80],[1,77],[0,73]],
+    ZR: [[18,131],[17,129],[16,125],[15,123],[14,120],[13,117],[12,114],[11,111],[10,108],[9,105],[8,103],[7,100],[6,97],[5,94],[4,91],[3,88],[2,85],[1,83],[0,80]],
+    FA: [[18,131],[17,128],[16,125],[15,121],[14,118],[13,115],[12,112],[11,108],[10,105],[9,102],[8,99],[7,95],[6,92],[5,89],[4,86],[3,83],[2,79],[1,76],[0,73]],
+    WU: [[18,133],[17,130],[16,126],[15,123],[14,119],[13,116],[12,112],[11,109],[10,106],[9,102],[8,99],[7,95],[6,92],[5,88],[4,85],[3,81],[2,78],[1,74],[0,71]],
+    GESAMT: [[131,140,134],[121,130,129],[111,120,124],[101,110,118],[91,100,113],[81,90,108],[71,80,103],[61,70,97],[51,60,92],[41,50,87],[31,40,82],[21,30,76],[11,20,71],[1,10,66]]
+  },
+  '13': {
+    SE: [[16,134],[15,130],[14,127],[13,123],[12,119],[11,115],[10,111],[9,107],[8,100],[7,96],[6,92],[5,88],[4,84],[3,80],[2,77],[1,73],[0,73]],
+    WA: [[16,133],[15,129],[14,125],[13,121],[12,117],[11,113],[10,109],[9,105],[8,101],[7,97],[6,93],[5,89],[4,85],[3,81],[2,77],[1,73],[0,69]],
+    AN: [[15,132],[14,129],[13,125],[12,121],[11,117],[10,114],[9,110],[8,106],[7,103],[6,99],[5,95],[4,91],[3,88],[2,84],[1,80],[0,77]],
+    GE: [[16,132],[15,129],[14,125],[13,121],[12,118],[11,114],[10,111],[9,107],[8,104],[7,100],[6,97],[5,93],[4,89],[3,86],[2,82],[1,79],[0,75]],
+    ME: [[19,133],[18,130],[17,127],[16,125],[15,122],[14,119],[13,116],[12,113],[11,110],[10,107],[9,105],[8,102],[7,101],[6,96],[5,93],[4,90],[3,87],[2,85],[1,82],[0,79]],
+    RA: [[17,134],[16,131],[15,128],[14,124],[13,121],[12,117],[11,114],[10,110],[9,107],[8,103],[7,100],[6,97],[5,93],[4,90],[3,86],[2,83],[1,79],[0,76]],
+    ZR: [[18,134],[17,131],[16,128],[15,125],[14,122],[13,119],[12,116],[11,113],[10,110],[9,107],[8,104],[7,101],[6,99],[5,96],[4,93],[3,90],[2,87],[1,84],[0,81]],
+    FA: [[19,135],[18,132],[17,128],[16,125],[15,122],[14,119],[13,116],[12,113],[11,110],[10,107],[9,103],[8,100],[7,97],[6,94],[5,91],[4,88],[3,85],[2,82],[1,78],[0,75]],
+    WU: [[19,134],[18,131],[17,128],[16,125],[15,122],[14,119],[13,116],[12,113],[11,109],[10,106],[9,103],[8,100],[7,97],[6,94],[5,91],[4,88],[3,84],[2,81],[1,78],[0,75]],
+    GESAMT: [[121,130,133],[111,120,128],[101,110,122],[91,100,117],[81,90,111],[71,80,106],[61,70,100],[51,60,94],[41,50,89],[31,40,83],[21,30,78],[11,20,72],[1,10,67]]
+  },
+  '12': {
+    SE: [[15,134],[14,130],[13,126],[12,122],[11,118],[10,114],[9,110],[8,106],[7,102],[6,98],[5,94],[4,90],[3,86],[2,82],[1,78],[0,74]],
+    WA: [[15,133],[14,129],[13,125],[12,120],[11,116],[10,112],[9,108],[8,104],[7,100],[6,95],[5,91],[4,87],[3,83],[2,79],[1,75],[0,70]],
+    AN: [[15,135],[14,132],[13,128],[12,124],[11,120],[10,116],[9,112],[8,108],[7,105],[6,101],[5,97],[4,93],[3,89],[2,85],[1,82],[0,78]],
+    GE: [[15,132],[14,129],[13,126],[12,121],[11,117],[10,114],[9,110],[8,106],[7,103],[6,99],[5,95],[4,91],[3,88],[2,84],[1,80],[0,77]],
+    ME: [[18,133],[17,130],[16,127],[15,124],[14,121],[13,119],[12,116],[11,113],[10,110],[9,107],[8,104],[7,101],[6,98],[5,95],[4,92],[3,89],[2,86],[1,83],[0,80]],
+    RA: [[15,133],[14,129],[13,126],[12,122],[11,118],[10,114],[9,111],[8,107],[7,103],[6,100],[5,96],[4,92],[3,89],[2,85],[1,81],[0,77]],
+    ZR: [[16,133],[15,130],[14,127],[13,123],[12,120],[11,117],[10,113],[9,110],[8,107],[7,103],[6,100],[5,97],[4,93],[3,90],[2,87],[1,83],[0,80]],
+    FA: [[17,134],[16,130],[15,127],[14,123],[13,120],[12,116],[11,113],[10,109],[9,105],[8,102],[7,98],[6,95],[5,91],[4,88],[3,84],[2,80],[1,77],[0,74]],
+    WU: [[18,133],[17,130],[16,127],[15,123],[14,120],[13,117],[12,114],[11,111],[10,108],[9,105],[8,102],[7,98],[6,95],[5,92],[4,89],[3,86],[2,83],[1,80],[0,77]],
+    GESAMT: [[121,130,139],[111,120,133],[101,110,127],[91,100,121],[81,90,115],[71,80,109],[61,70,104],[51,60,98],[41,50,92],[31,40,86],[21,30,80],[11,20,74],[1,10,68]]
+  },
+  '21-25': {
+    SE: [[20,126],[19,124],[18,121],[17,118],[16,115],[15,112],[14,109],[13,106],[12,103],[11,100],[10,97],[9,94],[8,91],[7,88],[6,85],[5,82],[4,79],[3,76],[2,74],[1,71],[0,68]],
+    WA: [[20,134],[19,131],[18,127],[17,124],[16,120],[15,116],[14,113],[13,109],[12,106],[11,102],[10,99],[9,95],[8,91],[7,88],[6,84],[5,81],[4,77],[3,74],[2,70],[1,66],[0,63]],
+    AN: [[20,126],[19,123],[18,121],[17,118],[16,116],[15,113],[14,111],[13,108],[12,106],[11,103],[10,101],[9,98],[8,96],[7,93],[6,91],[5,88],[4,86],[3,83],[2,81],[1,78],[0,76]],
+    GE: [[20,125],[19,122],[18,119],[17,117],[16,114],[15,111],[14,108],[13,106],[12,103],[11,100],[10,97],[9,94],[8,92],[7,89],[6,86],[5,83],[4,81],[3,78],[2,75],[1,72],[0,69]],
+    ME: [[20,122],[19,119],[18,117],[17,115],[16,112],[15,110],[14,108],[13,105],[12,103],[11,101],[10,98],[9,96],[8,94],[7,91],[6,89],[5,87],[4,84],[3,82],[2,80],[1,77],[0,75]],
+    RA: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,117],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,97],[7,94],[6,91],[5,88],[4,85],[3,82],[2,79],[1,77],[0,74]],
+    ZR: [[20,125],[19,122],[18,120],[17,118],[16,115],[15,113],[14,110],[13,108],[12,106],[11,103],[10,101],[9,99],[8,96],[7,94],[6,91],[5,89],[4,87],[3,84],[2,82],[1,80],[0,77]],
+    FA: [[20,127],[19,124],[18,121],[17,119],[16,116],[15,113],[14,110],[13,107],[12,104],[11,101],[10,99],[9,96],[8,93],[7,90],[6,87],[5,84],[4,81],[3,79],[2,76],[1,73],[0,70]],
+    WU: [[20,129],[19,126],[18,123],[17,120],[16,117],[15,115],[14,112],[13,109],[12,106],[11,103],[10,100],[9,97],[8,95],[7,92],[6,89],[5,86],[4,83],[3,80],[2,77],[1,75],[0,72]],
+    GESAMT: [[171,180,132],[161,170,128],[151,160,124],[141,150,120],[131,140,117],[121,130,113],[111,120,109],[101,110,105],[91,100,101],[81,90,97],[71,80,93],[61,70,90],[51,60,86],[41,50,82],[31,40,78],[21,30,74],[11,20,70],[1,10,67]]
+  },
+  '26-30': {
+    SE: [[20,127],[19,124],[18,121],[17,118],[16,115],[15,112],[14,108],[13,105],[12,102],[11,99],[10,96],[9,93],[8,90],[7,87],[6,84],[5,81],[4,78],[3,75],[2,72],[1,69],[0,66]],
+    WA: [[20,133],[19,129],[18,126],[17,123],[16,119],[15,116],[14,113],[13,109],[12,106],[11,103],[10,99],[9,96],[8,93],[7,89],[6,86],[5,83],[4,79],[3,76],[2,73],[1,69],[0,66]],
+    AN: [[20,125],[19,123],[18,121],[17,118],[16,116],[15,114],[14,111],[13,109],[12,106],[11,104],[10,102],[9,99],[8,97],[7,95],[6,92],[5,90],[4,87],[3,85],[2,83],[1,80],[0,78]],
+    GE: [[20,124],[19,121],[18,119],[17,116],[16,113],[15,110],[14,108],[13,105],[12,102],[11,99],[10,96],[9,94],[8,91],[7,88],[6,85],[5,83],[4,80],[3,77],[2,74],[1,71],[0,69]],
+    ME: [[20,123],[19,120],[18,118],[17,116],[16,114],[15,111],[14,109],[13,107],[12,105],[11,102],[10,100],[9,98],[8,95],[7,93],[6,91],[5,89],[4,86],[3,84],[2,82],[1,80],[0,77]],
+    RA: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,117],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,97],[7,94],[6,91],[5,88],[4,85],[3,82],[2,79],[1,77],[0,74]],
+    ZR: [[20,125],[19,123],[18,120],[17,118],[16,116],[15,113],[14,111],[13,109],[12,107],[11,104],[10,102],[9,100],[8,97],[7,95],[6,93],[5,90],[4,88],[3,86],[2,83],[1,81],[0,79]],
+    FA: [[20,128],[19,125],[18,122],[17,119],[16,116],[15,113],[14,111],[13,108],[12,105],[11,102],[10,99],[9,96],[8,93],[7,91],[6,88],[5,85],[4,82],[3,79],[2,76],[1,73],[0,71]],
+    WU: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,116],[14,113],[13,110],[12,107],[11,104],[10,101],[9,99],[8,96],[7,93],[6,90],[5,87],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    GESAMT: [[171,180,133],[161,170,129],[151,160,125],[141,150,121],[131,140,117],[121,130,113],[111,120,110],[101,110,106],[91,100,102],[81,90,98],[71,80,94],[61,70,90],[51,60,87],[41,50,83],[31,40,79],[21,30,75],[11,20,71],[1,10,67]]
+  },
+  '31-35': {
+    SE: [[20,127],[19,124],[18,121],[17,118],[16,112],[15,112],[14,109],[13,106],[12,103],[11,100],[10,97],[9,94],[8,91],[7,89],[6,86],[5,83],[4,80],[3,77],[2,74],[1,71],[0,68]],
+    WA: [[20,134],[19,131],[18,127],[17,124],[16,121],[15,117],[14,114],[13,111],[12,107],[11,104],[10,101],[9,97],[8,94],[7,91],[6,87],[5,84],[4,81],[3,77],[2,74],[1,71],[0,67]],
+    AN: [[20,126],[19,123],[18,121],[17,119],[16,117],[15,114],[14,112],[13,110],[12,108],[11,105],[10,103],[9,101],[8,98],[7,96],[6,94],[5,92],[4,89],[3,87],[2,85],[1,83],[0,80]],
+    GE: [[20,126],[19,123],[18,120],[17,117],[16,115],[15,112],[14,109],[13,106],[12,103],[11,100],[10,97],[9,95],[8,92],[7,89],[6,86],[5,83],[4,80],[3,77],[2,75],[1,72],[0,69]],
+    ME: [[20,124],[19,122],[18,119],[17,117],[16,115],[15,113],[14,110],[13,108],[12,106],[11,103],[10,101],[9,99],[8,97],[7,94],[6,92],[5,90],[4,88],[3,85],[2,83],[1,81],[0,78]],
+    RA: [[20,129],[19,126],[18,124],[17,121],[16,118],[15,116],[14,113],[13,110],[12,108],[11,105],[10,102],[9,99],[8,97],[7,94],[6,91],[5,89],[4,86],[3,83],[2,81],[1,78],[0,75]],
+    ZR: [[20,127],[19,125],[18,122],[17,120],[16,117],[15,115],[14,113],[13,110],[12,108],[11,105],[10,103],[9,101],[8,98],[7,96],[6,94],[5,91],[4,89],[3,86],[2,84],[1,82],[0,79]],
+    FA: [[20,129],[19,126],[18,123],[17,120],[16,118],[15,115],[14,112],[13,109],[12,106],[11,104],[10,101],[9,98],[8,95],[7,93],[6,90],[5,87],[4,84],[3,81],[2,79],[1,76],[0,73]],
+    WU: [[20,130],[19,127],[18,124],[17,122],[16,119],[15,116],[14,113],[13,111],[12,108],[11,105],[10,102],[9,99],[8,97],[7,94],[6,91],[5,88],[4,86],[3,83],[2,80],[1,77],[0,74]],
+    GESAMT: [[171,180,133],[161,170,129],[151,160,125],[141,150,121],[131,140,118],[121,130,114],[111,120,110],[101,110,107],[91,100,103],[81,90,99],[71,80,96],[61,70,92],[51,60,88],[41,50,84],[31,40,81],[21,30,77],[11,20,73],[1,10,70]]
+  },
+  '36-40': {
+    SE: [[20,128],[19,125],[18,122],[17,119],[16,116],[15,113],[14,110],[13,107],[12,104],[11,101],[10,99],[9,96],[8,93],[7,90],[6,87],[5,84],[4,81],[3,78],[2,75],[1,72],[0,69]],
+    WA: [[20,133],[19,130],[18,127],[17,124],[16,121],[15,118],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,96],[7,93],[6,89],[5,86],[4,83],[3,80],[2,77],[1,74],[0,71]],
+    AN: [[20,127],[19,125],[18,122],[17,120],[16,118],[15,115],[14,113],[13,111],[12,109],[11,106],[10,104],[9,102],[8,100],[7,97],[6,95],[5,93],[4,90],[3,88],[2,86],[1,84],[0,81]],
+    GE: [[20,128],[19,125],[18,122],[17,119],[16,116],[15,113],[14,110],[13,107],[12,104],[11,101],[10,99],[9,96],[8,93],[7,90],[6,87],[5,84],[4,81],[3,78],[2,75],[1,72],[0,69]],
+    ME: [[20,127],[19,124],[18,122],[17,120],[16,117],[15,115],[14,112],[13,110],[12,107],[11,105],[10,102],[9,100],[8,98],[7,95],[6,93],[5,90],[4,88],[3,85],[2,83],[1,80],[0,78]],
+    RA: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,116],[14,114],[13,111],[12,108],[11,105],[10,103],[9,100],[8,97],[7,94],[6,91],[5,89],[4,86],[3,83],[2,80],[1,78],[0,75]],
+    ZR: [[20,126],[19,124],[18,121],[17,119],[16,117],[15,115],[14,112],[13,110],[12,108],[11,105],[10,104],[9,101],[8,99],[7,97],[6,95],[5,92],[4,90],[3,88],[2,86],[1,84],[0,81]],
+    FA: [[20,128],[19,126],[18,123],[17,121],[16,118],[15,115],[14,113],[13,110],[12,108],[11,105],[10,103],[9,100],[8,97],[7,95],[6,92],[5,90],[4,87],[3,85],[2,82],[1,79],[0,77]],
+    WU: [[20,132],[19,129],[18,126],[17,123],[16,121],[15,118],[14,115],[13,112],[12,109],[11,107],[10,104],[9,101],[8,98],[7,96],[6,93],[5,90],[4,87],[3,84],[2,82],[1,79],[0,76]],
+    GESAMT: [[171,180,132],[161,170,128],[151,160,125],[141,150,121],[131,140,118],[121,130,114],[111,120,111],[101,110,108],[91,100,104],[81,90,101],[71,80,97],[61,70,94],[51,60,90],[41,50,87],[31,40,83],[21,30,80],[11,20,77],[1,10,73]]
+  },
+  '41-45': {
+    SE: [[20,129],[19,126],[18,123],[17,120],[16,117],[15,114],[14,111],[13,109],[12,106],[11,103],[10,100],[9,97],[8,94],[7,91],[6,86],[5,86],[4,83],[3,80],[2,77],[1,74],[0,71]],
+    WA: [[20,132],[19,129],[18,126],[17,123],[16,120],[15,117],[14,115],[13,112],[12,109],[11,106],[10,103],[9,100],[8,97],[7,95],[6,92],[5,89],[4,86],[3,83],[2,80],[1,77],[0,75]],
+    AN: [[20,127],[19,125],[18,123],[17,121],[16,118],[15,116],[14,114],[13,112],[12,110],[11,107],[10,105],[9,103],[8,101],[7,98],[6,96],[5,94],[4,92],[3,90],[2,87],[1,85],[0,83]],
+    GE: [[20,129],[19,126],[18,123],[17,120],[16,117],[15,114],[14,111],[13,109],[12,106],[11,103],[10,100],[9,97],[8,94],[7,91],[6,89],[5,86],[4,83],[3,80],[2,77],[1,74],[0,71]],
+    ME: [[20,127],[19,124],[18,122],[17,120],[16,118],[15,115],[14,113],[13,111],[12,108],[11,106],[10,104],[9,102],[8,99],[7,97],[6,95],[5,93],[4,90],[3,88],[2,86],[1,83],[0,81]],
+    RA: [[20,133],[19,130],[18,127],[17,125],[16,122],[15,119],[14,116],[13,113],[12,110],[11,107],[10,105],[9,102],[8,99],[7,96],[6,93],[5,90],[4,87],[3,85],[2,82],[1,79],[0,76]],
+    ZR: [[20,129],[19,126],[18,124],[17,121],[16,119],[15,117],[14,114],[13,112],[12,109],[11,107],[10,105],[9,102],[8,100],[7,98],[6,95],[5,93],[4,90],[3,88],[2,86],[1,83],[0,81]],
+    FA: [[20,129],[19,127],[18,124],[17,122],[16,119],[15,117],[14,114],[13,112],[12,109],[11,106],[10,104],[9,101],[8,99],[7,96],[6,94],[5,91],[4,88],[3,86],[2,83],[1,81],[0,78]],
+    WU: [[20,132],[19,129],[18,126],[17,124],[16,121],[15,118],[14,115],[13,113],[12,110],[11,107],[10,105],[9,102],[8,99],[7,96],[6,94],[5,91],[4,88],[3,86],[2,83],[1,80],[0,78]],
+    GESAMT: [[171,180,133],[161,170,130],[151,160,127],[141,150,123],[131,140,120],[121,130,116],[111,120,113],[101,110,109],[91,100,106],[81,90,102],[71,80,99],[61,70,96],[51,60,92],[41,50,89],[31,40,85],[21,30,82],[11,20,78],[1,10,75]]
+  },
+  '46-50': {
+    SE: [[20,131],[19,129],[18,126],[17,123],[16,120],[15,117],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,96],[7,90],[6,87],[5,84],[4,81],[3,79],[2,76],[1,73],[0,73]],
+    WA: [[19,135],[18,131],[17,128],[16,125],[15,122],[14,118],[13,115],[12,112],[11,109],[10,105],[9,102],[8,99],[7,96],[6,93],[5,89],[4,86],[3,83],[2,80],[1,76],[0,73]],
+    AN: [[20,128],[19,126],[18,124],[17,122],[16,120],[15,117],[14,115],[13,113],[12,111],[11,109],[10,107],[9,104],[8,102],[7,100],[6,98],[5,96],[4,93],[3,91],[2,89],[1,87],[0,85]],
+    GE: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,116],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,96],[7,93],[6,90],[5,87],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    ME: [[20,128],[19,126],[18,123],[17,121],[16,119],[15,117],[14,114],[13,112],[12,110],[11,108],[10,106],[9,103],[8,101],[7,99],[6,97],[5,94],[4,92],[3,90],[2,88],[1,86],[0,83]],
+    RA: [[20,134],[19,131],[18,128],[17,125],[16,123],[15,120],[14,117],[13,114],[12,111],[11,108],[10,105],[9,103],[8,100],[7,97],[6,94],[5,91],[4,88],[3,85],[2,83],[1,80],[0,77]],
+    ZR: [[20,129],[19,127],[18,124],[17,122],[16,120],[15,118],[14,115],[13,113],[12,111],[11,108],[10,106],[9,104],[8,102],[7,99],[6,97],[5,95],[4,92],[3,90],[2,88],[1,86],[0,83]],
+    FA: [[20,133],[19,131],[18,128],[17,125],[16,122],[15,119],[14,117],[13,114],[12,111],[11,108],[10,106],[9,103],[8,100],[7,97],[6,94],[5,92],[4,89],[3,86],[2,83],[1,81],[0,78]],
+    WU: [[20,134],[19,131],[18,128],[17,125],[16,123],[15,120],[14,117],[13,115],[12,112],[11,109],[10,106],[9,104],[8,101],[7,98],[6,96],[5,93],[4,90],[3,88],[2,85],[1,82],[0,79]],
+    GESAMT: [[171,180,136],[161,170,133],[151,160,129],[141,150,126],[131,140,122],[121,130,119],[111,120,115],[101,110,111],[91,100,108],[81,90,104],[71,80,101],[61,70,97],[51,60,94],[41,50,90],[31,40,86],[21,30,83],[11,20,79],[1,10,76]]
+  },
+  '51-60': {
+    SE: [[20,134],[19,131],[18,129],[17,126],[16,123],[15,120],[14,117],[13,114],[12,111],[11,108],[10,105],[9,102],[8,99],[7,96],[6,93],[5,90],[4,87],[3,84],[2,81],[1,79],[0,76]],
+    WA: [[19,135],[18,131],[17,128],[16,125],[15,122],[14,118],[13,115],[12,112],[11,109],[10,105],[9,102],[8,99],[7,96],[6,93],[5,89],[4,86],[3,83],[2,80],[1,76],[0,73]],
+    AN: [[20,128],[19,126],[18,124],[17,122],[16,120],[15,117],[14,115],[13,113],[12,111],[11,109],[10,107],[9,104],[8,102],[7,100],[6,98],[5,96],[4,93],[3,91],[2,89],[1,87],[0,85]],
+    GE: [[20,131],[19,128],[18,125],[17,122],[16,119],[15,116],[14,114],[13,111],[12,108],[11,105],[10,102],[9,99],[8,96],[7,93],[6,90],[5,87],[4,84],[3,81],[2,78],[1,75],[0,72]],
+    ME: [[20,128],[19,126],[18,123],[17,121],[16,119],[15,117],[14,114],[13,112],[12,110],[11,108],[10,106],[9,103],[8,101],[7,99],[6,97],[5,94],[4,92],[3,90],[2,88],[1,86],[0,83]],
+    RA: [[20,134],[19,131],[18,128],[17,125],[16,123],[15,120],[14,117],[13,114],[12,111],[11,108],[10,105],[9,103],[8,100],[7,97],[6,94],[5,91],[4,88],[3,85],[2,83],[1,80],[0,77]],
+    ZR: [[20,129],[19,127],[18,124],[17,122],[16,120],[15,118],[14,115],[13,113],[12,111],[11,108],[10,106],[9,104],[8,102],[7,99],[6,97],[5,95],[4,92],[3,90],[2,88],[1,86],[0,83]],
+    FA: [[20,133],[19,131],[18,128],[17,125],[16,122],[15,119],[14,117],[13,114],[12,111],[11,108],[10,106],[9,103],[8,100],[7,97],[6,94],[5,92],[4,89],[3,86],[2,83],[1,81],[0,78]],
+    WU: [[20,134],[19,131],[18,128],[17,125],[16,123],[15,120],[14,117],[13,115],[12,112],[11,109],[10,106],[9,104],[8,101],[7,98],[6,96],[5,93],[4,90],[3,88],[2,85],[1,82],[0,79]],
+    GESAMT: [[171,180,136],[161,170,133],[151,160,129],[141,150,126],[131,140,122],[121,130,119],[111,120,115],[101,110,111],[91,100,108],[81,90,104],[71,80,101],[61,70,97],[51,60,94],[41,50,90],[31,40,86],[21,30,83],[11,20,79],[1,10,76]]
+  }
+};
+
+function getSW(subtes, rw, usia) {
+  const norma = NORMA[usia];
+  if (!norma) return '';
+  const tabel = norma[subtes];
+  if (!tabel) return '';
+  // Cari RW tepat atau terdekat di bawahnya
+  let sw = '';
+  for (let i = 0; i < tabel.length; i++) {
+    if (rw >= tabel[i][0]) { sw = tabel[i][1]; break; }
+  }
+  return sw;
+}
+
+function getGesamtSW(jml, usia) {
+  const norma = NORMA[usia];
+  if (!norma || !norma.GESAMT) return '';
+  for (const row of norma.GESAMT) {
+    if (jml >= row[0] && jml <= row[1]) return row[2];
+    if (jml > row[1]) continue;
+  }
+  return norma.GESAMT[norma.GESAMT.length - 1][2];
+}
+
+// ─── NORMA IQ (SW → IQ) ──────────────────────────────────────
+const IQ_NORM = [
+  [140,160],[138,157],[136,154],[134,151],[132,145],[129,143],[128,142],
+  [127,140],[126,139],[125,137],[124,136],[123,134],[122,133],[121,131],
+  [120,130],[119,128],[118,127],[117,125],[116,124],[115,122],[114,121],
+  [113,120],[112,118],[111,116],[110,115],[109,113],[108,112],[107,110],
+  [106,109],[105,107],[104,106],[103,104],[102,103],[101,101],[100,100],
+  [99,98],[98,97],[97,96],[96,94],[95,92],[94,91],[93,90],[92,88],
+  [91,87],[90,85],[89,84],[88,82],[87,81],[86,79],[85,78],[84,76],
+  [83,75],[82,73],[81,71],[80,70],[79,68],[78,67],[77,66],[76,64],
+  [75,62],[74,61],[73,59],[72,58],[70,55],[68,52],[66,49],[64,46],
+  [62,43],[60,40],[58,37]
+];
+
+function getIQ(swTotal) {
+  for (let i = 0; i < IQ_NORM.length; i++) {
+    if (swTotal >= IQ_NORM[i][0]) return IQ_NORM[i][1];
+  }
+  return IQ_NORM[IQ_NORM.length - 1][1];
+}
+
+// ─── RENDER GRAPH ────────────────────────────────────────────
+function renderGraph(swValues, isEmpty) {
+  const svg = document.getElementById('graphSvg');
+  svg.innerHTML = '';
+  if (isEmpty) return;
+
+  // Subtes order: SE, WA, AN, GE, ME, RA, ZR, FA, WU (9 subtes, skip %W col)
+  const subtesOrder = ['SE','WA','AN','GE','ME','RA','ZR','FA','WU'];
+  const SW_MIN = 70, SW_MAX = 130;
+
+  // Tunggu tabel ter-render agar bisa ambil posisi cell
+  requestAnimationFrame(() => {
+    const table = document.getElementById('graphTable');
+    const tbody = document.getElementById('graphBody');
+    if (!tbody.rows.length) return;
+
+    const tableRect = table.getBoundingClientRect();
+    const svgRect   = svg.getBoundingClientRect();
+
+    const points = [];
+
+    subtesOrder.forEach((key, colIdx) => {
+      const sw = swValues[key];
+      if (sw === undefined || sw === '') return;
+
+      // Ambil posisi header cell (th) kolom ini untuk x
+      const th = table.querySelector('thead tr').cells[colIdx];
+      const thRect = th.getBoundingClientRect();
+      const x = (thRect.left + thRect.width / 2) - svgRect.left;
+
+      // Hitung y berdasarkan nilai SW (clamp ke 70-130)
+      const swClamped = Math.max(SW_MIN, Math.min(SW_MAX, sw));
+      // Baris pertama tbody = row 130, baris terakhir = row 70
+      // Tiap row = 14px height, ada 7 baris (130,120,110,100,90,80,70) = 6 interval
+      const firstRow = tbody.rows[0];
+      const lastRow  = tbody.rows[tbody.rows.length - 1];
+      const firstRect = firstRow.getBoundingClientRect();
+      const lastRect  = lastRow.getBoundingClientRect();
+
+      const yTop    = firstRect.top + firstRect.height / 2 - svgRect.top;
+      const yBottom = lastRect.top  + lastRect.height  / 2 - svgRect.top;
+      const y = yTop + (SW_MAX - swClamped) / (SW_MAX - SW_MIN) * (yBottom - yTop);
+
+      points.push({ x, y, sw, key });
+    });
+
+    if (points.length === 0) return;
+
+    // Gambar garis penghubung
+    for (let i = 0; i < points.length - 1; i++) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', points[i].x);
+      line.setAttribute('y1', points[i].y);
+      line.setAttribute('x2', points[i+1].x);
+      line.setAttribute('y2', points[i+1].y);
+      line.setAttribute('stroke', '#1a6ab5');
+      line.setAttribute('stroke-width', '1.5');
+      svg.appendChild(line);
+    }
+
+    // Gambar titik bulat
+    points.forEach(p => {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', '4');
+      circle.setAttribute('fill', '#1a6ab5');
+      circle.setAttribute('stroke', '#fff');
+      circle.setAttribute('stroke-width', '1');
+      svg.appendChild(circle);
+    });
+  });
+}
+
+// ─── RENDER RW TABLE ─────────────────────────────────────────
+function renderRW(scores, isEmpty, usia) {
+  const keys = ['SE','WA','AN','GE','ME','RA','ZR','FA','WU'];
+  const usiaKey = getUsiaKey(usia || 0);
+  let jml = 0;
+  keys.forEach(k => {
+    const elRw = document.getElementById('rw-' + k);
+    const elSw = document.getElementById('sw-' + k);
+    if (!elRw) return;
+    if (isEmpty) {
+      elRw.textContent = '';
+      if (elSw) elSw.textContent = '';
+      elRw.style.cursor = '';
+      elRw.onclick = null;
+    } else {
+      const val = scores[k] !== undefined ? scores[k] : 0;
+      elRw.textContent = val;
+      jml += val;
+
+      // Isi SW
+      if (elSw) {
+        const sw = getSW(k === 'WU' ? 'WU' : k, val, usiaKey);
+        elSw.textContent = sw;
+      }
+
+      // Khusus GE: klik tampilkan jumlah benar asli
+      if (k === 'GE') {
+        elRw.style.cursor = 'pointer';
+        elRw.title = 'Klik untuk lihat jumlah benar GE';
+        elRw.style.textDecoration = 'underline dotted';
+        elRw.onclick = () => showGEPopup(scores._GE_raw, val);
+      }
+    }
+  });
+
+  const elJml = document.getElementById('rw-JML');
+  const elSwJml = document.getElementById('sw-JML');
+  const elIQ = document.getElementById('iq-val');
+
+  // Hitung total SW semua subtes
+  let swTotal = 0;
+  if (!isEmpty) {
+    keys.forEach(k => {
+      const val = scores[k] !== undefined ? scores[k] : 0;
+      const sw = parseInt(getSW(k, val, usiaKey)) || 0;
+      swTotal += sw;
+    });
+    // Tambah SW JML (GESAMT)
+    const gesamtSW = parseInt(getGesamtSW(jml, usiaKey)) || 0;
+    // SW JML bukan dijumlah, GESAMT adalah konversi dari total RW
+    // IQ dikonversi dari sw-JML (GESAMT SW)
+  }
+
+  if (elJml) elJml.textContent = isEmpty ? '' : jml;
+  if (elSwJml) {
+    const gesamtSW = isEmpty ? '' : getGesamtSW(jml, usiaKey);
+    elSwJml.textContent = gesamtSW;
+    if (elIQ) elIQ.textContent = (isEmpty || !gesamtSW) ? '' : getIQ(parseInt(gesamtSW));
+  }
+
+  // Kumpulkan SW per subtes untuk grafik
+  const swForGraph = {};
+  if (!isEmpty) {
+    keys.forEach(k => {
+      const val = scores[k] !== undefined ? scores[k] : 0;
+      const sw = getSW(k, val, usiaKey);
+      swForGraph[k] = sw !== '' ? parseInt(sw) : undefined;
+    });
+  }
+  renderGraph(swForGraph, isEmpty);
+}
+
+// ─── GE POPUP ────────────────────────────────────────────────
+function showGEPopup(raw, rw) {
+  // Hapus popup lama jika ada
+  const old = document.getElementById('ge-popup');
+  if (old) old.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'ge-popup';
+  popup.style.cssText = `
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: #fff; border: 2px solid #1a6ab5; border-radius: 12px;
+    padding: 24px 32px; z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    font-family: 'Segoe UI', sans-serif; text-align: center; min-width: 220px;
+  `;
+  popup.innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:#0d2a4a;margin-bottom:14px;letter-spacing:0.5px;">
+      KONTROL SKOR GE
+    </div>
+    <div style="display:flex;gap:24px;justify-content:center;margin-bottom:16px;">
+      <div>
+        <div style="font-size:11px;color:#555;font-weight:600;margin-bottom:4px;">Jumlah Benar</div>
+        <div style="font-size:32px;font-weight:900;color:#1a6ab5;">${raw !== undefined ? raw : '-'}</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:20px;color:#aaa;">→</div>
+      <div>
+        <div style="font-size:11px;color:#555;font-weight:600;margin-bottom:4px;">RW (Konversi)</div>
+        <div style="font-size:32px;font-weight:900;color:#16a34a;">${rw}</div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('ge-popup').remove()"
+      style="padding:7px 22px;background:#1a6ab5;color:#fff;border:none;border-radius:8px;
+             font-size:13px;font-weight:700;cursor:pointer;">Tutup</button>
+  `;
+
+  // Overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'ge-overlay';
+  overlay.style.cssText = `
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.3);z-index:9998;
+  `;
+  overlay.onclick = () => { popup.remove(); overlay.remove(); };
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+renderAll({}, 0);
+</script>
+
+</body>
+</html>
